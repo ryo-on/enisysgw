@@ -602,15 +602,57 @@ class Gwbbs::Doc < Gwboard::CommonDb
     seen_remind(Core.user.id)
   end
 
+  # === 新着情報(編集時)を作成するメソッド
+  #  参加者(作成者以外)のユーザーに対して作成する
+  # ==== 引数
+  #  * なし
+  # ==== 戻り値
+  #  なし
+  def build_updated_remind
+    # 閲覧、編集、管理権限を持つユーザーに通知する
+    group_ids = []
+    user_ids = []
+    control.role.each do |role|
+      group_ids << role.group_id
+      user_ids << role.user_id
+    end
+    group_ids = group_ids.flatten.compact.uniq
+
+    # 制限なしが選択されていた場合
+    if group_ids.include?(0)
+      send_group_ids = System::Group.all.to_a.map(&:id)
+    else
+      send_group_ids = group_ids
+    end
+
+    # 所属からユーザー通知するユーザーを抽出
+    send_group_ids.each do |group_id|
+      group = System::Group.find(group_id)
+      group.users.each { |user| user_ids << user.id }
+    end
+
+    # ユーザーに通知
+    # 複数所属も考えられるので、重複がないようにする
+    user_ids = user_ids.flatten.compact.uniq
+    user_ids.each do |user_id|
+      target_user = System::User.find(user_id)
+      # 無効のユーザーの場合は通知しない
+      build_remind(user_id, "update") unless target_user.disabled?
+    end
+
+    # 更新者は通知を既読にする
+    seen_remind(Core.user.id)
+  end
+
   # === 新着情報を作成するメソッド
   #  ユーザーに対して作成する
   # ==== 引数
   #  * user_id: ユーザーID
   # ==== 戻り値
   #  なし
-  def build_remind(user_id)
+  def build_remind(user_id, action = "open")
     Gw::Reminder.create!(category: "bbs", user_id: user_id, title_id: title_id, item_id: id,
-      title: title, datetime: able_date, expiration_datetime: expiry_date, action: "open",
+      title: title, datetime: able_date, expiration_datetime: expiry_date, action: "#{action}",
       url: "/gwbbs/docs/#{id}/?title_id=#{title_id}")
   end
 

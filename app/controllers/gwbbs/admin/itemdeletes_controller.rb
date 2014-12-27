@@ -155,8 +155,7 @@ protected
   end
 
   def check_gw_system_admin
-    @is_sysadm = true if System::Model::Role.get(1, Core.user.id ,'_admin', 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Core.user_group.id ,'_admin', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_admin_admin?
     @is_bbsadm = true if @is_sysadm
   end
 

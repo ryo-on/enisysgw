@@ -32,10 +32,10 @@ class Gw::YearMarkJp < Gw::Database
   end
 
   def self.is_dev?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'_admin', 'developer')
+    Gw.is_other_developer?('_admin')
   end
   def self.is_admin?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'_admin', 'admin')
+    Gw.is_admin_admin?
   end
 
   def mark_upcase

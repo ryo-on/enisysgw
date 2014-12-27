@@ -30,7 +30,8 @@ class System::Admin::CustomGroupsController < Gw::Controller::Admin::Base
   def init_params
     @is_gw_admin = Gw.is_admin_admin?
     if params[:c1].present?
-      @role_schedule = System::Model::Role.get(1, Core.user.id ,'schedule_role', 'admin')
+      #スケジューラー設定権限を持つユーザーかの情報
+      @role_schedule = Gw.is_other_admin?('schedule_role')
       @is_gw_admin = @is_gw_admin || @role_schedule
     end
   end
@@ -42,10 +43,25 @@ class System::Admin::CustomGroupsController < Gw::Controller::Admin::Base
     item.order params[:sort], :sort_no
     cond = ''
     if @is_gw_admin != true
+      user_groups = System::UsersGroup.where(user_id: Site.user.id)
+      groups = ""
+      user_groups.each do |ug|
+        groups += ", " + ug.group_id.to_s if groups.present?
+        groups = ug.group_id.to_s if groups.blank?
+      end
+=begin
       cond +=  " owner_uid = #{Site.user.id} " +
               " OR id in (" +
                 " select custom_group_id from system_custom_group_roles where ( "+
                   " ( class_id = 2 AND system_custom_group_roles.group_id = #{Site.user_group.id} )" +
+                  " OR ( system_custom_group_roles.class_id = 1 AND system_custom_group_roles.user_id = #{Site.user.id} )" +
+                  " ) AND system_custom_group_roles.priv_name = 'admin' " +
+              ") "
+=end
+      cond +=  " owner_uid = #{Site.user.id} " +
+              " OR id in (" +
+                " select custom_group_id from system_custom_group_roles where ( "+
+                  " ( class_id = 2 AND system_custom_group_roles.group_id in(#{groups}) )" +
                   " OR ( system_custom_group_roles.class_id = 1 AND system_custom_group_roles.user_id = #{Site.user.id} )" +
                   " ) AND system_custom_group_roles.priv_name = 'admin' " +
               ") "

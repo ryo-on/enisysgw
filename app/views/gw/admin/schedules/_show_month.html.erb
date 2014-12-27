@@ -64,9 +64,8 @@ end
             schedule_id = "sche#{schedule.id}_#{i}_#{j}_#{week_cnt}"
             if schedule.date_between(week_add_day)
             %>
-
-            <%= render(:partial => '/gw/admin/schedules/show_week_one', 
-              :locals=>{:schedule => schedule, :week_add_day => week_add_day, :schedule_id => schedule_id}) -%>
+            <% user_id = params[:uid]? params[:uid] : Site.user.id %>
+            <%= show_week_one(schedule, week_add_day, schedule_id, user_id) %>
 
             <%
             end

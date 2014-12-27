@@ -44,4 +44,22 @@ module Gwbbs::Admin::DocsHelper
     msg = required(" ※#{msg} 制限値を超過しました。") if 100 <= usage
     return msg
   end
+
+  def open_gwbbs_form(uri)
+    uri = escape_javascript(uri)
+    "openGwbbsForm('#{uri}', '#{gwbbs_form_style}');"
+  end
+
+  def gwbbs_form_style
+    "resizable=yes,scrollbars=yes"
+  end
+
+    def open_gwcircular_form(uri)
+    uri = escape_javascript(uri)
+    "openGwcircularForm('#{uri}', '#{gwcircular_form_style}');"
+  end
+
+  def gwcircular_form_style
+    "resizable=yes,scrollbars=yes"
+  end
 end

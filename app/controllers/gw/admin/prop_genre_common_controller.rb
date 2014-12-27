@@ -15,8 +15,10 @@ class Gw::Admin::PropGenreCommonController < Gw::Controller::Admin::Base
     @item_image_name = "#{@item_name}画像"
     @index_order = "delete_state, reserved_state desc, coalesce(extra_flag,'other'), gid, coalesce(sort_no, 0), name"
     @cls = nz(Gw.trim(nz(params[:cls])).downcase, 'other')
+
+    #施設マスタ権限を持つユーザーかの情報
     @is_gw_admin = Gw.is_admin_admin?
-    @schedule_prop_admin = System::Model::Role.get(1, Core.user.id ,'schedule_prop_admin', 'admin')
+    @schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
     @is_admin = if @genre == 'other'
       @is_gw_admin || (params[:id].blank? || Gw::PropOtherRole.is_admin?(params[:id]))
     else

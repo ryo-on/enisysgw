@@ -75,7 +75,7 @@ class Gw::Admin::AdminMessagesController < Gw::Controller::Admin::Base
     _destroy(@item,options)
   end
   def init_params
-    @is_admin = Gw::AdminMessage.is_admin?( Site.user.id )
+    @is_admin = Gw.is_admin_admin?
 
     qsa = ['limit' , 's_keyword']
     @qs = qsa.delete_if{|x| nz(params[x],'')==''}.collect{|x| %Q(#{x}=#{params[x]})}.join('&')

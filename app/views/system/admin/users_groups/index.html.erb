@@ -22,7 +22,7 @@
           <th><%= System::User.human_attribute_name(:official_position) %></th>
           <th><%= System::User.human_attribute_name(:email) %></th>
           <th><%= System::UsersGroup.human_attribute_name(:job_order) %></th>
-          <th><%= System::User.human_attribute_name(:ldap) %></th>
+          <!--<th><%#= System::User.human_attribute_name(:ldap) %></th>-->
           <th><%= System::User.human_attribute_name(:state) %></th>
         </tr>
         <% for item in @items %>
@@ -33,7 +33,7 @@
           <td><%= safe{item.user.official_position} %></td>
           <td><%= safe{item.user.email} %></td>
           <td><%= System::UsersGroup.job_order_show(item.job_order) %></td>
-          <td><%= safe{System::UsersGroup.ldap_show(item.user.ldap)} %></td>
+          <!--<td><%#= safe{System::UsersGroup.ldap_show(item.user.ldap)} %></td>-->
           <td><%= safe{System::UsersGroup.state_show(item.user.state)} %></td>
         </tr>
         <% end %>

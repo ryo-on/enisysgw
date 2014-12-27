@@ -123,6 +123,8 @@ protected
 
         # 回覧板 新着情報処理
         if @title.is_a?(Gwcircular::Control) && item.is_a?(Gwcircular::Doc)
+          # 該当記事に対する新着情報をすべて削除する
+          item.reminders.destroy_all
           if item.doc_type == 0 && item.state == 'public'
             if item.created_at == item.latest_updated_at
               # 回覧作成の場合、配信者のユーザへ新着情報(作成時)を通知
@@ -144,8 +146,13 @@ protected
         format.html { redirect_to location }
         format.xml  { head :ok }
       else
-        format.html { render :action => failured_action || :edit }
-        format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        if options[:request_path].present?
+          format.html { render :action => failured_action || :edit, layout: "admin/template/mail_forward" }
+          format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        else
+          format.html { render :action => failured_action || :edit }
+          format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        end
       end
     end
   end
@@ -182,18 +189,38 @@ protected
 
         # 掲示板 新着情報処理
         if @title.is_a?(Gwbbs::Control) && item.is_a?(Gwbbs::Doc)
+          # 既読を含む該当記事に対する新着情報を取得する。
+          unscoped_reminders = Gw::Reminder.unscoped.extract_category("bbs").where(title_id: @title.id, item_id: item.id)
+          # 空でなければ既に公開済みの記事であると判断する。
+          has_seen_or_unseen_reminders = unscoped_reminders.present?
+
           # 該当記事に対する新着情報をすべて削除する
           item.reminders.destroy_all
-          # 改めて該当記事の新着情報を作成する
-          item.build_created_remind if item.public_status?
+          # 公開する記事であること
+          if item.public_status?
+            # 既に公開していた記事
+            if has_seen_or_unseen_reminders
+              # 該当記事の更新用新着情報を作成する
+              item.build_updated_remind
+            else
+              # 該当記事の公開用新着情報を作成する
+              item.build_created_remind
+            end
+          end
         end
 
         flash[:notice] = options[:notice] || '更新処理が完了しました'
         format.html { redirect_to s_location }
         format.xml  { head :ok }
       else
-        format.html { render :action => :edit }
-        format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        if options[:request_path].present?
+          format.html { render :action => :edit, layout: "admin/template/mail_forward" }
+          format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        else
+          @item.state = @before_state
+          format.html { render :action => :edit }
+          format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        end
       end
     end
   end
@@ -222,8 +249,14 @@ protected
         format.html { redirect_to s_location }
         format.xml  { head :ok }
       else
-        format.html { render :action => :edit }
-        format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        if options[:request_path].present?
+          format.html { render :action => :edit, layout: "admin/template/mail_forward" }
+          format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        else
+          @item.state = @before_state
+          format.html { render :action => :edit }
+          format.xml  { render :xml => item.errors, :status => :unprocessable_entity }
+        end
       end
     end
   end

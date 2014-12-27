@@ -8,6 +8,9 @@ EnisysGw::Application.routes.draw do
   match "gwbbs/itemdeletes/:mode/create_date_record", :to => "gwbbs/admin/itemdeletes#create_date_record"
   match "gwbbs/csv_exports/:id",                      :to => "gwbbs/admin/csv_exports#index"
   match "gwbbs/csv_exports/:id/export_csv",           :to => "gwbbs/admin/csv_exports#export_csv"
+  match 'gwbbs/forward_select'       => 'gwbbs/admin/menus#forward_select'
+  match 'gwbbs/docs/:id/gwcircular_forward' => 'gwbbs/admin/docs#gwcircular_forward'
+  match 'gwbbs/docs/:id/mail_forward' => 'gwbbs/admin/docs#mail_forward'
 
   #scope "_#{scp}" do
     namespace mod do
@@ -46,10 +49,11 @@ EnisysGw::Application.routes.draw do
           :path => "docs" do
             member do
               get :recognize_update, :publish_update, :clone
+              post :forward
             end
             collection do
-              get :destroy_void_documents
-              post :all_seen_remind
+              get :destroy_void_documents, :close
+              post :all_seen_remind, :forward
             end
           end
         resources "comments",

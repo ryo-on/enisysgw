@@ -24,7 +24,7 @@ class Attaches::Admin::GwcircularController < ApplicationController
     return http_error(404) unless params[:name] == sprintf('%08d',Util::CheckDigit.check(item.parent_id))
 
     chk = request.headers['HTTP_USER_AGENT']
-    chk = chk.index("MSIE")
+    chk = Gw.ie?(chk)
     if chk.blank?
       item_filename = item.filename
     else

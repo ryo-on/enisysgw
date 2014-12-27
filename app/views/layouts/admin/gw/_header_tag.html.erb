@@ -32,7 +32,7 @@ controller_js.each{|x|js_ret += javascript_include_tag(x)+"\n"};
 <script src="/javascripts/calendar_date_select/calendar_date_select.js" type="text/javascript"></script>
 <script src="/javascripts/calendar_date_select/format_db.js" type="text/javascript"></script>
 <script src="/javascripts/calendar_date_select/locale/ja.js" type="text/javascript"></script>
-<%= javascript_include_tag 'jquery.min', 'jquery-ui.min', '/javascripts/rumi' %>
+<%= javascript_include_tag '/_common/js/jquery/jquery.min', '/_common/js/jquery/jquery-ui.min', '/javascripts/rumi' %>
 <%= javascript_tag "jQuery.noConflict();" %>
 <%
 controller_css = @css ||  []

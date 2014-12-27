@@ -26,10 +26,10 @@ class System::Role < ActiveRecord::Base
   after_save :save_editable_groups
 
   def self.is_dev?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'_admin', 'developer')
+    Gw.is_other_developer?('_admin')
   end
   def self.is_admin?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'_admin', 'admin')
+    Gw.is_admin_admin?
   end
 
   def before_save_setting_columns

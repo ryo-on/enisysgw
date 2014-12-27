@@ -2,8 +2,7 @@
 module Gwmonitor::Model::Database
 
   def system_admin_flags
-    @is_sysadm = true if System::Model::Role.get(1, Site.user.id ,'gwmonitor', 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Site.user_group.id ,'gwmonitor', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?('gwmonitor')
 
   end
 

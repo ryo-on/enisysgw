@@ -15,10 +15,13 @@
     <th><%= System::User.human_attribute_name(:state) %><%= required %></th>
     <td><%= radio f, :state, Gw.yaml_to_array_for_select('system_states') %></td>
   </tr>
+  <!--
   <tr>
-    <th><%= System::User.human_attribute_name(:ldap) %><%= required %></th>
-    <td><%= radio f, :ldap, Gw.yaml_to_array_for_select('system_users_ldaps') %></td>
+    <th><%#= System::User.human_attribute_name(:ldap) %><%= required %></th>
+    <td><%#= radio f, :ldap, Gw.yaml_to_array_for_select('system_users_ldaps') %></td>
   </tr>
+  -->
+  <%= f.hidden_field :ldap, :value => "0" %>
   <tr>
     <th><%= System::User.human_attribute_name(:name) %><%= required %></th>
     <td><%= f.text_field :name, :class => 'string name', :style => 'width: 200px;' %></td>

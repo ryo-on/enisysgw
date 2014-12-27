@@ -4,7 +4,7 @@
 
 <div class="pieceBody">
 -->
-<%= render :partial => 'header' %>
+<%= render :partial => 'header' if params[:request_path].blank? %>
 <%= form_for :item, :url => "#{gwcircular_menus_path}/#{@item.id}", :html => {:method => :put, :multipart => true, :id => 'itemForm'} do |f| %>
 
 <%= f.error_messages %>
@@ -19,6 +19,10 @@
   <tr>
   <td><%= raw(submit_for_update(f, :js_submitter => "my_submit('public', 'new')",:caption => '配信', :id => 'item_submit')) %></td>
   <td><%= raw(submit_for_update(f, :js_submitter => "my_submit('draft', 'edit')",:caption => '下書き', :id => 'item_submit_draft')) %></td>
+  <% if params[:request_path].present? %>
+    <%= hidden_field_tag :request_path, request.path_info.to_s + "?id=" + @item.id.to_s %>
+    <td><%= raw(submit_for_update(f, :js_submitter => "my_submit('close', 'close')", :caption => '閉じる', :id => 'item_submit_close')) %></td>
+  <% end %>
   </tr>
   </table>
   </div>

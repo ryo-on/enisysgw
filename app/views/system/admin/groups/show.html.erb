@@ -26,10 +26,12 @@
           <th><%= System::Group.human_attribute_name(:category) %></th>
           <td><%= System::Group.category_show(@item.category) %></td>
         </tr>
+        <!--
         <tr>
-          <th><%= System::Group.human_attribute_name(:ldap) %></th>
-          <td><%= System::Group.ldap_show(@item.ldap) %></td>
+          <th><%#= System::Group.human_attribute_name(:ldap) %></th>
+          <td><%#= System::Group.ldap_show(@item.ldap) %></td>
         </tr>
+        -->
         <tr>
           <th><%= System::Group.human_attribute_name(:code) %></th>
           <td><%= @item.code %></td>

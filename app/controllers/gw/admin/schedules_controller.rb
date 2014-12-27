@@ -73,7 +73,8 @@ class Gw::Admin::SchedulesController < Gw::Controller::Admin::Base
     a_qs.push "todo=#{params[:todo]}" unless params[:todo].nil?
     @schedule_move_qs = a_qs.join('&')
 
-    @role_schedule = System::Model::Role.get(1, Core.user.id ,'schedule_role', 'admin')
+    #スケジューラー設定権限を持つユーザーかの情報
+    @role_schedule = Gw.is_other_admin?('schedule_role')
     @is_gw_admin = Gw.is_admin_admin?
 
     if params[:cgid].present?
@@ -506,7 +507,7 @@ class Gw::Admin::SchedulesController < Gw::Controller::Admin::Base
           @prop_edit = Gw::ScheduleProp.is_prop_edit?(prop.id, {:prop => prop, :is_gw_admin => @is_gw_admin})
         end
       end
-      if System::Model::Role.get(1, Core.user.id ,'schedule_prop_admin', 'admin')
+      if Gw.is_other_admin?('schedule_prop_admin')
         @prop_edit = true
       end
     end
@@ -864,7 +865,7 @@ class Gw::Admin::SchedulesController < Gw::Controller::Admin::Base
           flash_notice('シングルサインオン設定編集処理', true)
           redirect_to "/"
         else
-          flash_notice('スケジューラ設定編集処理', true)
+          flash[:notice] = I18n.t('rumi.schedule.setting_ind.update')
           redirect_to "/gw/schedules/setting_ind"
         end
       else

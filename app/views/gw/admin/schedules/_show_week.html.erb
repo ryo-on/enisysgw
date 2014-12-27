@@ -76,8 +76,7 @@ show_week_header = render(:partial => '/gw/admin/schedules/show_week_header')
               if participant
             %>
 
-            <%= render(:partial => '/gw/admin/schedules/show_week_one',
-              :locals=>{:schedule => schedule, :week_add_day => week_add_day, :schedule_id => schedule_id}) -%>
+            <%= show_week_one(schedule, week_add_day, schedule_id, user.id) %>
 
             <%
               end # participant

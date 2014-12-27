@@ -26,24 +26,29 @@ module Gwcircular::Model::DbnameAlias
   end
 
   def admin_flags(title_id)
-    @is_sysadm = true if System::Model::Role.get(1, Site.user.id ,'gwcircular', 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Site.user_group.id ,'gwcircular', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?('gwcircular')
     @is_bbsadm = true if @is_sysadm
 
     unless @is_bbsadm
-      item = Gwcircular::Adm.new
-      item.and :user_id, 0
-      item.and :group_code, Site.user_group.code
-      item.and :title_id, title_id unless title_id == '_menu'
-      items = item.find(:all)
+      cond = ["user_id = ?", Site.user.id]
+      user_groups = System::UsersGroup.without_disable.where(cond)
+      groups = ""
+      group_codes = ""
+      user_groups.each do |ug|
+        groups << "," unless groups.blank?
+        groups << ug.group_id.to_s
+        group_codes << "," unless group_codes.blank?
+        group_codes << ug.group_code.to_s
+      end
+      cond = "user_id = 0 and group_id in (#{groups})"
+      cond.concat " and title_id = #{title_id}"  unless title_id == '_menu'
+      items = Gwcircular::Adm.find(:all, :conditions => cond)
       @is_bbsadm = true unless items.blank?
 
       unless @is_bbsadm
-        item = Gwcircular::Adm.new
-        item.and :user_code, Site.user.code
-        item.and :group_code, Site.user_group.code
-        item.and :title_id, title_id unless title_id == '_menu'
-        items = item.find(:all)
+        cond = "user_code = '#{Site.user.code}' and group_code in (#{group_codes})"
+        cond.concat " and title_id = #{title_id}" unless title_id == '_menu'
+        items = Gwcircular::Adm.find(:all, :conditions => cond)
         @is_bbsadm = true unless items.blank?
       end
     end

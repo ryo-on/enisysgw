@@ -361,6 +361,8 @@ class Gw::Admin::ScheduleListsController < Gw::Controller::Admin::Base
 
     delete_cnt = 0
     delete_no_cnt = 0
+    no_editor = false
+    one_user = false
     items.each do |item|
 
       delete = false
@@ -374,11 +376,11 @@ class Gw::Admin::ScheduleListsController < Gw::Controller::Admin::Base
       if item.schedule_users.blank?
         user_len = 0
       else
-        user_len = item.schedule_users.length
+        user_len = item.schedule_users.count
       end
 
-      if (creator || !participation.blank? || @is_gw_admin) && user_len > 1
-
+      target = System::ScheduleRole.get_target_uids_schedule_user(Site.user.id, item.id)
+      if target.blank? && user_len > 1
         delete_user_items = Gw::ScheduleUser.new.find(:all,
           :conditions => "schedule_id = #{item.id} and class_id = 1 and uid = #{delete_user.id}", :order => "id")
         delete_user_items.each do | delete_user_item |
@@ -411,12 +413,18 @@ class Gw::Admin::ScheduleListsController < Gw::Controller::Admin::Base
 
       delete_cnt += 1    if delete == true
       delete_no_cnt += 1 if delete == false
+      no_editor = true if target.present? unless no_editor
+      one_user = true if user_len < 2 unless one_user
     end
 
-    notice = "ユーザー#{delete_user.display_name}を#{delete_cnt}件の予定から削除しました。"
+    notice = "予定から参加者を削除しました。<br />"
+    notice += "ユーザー#{delete_user.display_name}を#{items.count}件中、#{delete_cnt}件の予定から削除しました。"
+
     if delete_no_cnt > 0
+      notice += "<br />"
       notice += "#{delete_no_cnt}件の予定からは、削除されませんでした。"
-      notice += "<br />※編集権限がない予定は削除できません。<br />※参加者が１人の予定は削除できません。"
+      notice += "<br /><span class='required'>※スケジュール権限がないユーザーに対する予定からは削除できません。</span>" if no_editor
+      notice += "<br /><span class='required'>※参加者が１人の予定からは削除できません。</span>" if one_user
     end
     flash[:notice] = notice
 

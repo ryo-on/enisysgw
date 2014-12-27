@@ -65,7 +65,11 @@
 %>
 <tr>
   <% if @ids_show_flg -%>
-    <td align="center"><%= check_box_tag "ids[]", "#{item.id}" -%></td>
+    <td align="center">
+      <% if public -%>
+        <%= check_box_tag "ids[]", "#{item.id}" -%>
+      <% end %>
+    </td>
   <% end -%>
   <td<%=raw td_class -%>>
     <%= st_at_str -%> （<%= Gw.weekday_s(item.st_at) -%>）
@@ -79,12 +83,13 @@
   <td><%= link_to(nz(item.title), "/gw/schedules/#{item.id}/show_one") -%></td>
   <td><%= item.memo -%></td>
   <td><%= item.place -%></td>
+  <td><%= user_names -%></td>
   <% else -%>
   <td><%= Gw.required("[非公開]") -%></td>
-  <td></td>
-  <td></td>
+  <td><%= Gw.required("-") -%></td>
+  <td><%= Gw.required("-") -%></td>
+  <td><%= Gw.required("-") -%></td>
   <% end -%>
-  <td><%= user_names -%></td>
 </tr>
 <% end %>
 </table>

@@ -1,10 +1,10 @@
-<%= render :partial => 'header' %>
+<%= render :partial => 'header' unless request.path_info.include?("forward") %>
 <%= form_for :item, :url => "#{gwbbs_doc_path(@item)}#{gwbbs_params_set}", :html => {:method => :put, :id => 'itemForm'} do |f| %>
 
 <%= f.error_messages %>
 
 <div class="formTitle new">新規作成</div>
-
+<%= raw(%Q(<div class="notice">#{required(flash[:notice])}</div>)) unless flash[:notice].blank? %>
 <%= required_head %><%= doc_size_usage_rate%>
 
 <%= render :partial => @title.gwbbs_form_name + 'form', :locals => {:f => f} %>
@@ -32,7 +32,10 @@
   <% unless @title.draft_forbidden %>
     <input id="<%= f.object_name %>_submit_draft" name="commit" onclick="return my_submit('draft', 'new');" type="submit" value="下書き保存" />
   <% end %>
-
+  <% if request.path_info.include?("forward") %>
+    <%= hidden_field_tag :request_path, request.path_info %>
+    <input id="<%= f.object_name %>_submit_close" name="commit" onclick="return my_submit('close', 'new');" type="submit" value="閉じる" />
+  <% end %>
   <input id="<%= f.object_name %>_state" name="<%= f.object_name %>[state]" type="hidden" value="" />
 </div>
 

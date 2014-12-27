@@ -162,7 +162,9 @@ class Gw::ScheduleRepeat < Gw::Database
         #unless flg
         prop = Gw::PropOther.find(o_props_id)
         if !flg || (prop && prop.reserved_state == 0 || prop.delete_state == 1)
-          other_rent_flg = false unless System::Model::Role.get(1, Core.user.id ,'schedule_prop_admin', 'admin')
+          #施設マスタ権限を持つユーザーかの情報
+          schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
+          other_rent_flg = false unless schedule_prop_admin
         end
         other_admin_flg =  Gw::PropOtherRole.is_admin?(o_props_id, cg.id) if other_admin_flg
       }

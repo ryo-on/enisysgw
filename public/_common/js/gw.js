@@ -150,10 +150,8 @@ var ajax_request = function() {
 /////
 // ブラウザ判別用
 var is_ie = function() {
-// JavaScriptによるブラウザの種類とバージョン判断
-// http://www.mozilla-japan.org/docs/web-developer/sniffer/browser_type.html
   var agt = navigator.userAgent.toLowerCase();
-  return ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1));
+  return (agt.match(/msie|trident.*rv:11/) != null);
 }
 /////
 // 日付関連

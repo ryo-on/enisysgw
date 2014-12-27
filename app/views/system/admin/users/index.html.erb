@@ -15,8 +15,8 @@
           表示行数
           <%= select_tag( 'limit' ,options_for_select(Gw.limit_select, @limit.to_i) ) %>
 
-          <%= System::User.human_attribute_name(:ldap) %>
-          <%= filter_select_tag :ldap, 'system_users_ldaps', params, :default => :all %>
+          <%#= System::User.human_attribute_name(:ldap) %>
+          <%#= filter_select_tag :ldap, 'system_users_ldaps', params, :default => :all %>
 
           <%= System::User.human_attribute_name(:state) %>
           <%= filter_select_tag :state, 'system_states', params, :default => :enabled %>
@@ -37,7 +37,7 @@
     <table class="index">
       <colgroup class="action"></colgroup>
       <colgroup class="code"></colgroup>
-      <colgroup class="ldap"></colgroup>
+      <!--<colgroup class="ldap"></colgroup>-->
       <colgroup class="state"></colgroup>
       <colgroup class="name"></colgroup>
       <colgroup class="name_en"></colgroup>
@@ -48,7 +48,7 @@
         <tr>
           <th></th>
           <th><%= System::User.human_attribute_name(:code) %></th>
-          <th><%= System::User.human_attribute_name(:ldap) %></th>
+          <!--<th><%#= System::User.human_attribute_name(:ldap) %></th>-->
           <th><%= System::User.human_attribute_name(:state) %></th>
           <th><%= System::User.human_attribute_name(:name) %></th>
           <th><%= System::User.human_attribute_name(:name_en) %></th>
@@ -62,7 +62,7 @@
             <a href="/system/users/<%= item.id -%>">詳細</a>
           </td>
           <td><%= item.code -%></td>
-          <td><%= System::UsersGroup.ldap_show(item.ldap) -%></td>
+          <!--<td><%#= System::UsersGroup.ldap_show(item.ldap) -%></td>-->
           <td><%= System::UsersGroup.state_show(item.state) -%></td>
           <td><%= item.name -%></td>
           <td><%= item.name_en -%></td>

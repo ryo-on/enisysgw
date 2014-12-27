@@ -32,10 +32,12 @@
           <th><%= System::UsersGroupsCsvdata.human_attribute_name(:category) %></th>
           <td><%= System::Group.category_show(@item.category) %></td>
         </tr>
+        <!--
         <tr>
-          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:ldap) %></th>
-          <td><%=System::UsersGroup.ldap_show(@item.ldap) %></td>
+          <th><%#= System::UsersGroupsCsvdata.human_attribute_name(:ldap) %></th>
+          <td><%#=System::UsersGroup.ldap_show(@item.ldap) %></td>
         </tr>
+        -->
         <tr>
           <th><%= System::UsersGroupsCsvdata.human_attribute_name(:job_order) %></th>
           <td><%= System::UsersGroup.job_order_show(@item.job_order) %></td>

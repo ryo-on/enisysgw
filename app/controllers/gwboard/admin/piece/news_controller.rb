@@ -151,8 +151,7 @@ class Gwboard::Admin::Piece::NewsController < ApplicationController
     return sys
   end
   def admin_flags(title_id)
-    @is_sysadm = true if System::Model::Role.get(1, Site.user.id ,@system, 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Site.user_group.id ,@system, 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?(@system)
     @is_bbsadm = true if @is_sysadm
 
     unless @is_bbsadm

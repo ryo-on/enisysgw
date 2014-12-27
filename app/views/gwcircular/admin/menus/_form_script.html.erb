@@ -4,6 +4,10 @@ var my_submit = function(state, action) {
   var st = $('item_state');
   st.value = state;
 
+  if(st.value == "close"){
+    window.close();
+    return false;
+  }
   var item_expiry_date_text = document.getElementById('item_expiry_date').value;
   var regex = /^\d{4}[\-\/]\d{1,2}[\-\/]\d{1,2}( +\d{1,2}\:\d{1,2}(:\d{1,2})?)?$/;
 
@@ -38,6 +42,14 @@ var my_submit = function(state, action) {
       return false;
   }
 
+  //配信先有無のチェック。
+  var readg = $('item_reader_groups_json');
+  var read = $('item_readers_json');
+  if ( state == "public" && JSON.parse(readg.value).length == 0 && JSON.parse(read.value).length == 0) {
+    alert('配信先が選択されていません。');
+    return false;
+  }
+  
   switch (state) {
   case "public":
     if (action == 'edit') {
@@ -63,7 +75,13 @@ var my_submit = function(state, action) {
     FreezeScreen('<%= I18n.t('rumi.freezescreen.default') %>');
     break;
   }
-  
+  $('item_submit').disabled = true;
+   if($('item_submit_draft')){
+    $('item_submit_draft').disabled = true;
+  }
+  if($('item_submit_close')){
+    $('item_submit_close').disabled = true;
+  }
   $('itemForm').submit();
 }
 

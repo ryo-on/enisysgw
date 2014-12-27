@@ -16,8 +16,8 @@
     <table>
       <tr>
         <td>
-          <%= System::Group.human_attribute_name(:ldap) %>
-          <%= filter_select_tag :ldap, 'system_users_ldaps', params, :default => :all %>
+          <%#= System::Group.human_attribute_name(:ldap) %>
+          <%#= filter_select_tag :ldap, 'system_users_ldaps', params, :default => :all %>
 
           <%= System::Group.human_attribute_name(:state) %>
           <%= filter_select_tag :state, 'system_states', params, :default => :enabled %>
@@ -43,7 +43,7 @@
           <th><%= System::Group.human_attribute_name(:email) %></th>
           <th><%= System::Group.human_attribute_name(:start_at) %></th>
           <th><%= System::Group.human_attribute_name(:end_at) %></th>
-          <th><%= System::Group.human_attribute_name(:ldap) %></th>
+          <!--<th><%= System::Group.human_attribute_name(:ldap) %></th>-->
           <th><%= System::Group.human_attribute_name(:state) %></th>
         </tr>
         <% for item in @items %>
@@ -56,7 +56,7 @@
           <td><%= item.email %></td>
           <td><%= Gw.date_str(item.start_at) %></td>
           <td><%= Gw.date_str(item.end_at) %></td>
-          <td><%= System::UsersGroup.ldap_show(item.ldap) %></td>
+          <!--<td><%= System::UsersGroup.ldap_show(item.ldap) %></td>-->
           <td><%= System::UsersGroup.state_show(item.state) %></td>
         </tr>
         <% end %>

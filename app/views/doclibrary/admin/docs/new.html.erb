@@ -1,5 +1,5 @@
 <%= render :partial => 'folder_name' %>
-<%= form_for :item, :url => doclibrary_doc_path(@item, {:title_id => @title.id}) + doclib_uri_params, :method => :put, :html => {:method => :put} do |f| %>
+<%= form_for :item, :url => doclibrary_doc_path(@item, {:title_id => @title.id}) + doclib_uri_params, :method => :put, :html => {:id => 'itemForm', :method => :put} do |f| %>
 
 <%= f.error_messages %>
 
@@ -61,6 +61,11 @@ var my_submit = function(state) {
     FreezeScreen('<%= I18n.t('rumi.freezescreen.default') %>');
     break;
   }
+  $('item_submit_public').disabled = true;
+  if($('item_submit_recognize')){
+    $('item_submit_recognize').disabled = true;
+  }
+  $('item_submit_draft').disabled = true;
   $('itemForm').submit();
 }
 function FreezeScreen(msg) {

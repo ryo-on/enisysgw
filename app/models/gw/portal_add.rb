@@ -19,7 +19,7 @@ class Gw::PortalAdd  < Gw::Database
   end
 
   def self.is_admin?( uid = Site.user.id )
-    is_admin = System::Model::Role.get(1, uid ,'_admin', 'admin')
+    is_admin = Gw.is_admin_admin?
     return is_admin
   end
 

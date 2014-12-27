@@ -1,0 +1,85 @@
+<%=render(:partial => 'header')%>
+<div class="piece bbs">
+<div class="pieceHeader">
+<h2>転送先掲示板選択</h2>
+</div>
+<div class="pieceBody">
+<table class="index">
+<tr class="items">
+<td class="bbstitle">掲示板</td>
+<td class="explanation">説明</td>
+<td class="manager">管理所属</td>
+<td class="update">更新日時</td>
+</tr>
+<%= form_for(:item, :url => @gwbbs_form_url, :method => :post,
+    :html => {:id => "item_form", :multipart => true, :target => @gwbbs_target_name,
+      :style => "display: inline", :target => "gwbbs_form"}) do |f| %>
+  <%= hidden_field_tag :title_id, "1" %>
+  <%= hidden_field_tag :title, params[:title] %>
+  <%= hidden_field_tag :body, params[:body] %>
+  <% if params[:tmp].present? %>
+    <%= hidden_field_tag :tmp, params[:tmp] %>
+    <%= hidden_field_tag :name, params[:name] %>
+    <%= hidden_field_tag :content_type, params[:content_type] %>
+    <%= hidden_field_tag :size, params[:size] %>
+  <% end %>
+<% end %>
+<% for item in @items %>
+  <tr class="<%= cycle 'article', 'article cycle' %>">
+    <td class="bbstitle">
+      <%=link_to h(item.title),"#", {:onclick => "window.open('about:blank','gwbbs_form','resizable=yes,scrollbars=yes');$('item_form').title_id.value = #{item.id};$('item_form').submit();"}  %>
+      <% unreed_count = item.notification_each_db(Core.user.id) %>
+      <% unless unreed_count.zero? %>
+        （<%= unreed_count %>）
+      <% end %>
+    </td>
+ <td class="explanation"><%=raw(item.caption) %></td>
+ <td class="manager"><%=gwbd_admin_name(item.admingrps_json,item.adms_json, item.dsp_admin_name)%></td>
+ <td class="update"><%=item.docslast_updated_at.to_datetime.strftime('%y-%m-%d %H:%M').to_s unless item.docslast_updated_at.blank? %></td>
+ </tr>
+<% end %>
+</table>
+<%=paginate @items %>
+<% if request.path_info.include?("forward_select") %>
+  <%= form_for :submit, :url => "#", :html => {:method => :put, :multipart => true, :id => 'submit'} do |f| %>
+  <center>
+    <table>
+      <tr>
+        <td><%= raw(submit_for_update(f, :js_submitter => "my_submit()", :caption => '閉じる', :id => 'item_submit_close')) %></td>
+      </tr>
+    </table>
+  </center>
+<% end %>
+<% end %>
+</div>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+function openGwbbsForm(uri){
+  var opt = null;
+  var name = "gwbbs_form";
+  if (arguments.length > 1) {
+    opt = arguments[1];
+  }
+
+  try {
+    var win = window.open("", name, opt);
+    win.document.item_form = new FormData();
+    win.document.item_form.action = uri;
+    win.document.item_form.target = name ;
+    win.document.item_form.method = "POST" ;
+    win.document.item_form.submit() ;
+    win.focus();
+    return win;
+  } catch(e) {
+    alert(e);
+    return;
+  }
+}
+
+var my_submit = function() {
+    window.close();
+    return false;
+}
+//]]>
+</script>

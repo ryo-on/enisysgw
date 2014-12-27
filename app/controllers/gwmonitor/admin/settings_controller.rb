@@ -13,8 +13,7 @@ class Gwmonitor::Admin::SettingsController < Gw::Controller::Admin::Base
     @system_title = disp_system_name
     @css = ["/_common/themes/gw/css/monitor.css"]
     
-    @is_sysadm = System::Model::Role.get(1, Site.user.id ,'gwmonitor', 'admin') ||
-      System::Model::Role.get(2, Site.user_group.id ,'gwmonitor', 'admin')
+    @is_sysadm = Gw.is_other_admin?('gwmonitor')
   end
 
   def index

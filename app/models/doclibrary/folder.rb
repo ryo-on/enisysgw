@@ -385,7 +385,7 @@ class Doclibrary::Folder < Gwboard::CommonDb
     return false unless Doclibrary::Role.has_auth?(self.title_id, target_user_id, 'r')
 
     # フォルダーに対して管理権限のあるユーザーか？
-    return true if self.admin_user?(target_user_id)
+    return true if admin_user_check(target_user_id)
 
     # フォルダーに対して閲覧権限のあるユーザーか？
     return readable_user_check(target_user_id)
@@ -466,7 +466,7 @@ protected
   end
 
   # === フォルダーの管理権限判定メソッド
-  #  ルートフォルダから順に辿り、指定ユーザーに対してフォルダーの管理権限があるか判定するメソッドである。
+  #  指定ユーザーに対してフォルダーの管理権限があるか判定するメソッドである。
   # ==== 引数
   #  * target_user_id: ユーザーID
   # ==== 戻り値
@@ -474,42 +474,31 @@ protected
   def admin_user_check(target_user_id)
     is_admin = false
 
-    # ルートフォルダでない場合、親フォルダで管理権限のチェックを行う
-    unless level_no == 1
-      parent_folder = Doclibrary::Folder.find(self.parent_id)
-      return false if parent_folder.blank?
+    # グループ管理権限、個人管理権限の両方がnil場合、管理権限なし
+    return false if self.admin_groups_json.nil? && self.admins_json.nil?
 
-      is_admin = parent_folder.admin_user_check(target_user_id)
+    admin_groups = JsonParser.new.parse(self.admin_groups_json)
+    admins = JsonParser.new.parse(self.admins_json)
+
+    # グループ管理権限、個人管理権限の両方が設定されていない場合、管理権限なし
+    return false if admin_groups.blank? && admins.blank?
+
+    # 指定ユーザーがグループ管理権限に含まれるか？
+    target_user = System::User.find(target_user_id)
+    user_group_ids = target_user.groups.map(&:id)
+    admin_groups.each do |group|
+      return true if user_group_ids.include?(group[1].to_i)
     end
 
-    # カレントフォルダがルートフォルダの場合、または親フォルダに管理権限がなかった場合、
-    # カレントフォルダで管理権限のチェックを行う
-    if (level_no == 1) || !is_admin
-      # グループ管理権限、個人管理権限の両方がnil場合、管理権限なし
-      return false if self.admin_groups_json.nil? && self.admins_json.nil?
+    # 指定ユーザーが個人管理権限に含まれるか？
+    admins_ids = admins.map{|admin| admin[1].to_i}
+    return true if admins_ids.include?(target_user_id)
 
-      admin_groups = JsonParser.new.parse(self.admin_groups_json)
-      admins = JsonParser.new.parse(self.admins_json)
-
-      # グループ管理権限、個人管理権限の両方が設定されていない場合、管理権限なし
-      return false if admin_groups.blank? && admins.blank?
-
-      # 指定ユーザーがグループ管理権限に含まれるか？
-      target_user = System::User.find(target_user_id)
-      user_group_ids = target_user.groups.map(&:id)
-      admin_groups.each do |group|
-        return true if user_group_ids.include?(group[1].to_i)
-      end
-
-      # 指定ユーザーが個人管理権限に含まれるか？
-      admins_ids = admins.map{|admin| admin[1].to_i}
-      return true if admins_ids.include?(target_user_id)
-    end
     return is_admin
   end
 
   # === フォルダーの閲覧権限判定メソッド
-  #  ルートフォルダから順に辿り、指定ユーザーに対してフォルダーの閲覧権限があるか判定するメソッドである。
+  #  指定ユーザーに対してフォルダーの閲覧権限があるか判定するメソッドである。
   # ==== 引数
   #  * target_user_id: ユーザーID
   # ==== 戻り値
@@ -517,40 +506,29 @@ protected
   def readable_user_check(target_user_id)
     is_readable = false
 
-    # ルートフォルダでない場合、親フォルダで閲覧権限のチェックを行う
-    unless level_no == 1
-      parent_folder = Doclibrary::Folder.find(self.parent_id)
-      return false if parent_folder.blank?
+    # 管理権限あり場合、閲覧権限あり
+    return true if self.admin_user?(target_user_id)
 
-      is_readable = parent_folder.readable_user_check(target_user_id)
+    # グループ閲覧権限、個人閲覧権限の両方がnil場合、閲覧権限あり
+    return true if self.reader_groups_json.nil? && self.readers_json.nil?
+
+    reader_groups = JsonParser.new.parse(self.reader_groups_json)
+    readers = JsonParser.new.parse(self.readers_json)
+
+    # グループ閲覧権限、個人閲覧権限の両方が設定されていない場合、閲覧権限あり
+    return true if reader_groups.blank? && readers.blank?
+
+    # 指定ユーザーがグループ閲覧権限に含まれるか？
+    target_user = System::User.find(target_user_id)
+    user_group_ids = target_user.groups.map(&:id)
+    reader_groups.each do |group|
+      return true if user_group_ids.include?(group[1].to_i)
     end
 
-    # カレントフォルダがルートフォルダの場合、または親フォルダに閲覧権限があった場合、
-    # カレントフォルダで閲覧権限のチェックを行う
-    if (level_no == 1) || is_readable
-      # 管理権限あり場合、閲覧権限あり
-      return true if self.admin_user?(target_user_id)
+    # 指定ユーザーが個人閲覧権限に含まれるか？
+    readers_ids = readers.map{|reader| reader[1].to_i}
+    return true if readers_ids.include?(target_user_id)
 
-      # グループ閲覧権限、個人閲覧権限の両方がnil場合、閲覧権限あり
-      return true if self.reader_groups_json.nil? && self.readers_json.nil?
-
-      reader_groups = JsonParser.new.parse(self.reader_groups_json)
-      readers = JsonParser.new.parse(self.readers_json)
-
-      # グループ閲覧権限、個人閲覧権限の両方が設定されていない場合、閲覧権限あり
-      return true if reader_groups.blank? && readers.blank?
-
-      # 指定ユーザーがグループ閲覧権限に含まれるか？
-      target_user = System::User.find(target_user_id)
-      user_group_ids = target_user.groups.map(&:id)
-      reader_groups.each do |group|
-        return true if user_group_ids.include?(group[1].to_i)
-      end
-
-      # 指定ユーザーが個人閲覧権限に含まれるか？
-      readers_ids = readers.map{|reader| reader[1].to_i}
-      return true if readers_ids.include?(target_user_id)
-    end
     return false
   end
 end

@@ -18,9 +18,9 @@ class Gw::Admin::CountingsController < Gw::Controller::Admin::Base
 
     @editor_role  = Gw.is_editor?
 
-    @role_tabs  = System::Model::Role.get(1, Core.user.id ,'edit_tab', 'editor')
+    @role_tabs  = Gw.is_other_editor?('edit_tab')
 
-    @role_users = System::Model::Role.get(1, Core.user.id ,'system_users','editor')
+    @role_users = Gw.is_other_editor?('system_users')
 
 
     @is_readable = nil
@@ -133,9 +133,7 @@ class Gw::Admin::CountingsController < Gw::Controller::Admin::Base
 =end
 
   def role_gwcircular(title_id = '_menu')
-
-    @is_sysadm = true if System::Model::Role.get(1, Core.user.id ,'gwcircular', 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Core.user_group.id ,'gwcircular', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?('gwcircular')
     @is_bbsadm = true if @is_sysadm
 
     unless @is_bbsadm

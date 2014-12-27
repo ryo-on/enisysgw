@@ -342,7 +342,16 @@ class Gw::Schedule < Gw::Database
 
     if is_public == 2
       # 所属内の時、参加者および公開所属、および参加者に存在した場合true
-      if self.creator_uid.to_i == Site.user.id || gids.index(Site.user_group.id) || uids.index(Site.user.id)
+      cond = ["user_id = ?", Site.user.id]
+      group_flg = false
+      user_groups = System::UsersGroup.where(cond)
+      user_groups.each do |ug|
+        gids.each do |g|
+          group_flg = true if ug.group_id == g
+        end
+      end
+      #if self.creator_uid.to_i == Site.user.id || gids.index(Site.user_group.id) || uids.index(Site.user.id)
+      if self.creator_uid.to_i == Site.user.id || group_flg || uids.index(Site.user.id)
         return true
       end
     elsif is_public == 3
@@ -416,7 +425,8 @@ class Gw::Schedule < Gw::Database
     names = Gw.join(_names, '，')
     return names
   end
-  
+
+=begin
   def get_usernames
     _names = Array.new
     names = ""
@@ -440,6 +450,12 @@ class Gw::Schedule < Gw::Database
     end
     names = Gw.join(_names, '，')
     return names
+  end
+=end
+
+  def get_usernames
+    Gw::ScheduleUser.includes(:user).where(schedule_id: self.id)
+                    .map {|x| x.user.name }.join(', ')
   end
 
   def self.schedule_linked_time_save(item, st_at, ed_at)
@@ -578,8 +594,10 @@ class Gw::Schedule < Gw::Database
       auth_level[:edit_level] = 1
       auth_level[:delete_level] = 1
     end
+    #施設マスタ権限を持つユーザーかの情報
+    schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
     props.each do |prop|
-      unless Gw::PropOtherRole.is_admin?(prop.prop.id) || Gw::PropOtherRole.is_edit?(prop.prop.id) || System::Model::Role.get(1, Core.user.id ,'schedule_prop_admin', 'admin')
+      unless Gw::PropOtherRole.is_admin?(prop.prop.id) || Gw::PropOtherRole.is_edit?(prop.prop.id) || schedule_prop_admin
         prop_admin = false
       end
     end

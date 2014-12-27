@@ -31,7 +31,11 @@ EnisysGw::Application.routes.draw do
       resources :itemdeletes
       resources :basics
       resources :settings
-      resources :menus
+      resources :menus do
+        collection do
+          get :close
+        end
+      end
       resources :docs do
         member do
           get :edit_show
@@ -57,6 +61,11 @@ EnisysGw::Application.routes.draw do
 
   match 'gwcircular/menus/:id/circular_publish' => 'gwcircular/admin/menus#circular_publish'
   match 'gwcircular/docs/:id/already_update' => 'gwcircular/admin/docs#already_update'
+  match 'gwcircular/forward'       => 'gwcircular/admin/menus#forward'
   match 'gwcircular/new'       => 'gwcircular/admin/menus#new'
   match 'gwcircular'          => 'gwcircular/admin/menus#index'
+  match 'gwcircular/docs/:id/gwbbs_forward' => 'gwcircular/admin/docs#gwbbs_forward'
+  match 'gwcircular/docs/:id/mail_forward' => 'gwcircular/admin/docs#mail_forward'
+  match 'gwcircular/menus/:id/gwbbs_forward' => 'gwcircular/admin/menus#gwbbs_forward'
+  match 'gwcircular/menus/:id/mail_forward' => 'gwcircular/admin/menus#mail_forward'
 end

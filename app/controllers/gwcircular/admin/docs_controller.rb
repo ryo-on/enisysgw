@@ -5,8 +5,9 @@ class Gwcircular::Admin::DocsController < Gw::Controller::Admin::Base
   include Gwboard::Controller::Common
   include Gwcircular::Model::DbnameAlias
   include Gwcircular::Controller::Authorize
-  layout "admin/template/gwcircular"
-
+  layout :select_layout
+  require 'base64'
+  require 'zlib'
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :invalidtoken
 
@@ -74,6 +75,84 @@ class Gwcircular::Admin::DocsController < Gw::Controller::Admin::Base
     @files = Gwcircular::File.where(:parent_id => @parent.id)
 
     commission_index
+  end
+
+  def gwbbs_forward
+    item = Gwcircular::Doc.new
+    item.and :id, params[:id]
+    item.and :state ,'!=', 'preparation'
+    @item = item.find(:first)
+    return http_error(404) if @item.blank?
+
+    @parent = Gwcircular::Doc.find_by_id(@item.parent_id)
+    return http_error(404) unless @parent
+
+    @forward_form_url = "/gwbbs/forward_select"
+    @target_name = "gwbbs_form_select"
+    forward_setting
+  end
+
+  def mail_forward
+    item = Gwcircular::Doc.new
+    item.and :id, params[:id]
+    item.and :state ,'!=', 'preparation'
+    @item = item.find(:first)
+    return http_error(404) if @item.blank?
+
+    @parent = Gwcircular::Doc.find_by_id(@item.parent_id)
+    return http_error(404) unless @parent
+
+    _url = Enisys::Config.application["webmail.root_url"]
+    @forward_form_url = URI.join(_url, "/_admin/gw/webmail/INBOX/mails/gw_forward").to_s
+    @target_name = "mail_form"
+
+    forward_setting
+  end
+
+  def forward_setting
+    #機能間転送の為の処理
+    #本文の処理
+    if @parent.body.include?("<")
+      @gwcircular_text_body = "-------- Original Message --------<br />"
+      #本文_タイトル
+      @gwcircular_text_body << "タイトル： " + @parent.title + "<br />"
+      #本文_作成日時
+      @gwcircular_text_body << "作成日時： " + @parent.created_at.strftime('%Y-%m-%d %H:%M') + "<br />"
+      #本文_作成者
+      @gwcircular_text_body << "作成者： " + @parent.createrdivision + " " + @parent.creater + "<br />"
+      #本文_回覧記事本文
+      @gwcircular_text_body << @parent.body
+    else
+      @gwcircular_text_body = "-------- Original Message --------\n"
+      #本文_タイトル
+      @gwcircular_text_body << "タイトル： " + @parent.title + "\n"
+      #本文_作成日時
+      @gwcircular_text_body << "作成日時： " + @parent.created_at.strftime('%Y-%m-%d %H:%M') + "\n"
+      #本文_作成者
+      @gwcircular_text_body << "作成者： " + @parent.createrdivision + " " + @parent.creater + "\n"
+      #本文_回覧記事本文
+      @gwcircular_text_body << @parent.body
+    end
+    @gwcircular_text_body = Base64.encode64(@gwcircular_text_body).split().join()
+
+    @tmp = ""
+    @name = ""
+    @content_type = ""
+    @size = ""
+
+    forword = Gwcircular::Doc.find_by_id(@parent.id)
+    forword.files.each do |attach|
+      f = File.open(attach.f_name)
+      @tmp.concat "," if @tmp.present?
+      tmp = Zlib::Deflate.deflate(f.read, Zlib::BEST_COMPRESSION)
+      @tmp.concat Base64.encode64(tmp).split().join()
+      @name.concat "," if @name.present?
+      @name.concat attach.filename.to_s
+      @content_type.concat "," if @content_type.present?
+      @content_type.concat attach.content_type.to_s
+      @size.concat "," if @size.present?
+      @size.concat attach.size.to_s
+    end
   end
 
   def commission_index(no_paginate=nil)
@@ -187,5 +266,16 @@ class Gwcircular::Admin::DocsController < Gw::Controller::Admin::Base
   private
   def invalidtoken
     return http_error(404)
+  end
+
+protected
+
+  def select_layout
+    layout = "admin/template/gwcircular"
+    case params[:action].to_sym
+    when :gwbbs_forward, :mail_forward
+      layout = "admin/template/forward_form"
+    end
+    layout
   end
 end

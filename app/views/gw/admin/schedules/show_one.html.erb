@@ -91,7 +91,7 @@ user_id = Site.user.id
         <% end %>
 
       <% else %>
-        <div>※参加者（<%= @target_user %>）に対するスケジュール登録権限がないため、編集・引用作成・削除等を行えません。</div>
+        <div>※参加者（<%= @target_user %>）に対するスケジュール権限がないため、編集・引用作成・削除等を行えません。</div>
         <br>
         <% if @item.unseen?(Site.user.id) %>
           <div class="btReadLarge">

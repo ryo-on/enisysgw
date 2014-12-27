@@ -743,6 +743,18 @@ span.att a {
   margin-right: 10px;
   padding-top: 15px;
 }
+
+.editingBox a.mail_forward,
+.editingBox a.gwcircular_forward,
+.editingBox a.gwbbs_forward {
+  overflow: hidden;
+  float: left;
+  width: 105px;
+  height: 0px;
+  margin-right: 10px;
+  padding-top: 15px;
+}
+
 .editingBox p {
   float: left;
   width: 500px;
@@ -777,6 +789,15 @@ span.att a {
 }
 .editingBox .btCopy a {
   background-image: url(/_common/themes/gw/files/ic_act_copy.gif);
+}
+.editingBox .btMailForword a {
+  background-image: url(/_common/themes/gw/files/ic_act_mailforward.png);
+}
+.editingBox .btGwbbsForword a {
+  background-image: url(/_common/themes/gw/files/ic_act_gwbbsforward.png);
+}
+.editingBox .btGwcircularForword a {
+  background-image: url(/_common/themes/gw/files/ic_act_gwcircularforward.png);
 }
 .editingBox .btEditRepeat a {
   width: 89px;

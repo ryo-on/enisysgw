@@ -1,8 +1,7 @@
 module Gwboard::Model::KbdbnameAlias
 
   def faq_admin_flags(title_id)
-    @is_sysadm = true if System::Model::Role.get(1, Core.user.id ,'gwfaq', 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Core.user_group.id ,'gwfaq', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?('gwfaq')
     @is_bbsadm = true if @is_sysadm
 
     unless @is_bbsadm
@@ -103,8 +102,7 @@ module Gwboard::Model::KbdbnameAlias
   end
 
   def qa_admin_flags(title_id)
-    @is_sysadm = true if System::Model::Role.get(1, Core.user.id ,'gwqa', 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Core.user_group.id ,'gwqa', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?('gwqa')
     @is_bbsadm = true if @is_sysadm
 
     unless @is_bbsadm

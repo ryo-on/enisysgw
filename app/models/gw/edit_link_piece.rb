@@ -102,15 +102,15 @@ class Gw::EditLinkPiece < Gw::Database
   end
 
   def self.is_dev?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'gwsub', 'developer')
+    Gw.is_other_developer?('gwsub')
   end
 
   def self.is_admin?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'edit_link_piece', 'admin')
+    Gw.is_other_admin?('edit_link_piece')
   end
 
   def self.is_editor?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'edit_link_piece', 'editor')
+    Gw.is_other_editor?('edit_link_piece')
   end
 
   def self.published_select

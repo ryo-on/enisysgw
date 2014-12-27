@@ -142,7 +142,7 @@ class Doclibrary::Admin::DocsController < Gw::Controller::Admin::Base
     item = doclib_db_alias(Doclibrary::Folder)
     parent = item.find(:all, :conditions=>["parent_id IS NULL"], :order=>"level_no, sort_no, id")
     @select_categories = []
-    make_group_trees(parent)
+    make_group_trees(parent) unless params[:state] == "CATEGORY"
   end
 
   def make_group_trees(items)
@@ -1310,9 +1310,8 @@ class Doclibrary::Admin::DocsController < Gw::Controller::Admin::Base
     download_file_name = "doclibrary_#{Time.now.strftime('%Y%m%d%H%M%S')}.zip"
     send_file target_zip_file ,
         :filename => download_file_name if FileTest.exist?(target_zip_file)
-    
     # 一時ファイルの削除
-    File.delete target_zip_file if FileTest.exist?(target_zip_file)
+    #File.delete target_zip_file if FileTest.exist?(target_zip_file)
     
     Doclibrary::Doc.remove_connection
     Doclibrary::Folder.remove_connection

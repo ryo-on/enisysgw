@@ -405,8 +405,9 @@ class Gw::Admin::ScheduleSettingsController  < Gw::Controller::Admin::Base
 protected
   
   def check_gw_system_admin
-    @is_sysadm = System::Model::Role.get(1, Site.user.id ,'_admin', 'admin') || 
-      System::Model::Role.get(2, Site.user_group.id ,'_admin', 'admin')
+    #施設マスタ権限を持つユーザーかの情報
+    schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
+    @is_sysadm = Gw.is_admin_admin? || schedule_prop_admin
   end
 
 end

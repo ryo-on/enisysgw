@@ -302,14 +302,28 @@ class System::User < ActiveRecord::Base
     return nil if role_code == 'w'
 
     group_ids = groups.map(&:id)
+    cond = ["user_id = ?", Site.user.id]
+    user_groups = System::UsersGroup.without_disable.where(cond)
+    parent_ids = Array.new
+    user_groups.each do |ug|
+      group = System::Group.without_disable.where(code: ug.group_code).first
+      if group.parent_id != 1 && ug.id != 1
+        parent = System::Group.without_disable.where(id: group.parent_id).first
+        parent_ids << parent.id
+      end
+    end
+
     roles = Doclibrary::Role.where(title_id: title_id, role_code: role_code)
     roles.each do |role|
       if role.group_id.present?
         # グループIDが「0:制限なし」の場合、権限を返す
         return role if (role_code == 'r') && (role.group_id == 0)
 
+        # 対象の子グループに所属している場合、権限を返す
+        return role if parent_ids.include?(role.group_id)
         # 対象のグループに所属している場合、権限を返す
         return role if group_ids.include?(role.group_id)
+
       elsif role.user_id.present?
         # 対象のユーザーの場合、権限を返す
         return role if role.user_id == self.id
@@ -553,15 +567,15 @@ class System::User < ActiveRecord::Base
   end
 
   def self.is_dev?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'_admin', 'developer')
+    Gw.is_other_developer?('_admin')
   end
 
   def self.is_admin?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'_admin', 'admin')
+    Gw.is_admin_admin?
   end
 
   def self.is_editor?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'system_users', 'editor')
+    Gw.is_other_editor?('system_users')
   end
 
   def self.get_user_select(g_id=nil,all=nil, options = {})

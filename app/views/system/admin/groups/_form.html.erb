@@ -13,10 +13,13 @@
     <th><%= System::Group.human_attribute_name(:category) %><%= Gw.required %></th>
     <td><%= f.radio_buttons :category, Gw.yaml_to_array_for_select('system_groups_categories'), :class => 'status' %></td>
   </tr>
+  <!--
   <tr>
-    <th><%= System::Group.human_attribute_name(:ldap) %><%= Gw.required %></th>
-    <td><%= f.radio_buttons :ldap, Gw.yaml_to_array_for_select('system_users_ldaps'), :class => 'status' %></td>
+    <th><%#= System::Group.human_attribute_name(:ldap) %><%#= Gw.required %></th>
+    <td><%#= f.radio_buttons :ldap, Gw.yaml_to_array_for_select('system_users_ldaps'), :class => 'status' %></td>
   </tr>
+  -->
+  <%= f.hidden_field :ldap, :value => "0" %>
   <tr>
     <th><%= System::Group.human_attribute_name(:code) %><%= Gw.required %></th>
     <td><%= f.text_field :code, :class => 'num name' %></td>

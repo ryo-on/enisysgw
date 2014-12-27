@@ -26,19 +26,19 @@ class Gw::EditTab < Gw::Database
   before_update :set_updator
 
   def self.is_dev?(uid = Site.user.id)
-    role_dev  = System::Model::Role.get(1, uid ,'gwsub', 'developer')
+    role_dev  = Gw.is_other_developer?('gwsub')
     return role_dev
   end
 
   def self.is_admin?(uid = Site.user.id)
-    edit_tab_admin  = System::Model::Role.get(1, uid ,'edit_tab', 'admin')
-    admin_admin     = System::Model::Role.get(1, uid ,'_admin', 'admin')
+    edit_tab_admin  = Gw.is_other_admin?('edit_tab')
+    admin_admin     = Gw.is_admin_admin?
     role_admin = admin_admin || edit_tab_admin
     return role_admin
   end
 
   def self.is_editor?(uid = Site.user.id)
-    role_editor = System::Model::Role.get(1, uid ,'edit_tab', 'editor')
+    role_editor = Gw.is_other_editor?('edit_tab')
     return role_editor
   end
 

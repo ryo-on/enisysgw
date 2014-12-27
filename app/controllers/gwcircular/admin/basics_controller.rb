@@ -225,13 +225,19 @@ class Gwcircular::Admin::BasicsController < Gw::Controller::Admin::Base
       d.and "sql", "gwcircular_controls.view_hide = 1" unless hide
       d.and "sql", "gwcircular_adms.user_code = '#{Site.user.code}'"
     }
-
+    cond = ["user_id = ?", Site.user.id]
+    user_groups = System::UsersGroup.without_disable.where(cond)
+    group_codes = ""
+    user_groups.each do |ug|
+      group_codes << "," unless group_codes.blank?
+      group_codes << ug.group_code.to_s
+    end
     sql.or {|d|
       d.and "sql", "gwcircular_controls.state = 'public'"
       d.and "sql", "gwcircular_controls.view_hide = 0" if hide
       d.and "sql", "gwcircular_controls.view_hide = 1" unless hide
       d.and "sql", "gwcircular_adms.user_id = 0"
-      d.and "sql", "gwcircular_adms.group_code = '#{Site.user_group.code}'"
+      d.and "sql", "gwcircular_adms.group_code in (#{group_codes})"
     }
     join = "INNER JOIN gwcircular_adms ON gwcircular_controls.id = gwcircular_adms.title_id"
     item = Gwcircular::Control.new

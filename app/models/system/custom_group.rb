@@ -17,7 +17,7 @@ class System::CustomGroup < ActiveRecord::Base
   def save_with_rels(params, mode, options={})
       @is_gw_admin = Gw.is_admin_admin?
       if params[:c1].present?
-        @role_schedule = System::Model::Role.get(1, Core.user.id ,'schedule_role', 'admin')
+        @role_schedule = Gw.is_other_admin?('schedule_role')
         @is_gw_admin = @is_gw_admin || @role_schedule
       end
 
@@ -256,10 +256,19 @@ class System::CustomGroup < ActiveRecord::Base
   end
 
   def self.get_my_view(options={})
+    user_groups = System::UsersGroup.where(user_id: Site.user.id)
+    groups = ""
+    user_groups.each do |ug|
+      groups += ", " + ug.group_id.to_s if groups.present?
+      groups = ug.group_id.to_s if groups.blank?
+    end
     cond= " system_custom_groups.state = 'enabled' "
-    cond+= " AND ( " +
-      "(system_custom_group_roles.class_id = 2 AND ( system_custom_group_roles.group_id = #{Site.user_group.id}) OR system_custom_group_roles.group_id = 0 )" +
-      " OR (system_custom_group_roles.class_id = 1 AND system_custom_group_roles.user_id = #{Site.user.id}) )"
+    #cond+= " AND ( " +
+    #  "(system_custom_group_roles.class_id = 2 AND ( system_custom_group_roles.group_id = #{Site.user_group.id}) OR system_custom_group_roles.group_id = 0 )" +
+    #  " OR (system_custom_group_roles.class_id = 1 AND system_custom_group_roles.user_id = #{Site.user.id}) )"
+    cond += " AND ( " +
+        "(system_custom_group_roles.class_id = 2 AND ( system_custom_group_roles.group_id in (#{groups})) OR system_custom_group_roles.group_id = 0 )" +
+        " OR (system_custom_group_roles.class_id = 1 AND system_custom_group_roles.user_id = #{Site.user.id}) )"
     if options[:priv] == :edit
       cond+= " AND system_custom_group_roles.priv_name = 'edit' "
     else

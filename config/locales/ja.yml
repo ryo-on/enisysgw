@@ -60,6 +60,21 @@ ja:
       empty:
         list: 表示する内容はありません。
       disable_with: 処理中
+      forward_message:
+        gwcircular:
+          mail_forward_message_1: 転送（回覧板→メール）処理中です。
+          mail_forward_message_2: 添付ファイルがある場合、時間がかかることがあります。
+          mail_forward_message_3: しばらくお待ちください。
+          gwbbs_forward_message_1: 転送（回覧板→掲示板）処理中です。
+          gwbbs_forward_message_2: 添付ファイルがある場合、時間がかかることがあります。
+          gwbbs_forward_message_3: しばらくお待ちください。
+        gwbbs:
+          gwcircular_forward_message_1: 転送（掲示板→回覧板）処理中です。
+          gwcircular_forward_message_2: 添付ファイルがある場合、時間がかかることがあります。
+          gwcircular_forward_message_3: しばらくお待ちください。
+          mail_forward_message_1: 転送（掲示板→メール）処理中です。
+          mail_forward_message_2: 添付ファイルがある場合、時間がかかることがあります。
+          mail_forward_message_3: しばらくお待ちください。
     label:
       all_check: 全選択
       all_uncheck: 解除
@@ -74,6 +89,7 @@ ja:
           name: 掲示板
           action:
             open: が公開されました。
+            update: が更新されました。
         circular:
           name: 回覧板
           action:
@@ -177,6 +193,8 @@ ja:
         create: スケジュール作成中です
         edit: スケジュール編集中です
         repeat_edit: スケジュール一括編集中です
+      setting_ind:
+        update: スケジュール設定を変更しました。
     schedule_prop:
       name: :rumi.reminder.feature.schedule_prop.name
       form:

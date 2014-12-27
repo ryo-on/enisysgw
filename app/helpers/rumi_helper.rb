@@ -228,7 +228,7 @@ module RumiHelper
   # ==== 戻り値
   #  boolean
   def mail_feature_url?(url)
-    return url.include?("/_admin/gw/link_sso/")
+    return (url == Enisys::Config.application["webmail.root_url"])
   end
 
   # === 回覧板機能のURLか判断するメソッド

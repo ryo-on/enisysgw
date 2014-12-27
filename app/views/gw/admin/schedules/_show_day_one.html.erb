@@ -6,7 +6,7 @@
   <% if public %>
   <div title="<%= create_schedule_tooltip(schedule, @ie) -%>" class="ind" id="<%= schedule_id -%>">
     <a class="<%= schedule.get_category_class -%>" href="/gw/schedules/<%= schedule.id -%>/show_one">
-      <% if schedule.unseen?(Site.user.id) %>
+      <% if user_id.to_s == Site.user.id.to_s && schedule.remind_unseen?(schedule) %>
       <span class="new">new</span>
       <% end %>
       <%= schedule.show_time(@st_date) -%><%= schedule.title -%>
@@ -51,7 +51,7 @@ end
   <% if public %>
   <div title="<%= create_schedule_tooltip(schedule, @ie) -%>" class="ind" id="<%= schedule_id -%>">
     <a class="<%= schedule.get_category_class -%>" href="/gw/schedules/<%= schedule.id -%>/show_one">
-      <% if schedule.unseen?(Site.user.id) %>
+      <% if user_id.to_s == Site.user.id.to_s && schedule.remind_unseen?(schedule) %>
         <span class="new">new</span>
       <% end %>
       <%= schedule.show_time(@st_date) -%><%= schedule.title -%>
@@ -84,7 +84,7 @@ end
   <td colspan="<%= ((@calendar_space_time.last - st_at) * 2).to_i + 2 -%>">
     <% if public %>
     <a href="/gw/schedules/<%= schedule.id -%>/show_one">
-    <% if schedule.unseen?(Site.user.id) %>
+    <% if user_id.to_s == Site.user.id.to_s && schedule.remind_unseen?(schedule) %>
       <span class="new">new</span>
     <% end %>
     <%= schedule.show_time(@st_date) -%> <%= schedule.title -%></a>

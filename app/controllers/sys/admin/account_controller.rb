@@ -44,6 +44,10 @@ class Sys::Admin::AccountController < Sys::Controller::Admin::Base
     cookies.delete :sys_login_referrer
     System::Session.delete_past_sessions_at_random
 
+    @next_uri = Rumi::WebmailApi.new.login(params[:account], params[:password], params[:path] || "/", request.path_info)
+    user = System::User.find(self.current_user.id)
+    url = Enisys::Config.application["webmail.root_url"]
+    redirect_to @next_uri and return if @next_uri.present? && url.present?
     respond_to do |format|
       format.html { redirect_to @uri }
       format.xml  { render(:xml => current_user.to_xml) }

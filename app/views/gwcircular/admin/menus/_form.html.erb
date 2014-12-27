@@ -8,7 +8,7 @@
 %>
 <%= tool_tiny_mce(mce_base_url, {:leftbar_mode=>true}) %>
 <%= raw(gw_js_include_full) %>
-<%= raw(%Q(<div class="notice">#{flash[:notice]}</div>)) unless flash[:notice].blank? %>
+<%= raw(%Q(<div class="notice">#{required(flash[:notice])}</div>)) unless flash[:notice].blank? %>
 &nbsp;<%= required_head %>
 <table class="show bbsText">
   <tr>

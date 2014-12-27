@@ -51,17 +51,11 @@ class Doclibrary::ViewAclFolder < Gwboard::CommonDb
   # === 子フォルダ取得メソッド
   #  本メソッドは、子フォルダを取得するメソッドである。
   # ==== 引数
-  #  * folder: 子フォルダ配列
+  #  なし
   # ==== 戻り値
   #  子フォルダID配列
-  def get_child_folders(folders)
-    self.children.each do |child|
-      # 子フォルダを子フォルダ配列へ格納
-      folders << child
-
-      # 次階層の子フォルダIDを取得
-      folders = child.get_child_folders(folders)
-    end
-    return folders
+  def get_child_folders
+    f = Doclibrary::ViewAclFolder.select("id").group("id")
+    return f
   end
 end

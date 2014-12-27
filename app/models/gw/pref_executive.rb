@@ -219,15 +219,15 @@ class Gw::PrefExecutive < Gw::Database
     return false
   end
   def self.is_admin?( uid = Site.user.id )
-    is_admin = System::Model::Role.get(1, uid ,'gw_pref_executive', 'admin')
+    is_admin = Gw.is_other_admin?('gw_pref_executive')
     return true if is_admin == true
-    gw_admin = System::Model::Role.get(1, uid ,'_admin', 'admin')
+    gw_admin = Gw.is_admin_admin?
     return true if gw_admin == true
     return false
   end
 
   def self.is_dev?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'gwsub', 'developer')
+    Gw.is_other_developer?('gwsub')
   end
 
   def set_creator

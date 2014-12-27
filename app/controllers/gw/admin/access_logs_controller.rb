@@ -13,8 +13,7 @@ class Gw::Admin::AccessLogsController < Gw::Controller::Admin::Base
 
   def role_gwcircular(title_id = '_menu')
 
-    @is_sysadm = true if System::Model::Role.get(1, Core.user.id ,'gwcircular', 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Core.user_group.id ,'gwcircular', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?('gwcircular')
     @is_bbsadm = true if @is_sysadm
 
     unless @is_bbsadm
@@ -48,9 +47,9 @@ class Gw::Admin::AccessLogsController < Gw::Controller::Admin::Base
 
     @editor_role  = Gw.is_editor?
 
-    @role_tabs  = System::Model::Role.get(1, Core.user.id ,'edit_tab', 'editor')
+    @role_tabs  = Gw.is_other_editor?('edit_tab')
 
-    @role_users = System::Model::Role.get(1, Core.user.id ,'system_users','editor')
+    @role_users = Gw.is_other_editor?('system_users')
 
 
     @is_readable = nil
@@ -109,11 +108,6 @@ class Gw::Admin::AccessLogsController < Gw::Controller::Admin::Base
 
   def index
     init_params
-
-    #３ヶ月経過ログの削除処理
-    delete_at = 3.month.ago
-    delete_log = System::AccessLog.find(:all, :conditions => ["created_at <= ?", delete_at])
-    System::AccessLog.delete_all(["created_at <= ?", delete_at]) if delete_log.present?
     
     now = DateTime.now
     if params[:item].blank?
@@ -172,57 +166,40 @@ class Gw::Admin::AccessLogsController < Gw::Controller::Admin::Base
     #固定ヘッダーの情報取得
     categories = Gw::EditLinkPiece.extract_location_header
 
+    # ログデータ取得
+    categories_data = @logs.group(:feature_name).count
 
     @categories =[]  #グラフ表示用機能名
     @data = []  #グラフデータ
-    max = 0  #グラフ数値軸調整
 
     #固定ヘッダーに存在する機能名のログ集計
     categories.each do |categories|
       categories.opened_children.each_with_index do |level3_item, idx3|
         next if level3_item.published != 'opened' || level3_item.state != 'enabled'
-        @categories << level3_item.name
-        @data << @logs.where(feature_name: level3_item.name).count
+        category = level3_item.name
+        @categories << category
+        @data << categories_data.delete(category)
       end
     end
 
     #ログイン情報の集計
     @categories << "ログイン"
-    @data << @logs.where(feature_name: 'ログイン').count
+    @data << categories_data.delete("ログイン")
 
     #ログアウト情報の集計
     @categories << "ログアウト"
-    @data << @logs.where(feature_name: 'ログアウト').count
-
-
-    d_feature = System::AccessLog.find(
-                :all, :select =>"feature_name",
-                :conditions => ["created_at >= ? and created_at <= ?", @start_date, @end_date],
-                :group => "feature_name")
+    @data << categories_data.delete("ログアウト")
 
     #固定ヘッダーに存在しない機能名のログ集計
-    d_feature.each do |d_feature|
-      d_flg = true
-      @categories.each do |feature|
-        if d_feature.feature_name == feature
-          d_flg = nil
-        end
-      end
-      if d_flg==true
-        @categories << d_feature.feature_name
-        @data << @logs.where(feature_name: d_feature.feature_name).count
-      end
+    categories_data.each do |category, data|
+      @categories << category
+      @data << data
     end
 
-    @data_cnt = 0
-    @logs.each do |log|
-      @data_cnt = @data_cnt + 1
-    end
+    @data_cnt = @logs.length
 
     #機能別の最大値取得
-    @categories.each do |categories|
-      max = @logs.where(feature_name: categories).count if max < @logs.where(feature_name: categories).count
-    end
+    max = @data.compact.max || 0
 
     @column_graph = LazyHighCharts::HighChart.new("graph") do |f|
       f.chart(:type => "column")
@@ -271,7 +248,7 @@ class Gw::Admin::AccessLogsController < Gw::Controller::Admin::Base
       end
     end
     csv = NKF.nkf('-Ws -Lw', csv)
-    send_data(csv, :type => 'text/csv; charset=Shift_JIS', 
+    send_data(csv, :type => 'text/csv; charset=Shift_JIS',
               :filename => "access_logs_#{s_date.strftime("%Y%m%d-%H%M%S")}_#{e_date.strftime("%Y%m%d-%H%M%S")}.csv")
   end
 

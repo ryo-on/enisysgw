@@ -11,18 +11,14 @@ module Gw::SchedulesHelper
   end
 
   def create_month_class(week_add_day, date, holidays, params)
-    class_str = %Q(scheduleData #{Gw.weekday_s(week_add_day, :mode => :eh, :no_weekday => 1, :holidays => holidays)}) if (week_add_day).year == date.year && (week_add_day).month == date.month
-    class_str = 'scheduleData weekday' unless (week_add_day).year == date.year && (week_add_day).month == date.month
-    class_str.concat ' rangeOut' unless (week_add_day).year == date.year && (week_add_day).month == date.month
+    class_str = %Q(scheduleData #{Gw.weekday_s(week_add_day, :mode => :eh, :no_weekday => 1, :holidays => holidays)})
     class_str.concat ' today' if (week_add_day) == Date.today
     class_str.concat ' selectDay' if (week_add_day) == nz(params[:s_date], Date.today.to_s).to_date
     return class_str
   end
 
   def create_month_class_noweek(week_add_day, date, holidays, params)
-    class_str = %Q(scheduleData dayHeder #{Gw.weekday_s(week_add_day, :mode => :eh, :no_weekday => 1, :holidays => holidays)}) if (week_add_day).year == date.year && (week_add_day).month == date.month
-    class_str = 'scheduleData weekday' unless (week_add_day).year == date.year && (week_add_day).month == date.month
-    class_str.concat ' rangeOut' unless (week_add_day).year == date.year && (week_add_day).month == date.month
+    class_str = %Q(scheduleData dayHeder #{Gw.weekday_s(week_add_day, :mode => :eh, :no_weekday => 1, :holidays => holidays)})
     class_str.concat ' today' if (week_add_day) == Date.today
     class_str.concat ' selectDay' if (week_add_day) == nz(params[:s_date], Date.today.to_s).to_date
     return class_str
@@ -66,4 +62,53 @@ module Gw::SchedulesHelper
     tooltip = Gw.simple_strip_html_tags(tooltip, :exclude_tags=>'br/')
     return tooltip
   end
+
+  def show_week_one(schedule, week_add_day, schedule_id, user_id = nil)
+    if @schedule_settings[:view_schedule_title_display].to_i == 1
+      class_str = "schedule-show-ellipsis"
+      schedule_show_time = schedule.show_time_ellipsis(week_add_day)
+    else
+      class_str = "schedule-show-all"
+      schedule_show_time = schedule.show_time(week_add_day)
+    end
+
+    if schedule.is_public_auth?(@is_gw_admin)
+      if user_id.to_s == Site.user.id.to_s && schedule.remind_unseen?(schedule)
+        new = "<span class='new'>new</span>"
+      else
+        new = nil
+      end
+      if @schedule_settings[:view_place_display] == '1' &&
+          schedule.place.present?
+        place = "<span class='place'>（#{schedule.place}）</span>"
+      else
+        place = nil
+      end
+html = <<HTML
+<div title="#{create_schedule_tooltip(schedule, @ie)}" class="ind #{class_str}" id="#{schedule_id}">
+  <a class="#{schedule.get_category_class}" href="/gw/schedules/#{schedule.id}/show_one">
+    #{new}
+    <span>#{schedule_show_time}</span>
+    <span class="title">#{schedule.title}</span>
+    #{place}
+  </a>
+</div>
+HTML
+    else
+      t = schedule.show_time(week_add_day)
+      if @ie
+        title = "#{t} [非公開予定]"
+      else
+        title = "<span>#{t} [非公開予定]</span>"
+      end
+html = <<HTML
+<div title="#{title}" id="#{schedule_id}" class="ind #{class_str}">
+  <a class="category0"><span>#{schedule_show_time}</span>
+  <span class="title">[非公開予定]</span></a>
+</div>
+HTML
+    end
+    html.html_safe
+  end
+
 end

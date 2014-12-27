@@ -32,7 +32,7 @@ class Gwboard::Admin::ReceiptsController < ApplicationController
     end
 
     chk = request.headers['HTTP_USER_AGENT']
-    chk = chk.index("MSIE")
+    chk = Gw.ie?(chk)
     if chk.blank?
       item_filename = item.filename
     else

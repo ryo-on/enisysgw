@@ -75,7 +75,7 @@ class Gw::Admin::YearFiscalJpsController < Gw::Controller::Admin::Base
   end
 
   def init_params
-#    @is_admin = Gw::AdminMessage.is_admin?( Site.user.id )
+#    @is_admin = Gw.is_admin_admin?
     @role_developer  = Gw::YearMarkJp.is_dev?
     @role_admin      = Gw::YearMarkJp.is_admin?
     @u_role = @role_developer || @role_admin

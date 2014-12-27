@@ -1,4 +1,4 @@
-## Enisys Gw 1.0.0 インストールマニュアル                   2014.05.30
+## Enisys Gw 1.1.0 インストールマニュアル                   2014.08.22
 
 **********************************************************************
  1 想定環境
@@ -82,7 +82,7 @@ Enisys Gw の実行に必要なパッケージをインストールします。
 Enisys Gwソースコードを設置します。
 
   # mkdir /var/share
-  # tar xvzf enisysgw-1.0.0.tar.gz -C /var/share
+  # tar xvzf enisysgw-1.1.0.tar.gz -C /var/share
   # chown -R apache:apache /var/share/enisysgw
 
 **********************************************************************

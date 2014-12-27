@@ -20,17 +20,16 @@ class Gw::Admin::ConfigSettingsController < Gw::Controller::Admin::Base
 
     # 個別機能の、管理者・編集者権限
     # タブ編集
-    @role_tabs  = System::Model::Role.get(1, Core.user.id ,'edit_tab', 'editor')
+    @role_tabs  = Gw.is_other_editor?('edit_tab')
     # 総務事務メッセージ編集
-    @role_soumu_msg = System::Model::Role.get(1, Core.user.id ,'pref_soumu_msg', 'editor')
+    @role_soumu_msg = Gw.is_other_editor?('pref_soumu_msg')
     # ユーザー管理
     @role_users = System::Model::Role.get(1, Core.user.id ,'system_users','editor')
 #    # 災害モード管理
 #    @role_disaster_admin_users = Gw::AdminMode.is_disaster_admin?( Core.user.id )
 #    @role_disaster_editor_users = Gw::AdminMode.is_disaster_editor?( Core.user.id )
-
     #スケジュール権限
-    @role_schedule = System::Model::Role.get(1, Core.user.id ,'schedule_role', 'admin')
+    @role_schedule = Gw.is_other_admin?('schedule_role')
 
     # ボード系管理者権限
     # 掲示板
@@ -77,8 +76,8 @@ class Gw::Admin::ConfigSettingsController < Gw::Controller::Admin::Base
     # 　システム管理者のみ
 
     # HCS管理者権限
-#    @role_hcs_admin = System::Model::Role.get(1, Core.user.id ,'hcs','admin')
-#    @role_hcs_portal = System::Model::Role.get(1, Core.user.id ,'hcs_portal','admin')
+#    @role_hcs_admin = Gw.is_other_admin?('hcs')
+#    @role_hcs_portal = Gw.is_other_admin?('hcs_portal')
 #    @role_hcs = @admin_role || @role_hcs_admin || @role_hcs_portal
 
     # 選択メニュー位置（管理者・編集者のみ）
@@ -119,9 +118,7 @@ class Gw::Admin::ConfigSettingsController < Gw::Controller::Admin::Base
   def role_gwcircular(title_id = '_menu')
     # module Gwcircular::Model::DbnameAlias から、関数の内容をコピペ
     #システムで登録されている管理者(システム管理者)ならtrueを返す
-    @is_sysadm = true if System::Model::Role.get(1, Core.user.id ,'gwcircular', 'admin')
-    #自分の所属idがシステムで登録されている管理者(システム管理者)ならtrueを返す
-    @is_sysadm = true if System::Model::Role.get(2, Core.user_group.id ,'gwcircular', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?('gwcircular')
     #システム管理者なら回覧板管理者の資格も持つ
     @is_bbsadm = true if @is_sysadm
 
@@ -157,9 +154,7 @@ class Gw::Admin::ConfigSettingsController < Gw::Controller::Admin::Base
 
   def role_questionnaire
     #システムで登録されている管理者(システム管理者)ならtrueを返す
-    role_questionnaire_set = true if System::Model::Role.get(1, Core.user.id ,'enquete', 'admin')
-    #自分の所属idがシステムで登録されている管理者(システム管理者)ならtrueを返す
-    role_questionnaire_set = true if System::Model::Role.get(2, Core.user_group.id ,'enquete', 'admin') unless role_questionnaire_set
+    role_questionnaire_set = true if Gw.is_other_admin?('enquete')
     return role_questionnaire_set
   end
 

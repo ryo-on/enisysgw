@@ -5,6 +5,11 @@ var my_submit = function(state, action) {
   var st = $('item_state');
   st.value = state;
 
+  if(st.value == "close"){
+    window.close();
+    return false;
+  }
+
   var item_able_date_text = document.getElementById('item_able_date').value;
   var item_expiry_date_text = document.getElementById('item_expiry_date').value;
   var regex = /^\d{4}[\-\/]\d{1,2}[\-\/]\d{1,2}( +\d{1,2}\:\d{1,2}(:\d{1,2})?)?$/;
@@ -78,7 +83,11 @@ var my_submit = function(state, action) {
   switch (state) {
   case "public":
     if (action == 'edit') {
-      var res = confirm('<%= raw I18n.t('rumi.gwbbs.submit.public_update_confirm') %>');
+      if ($('request_path')){
+        var res = confirm('<%= I18n.t('rumi.gwbbs.submit.public_confirm') %>');
+      }else{
+        var res = confirm('<%= raw I18n.t('rumi.gwbbs.submit.public_update_confirm') %>');
+      }
     }else {
       var res = confirm('<%= I18n.t('rumi.gwbbs.submit.public_confirm') %>');
     }
@@ -107,6 +116,14 @@ var my_submit = function(state, action) {
   default:
     FreezeScreen('<%= I18n.t('rumi.freezescreen.default') %>');
     break;
+  }
+  $('item_submit_public').disabled = true;
+  if($('item_submit_recognize')){
+    $('item_submit_recognize').disabled = true;
+  }
+  $('item_submit_draft').disabled = true;
+  if($('item_submit_close')){
+    $('item_submit_close').disabled = true;
   }
   $('itemForm').submit();
 }

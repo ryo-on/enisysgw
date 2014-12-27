@@ -179,8 +179,18 @@ class Gw
     end
   end
 
-  def self.ie?(request)
-    !request.blank? && !request.user_agent.blank? && !request.user_agent.index("MSIE").blank?
+  def self.ie?(val)
+    case val
+    when String
+      str = val
+    when ActionDispatch::Request
+      str = val.user_agent
+    else
+      return false
+    end
+    return str.index(/MSIE|Trident.*rv:11/)
+  rescue
+    return false
   end
 
   def self.simple_strip_html_tags(html, options={})
@@ -469,19 +479,48 @@ class Gw
 
   def self.is_editor?(options={})
     uid = nz(options[:uid],Core.user.id)
+    cond = ["user_id = ?", uid]
+    user_groups = System::UsersGroup.without_disable.where(cond)
+    groups = ""
+    user_groups.each do |ug|
+      groups << "," unless groups.blank?
+      groups << ug.group_id.to_s
+    end
+
     editor_users        = System::Model::Role.get(1, uid ,'system_users','editor')
     editor_tabs         = System::Model::Role.get(1, uid ,'edit_tab', 'editor')
     editor_rss          = System::Model::Role.get(1, uid ,'rss_reader', 'admin')
     editor_blogparts    = System::Model::Role.get(1, uid ,'blog_part', 'admin')
     editor_ind_portals  = System::Model::Role.get(1, uid ,'ind_portal', 'admin')
     schedule_role_admin = System::Model::Role.get(1, uid ,'schedule_role', 'admin')
+
+    groups.split(",").each do |g|
+      editor_users        = System::Model::Role.get(2, g.to_i ,'system_users','editor') unless editor_users
+      editor_tabs         = System::Model::Role.get(2, g.to_i ,'edit_tab', 'editor') unless editor_tabs
+      editor_rss          = System::Model::Role.get(2, g.to_i ,'rss_reader', 'admin') unless editor_rss
+      editor_blogparts    = System::Model::Role.get(2, g.to_i ,'blog_part', 'admin') unless editor_blogparts
+      editor_ind_portals  = System::Model::Role.get(2, g.to_i ,'ind_portal', 'admin') unless editor_ind_portals
+      schedule_role_admin = System::Model::Role.get(2, g.to_i ,'schedule_role', 'admin') unless schedule_role_admin
+    end
+
     editor = editor_users || editor_tabs  || editor_rss || editor_blogparts || editor_ind_portals || schedule_role_admin
     return editor
   end
 
   def self.is_admin_admin?(options={})
     uid = nz(options[:uid],Core.user.id)
+    cond = ["user_id = ?", uid]
+    user_groups = System::UsersGroup.without_disable.where(cond)
+    groups = ""
+    user_groups.each do |ug|
+      groups << "," unless groups.blank?
+      groups << ug.group_id.to_s
+    end
+
     ret = System::Model::Role.get(1,uid,'_admin','admin')
+    groups.split(",").each do |g|
+      ret = true if System::Model::Role.get(2, g.to_i ,'_admin', 'admin') unless ret
+    end
     return ret
   end
 
@@ -491,6 +530,57 @@ class Gw
     admin = Gw.is_admin_admin?(options)
     admin_role = editor || admin
     return admin_role
+  end
+
+  def self.is_other_admin?(system)
+    return false if system.blank?
+
+    cond = ["user_id = ?", Core.user.id]
+    user_groups = System::UsersGroup.without_disable.where(cond)
+    groups = ""
+    user_groups.each do |ug|
+      groups << "," unless groups.blank?
+      groups << ug.group_id.to_s
+    end
+    other_admin = System::Model::Role.get(1, Core.user.id ,system, 'admin')
+    groups.split(",").each do |g|
+      other_admin = true if System::Model::Role.get(2, g.to_i ,system, 'admin') unless other_admin
+    end
+    return other_admin
+  end
+
+  def self.is_other_editor?(system)
+    return false if system.blank?
+
+    cond = ["user_id = ?", Core.user.id]
+    user_groups = System::UsersGroup.without_disable.where(cond)
+    groups = ""
+    user_groups.each do |ug|
+      groups << "," unless groups.blank?
+      groups << ug.group_id.to_s
+    end
+    other_editor = System::Model::Role.get(1, Core.user.id ,system, 'editor')
+    groups.split(",").each do |g|
+      other_editor = true if System::Model::Role.get(2, g.to_i ,system, 'editor') unless other_editor
+    end
+    return other_editor
+  end
+
+  def self.is_other_developer?(system)
+    return false if system.blank?
+
+    cond = ["user_id = ?", Core.user.id]
+    user_groups = System::UsersGroup.without_disable.where(cond)
+    groups = ""
+    user_groups.each do |ug|
+      groups << "," unless groups.blank?
+      groups << ug.group_id.to_s
+    end
+    other_developer = System::Model::Role.get(1, Core.user.id ,system, 'developer')
+    groups.split(",").each do |g|
+      other_developer = true if System::Model::Role.get(2, g.to_i ,system, 'developer') unless other_developer
+    end
+    return other_developer
   end
 
   #require 'parsedate'

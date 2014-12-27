@@ -10,7 +10,7 @@ require 'fileutils'
 # 添付ファイル一括ダウンロード機能のzipファイルを作成する。
 module  Rumi::Doclibrary::ZipFileUtils
   # 一時ファイル格納フォルダパス
-  TMP_FILE_PATH = "#{Rails.root}/tmp/doclibrary"
+  TMP_FILE_PATH = Dir.tmpdir
   
   # zipファイルの文字エンコード
   ZIP_ENCODING = 'Shift_JIS'

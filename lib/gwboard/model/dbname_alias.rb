@@ -201,10 +201,7 @@ module Gwboard::Model::DbnameAlias
       return false
     end
 
-    @is_readable = true if System::Model::Role.get(1, Core.user.id , system_name, 'admin')
-    return @is_readable if @is_readable
-
-    @is_readable = true if System::Model::Role.get(2, Core.user_group.id , system_name, 'admin') unless @is_readable
+    @is_readable = true if Gw.is_other_admin?(system_name)
     return @is_readable if @is_readable
 
     unless @is_readable
@@ -223,20 +220,22 @@ module Gwboard::Model::DbnameAlias
       end
     end
     unless @is_readable
-      item = base_item.new
-      item.and :user_id, 0
-      item.and :group_code, Core.user_group.code
-      item.and :title_id, params[:title_id]
-      items = item.find(:all)
-
+      cond = ["user_id = ?", Site.user.id]
+      user_groups = System::UsersGroup.without_disable.where(cond)
+      group_codes = ""
+      user_groups.each do |ug|
+        group_codes << "," unless group_codes.blank?
+        group_codes << "\"" + ug.group_code.to_s + "\""
+      end
+      cond = "user_id = 0 and group_code in (#{group_codes})"
+      cond.concat " and title_id = #{params[:title_id]}" unless params[:title_id].blank?
+      items = base_item.find(:all, :conditions => cond)
       @is_readable = true unless items.blank?
 
       unless @is_readable
-        item = base_item.new
-        item.and :user_code, Core.user.code
-        item.and :group_code, Core.user_group.code
-        item.and :title_id, params[:title_id]
-        items = item.find(:all)
+        cond = "user_code = '#{Core.user.code}' and group_code in (#{group_codes})"
+        cond.concat " and title_id = #{params[:title_id]}" unless params[:title_id].blank?
+        items = base_item.find(:all, :conditions => cond)
         @is_readable = true unless items.blank?
       end
     end
@@ -259,6 +258,21 @@ module Gwboard::Model::DbnameAlias
       end
     end
 
+    cond = ["user_id = ?", Site.user.id]
+    user_groups = System::UsersGroup.without_disable.where(cond)
+    group_codes = ""
+    parent_codes = ""
+    user_groups.each do |ug|
+      group_codes << "," unless group_codes.blank?
+      group_codes << "\"" + ug.group_code.to_s + "\""
+      group = System::Group.without_disable.where(code: ug.group_code).first
+      if group.parent_id != 1 && ug.id != 1
+        parent = System::Group.without_disable.where(id: group.parent_id).first
+        parent_codes << "," unless parent_codes.blank?
+        parent_codes << "\"" + parent.code.to_s + "\""
+      end
+    end
+
     unless @is_readable
       item = base_item.new
       item.and :role_code, 'r'
@@ -272,21 +286,17 @@ module Gwboard::Model::DbnameAlias
     parent_group_code = ''
     parent_group_code = Core.user_group.parent.code unless Core.user_group.parent.blank?
     unless @is_readable
-      item = base_item.new
-      item.and :role_code, 'r'
-      item.and :title_id, @title.id
-      item.and :group_code, parent_group_code
-      items = item.find(:all)
-
+      cond = "role_code = 'r'"
+      cond.concat " and title_id = #{@title.id}" unless @title.blank?
+      cond.concat " and group_code in (#{parent_codes})" unless parent_codes.blank?
+      items = base_item.find(:all, :conditions => cond)
       @is_readable = true unless items.blank?
     end  unless parent_group_code.blank?
 
     unless @is_readable
-      item = base_item.new
-      item.and :role_code, 'r'
-      item.and :title_id, @title.id
-      item.and :group_code, Core.user_group.code
-      items = item.find(:all)
+      cond = "role_code = 'r' and group_code in (#{group_codes})"
+      cond.concat " and title_id = #{@title.id}" unless @title.blank?
+      items = base_item.find(:all, :conditions => cond)
       @is_readable = true unless items.blank?
     end
 

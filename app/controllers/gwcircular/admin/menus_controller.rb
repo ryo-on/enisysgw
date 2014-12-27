@@ -4,10 +4,14 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
   include Gwboard::Controller::Common
   include Gwcircular::Model::DbnameAlias
   include Gwcircular::Controller::Authorize
+  require 'base64'
+  require 'zlib'
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :invalidtoken
 
-  layout "admin/template/gwcircular"
+  protect_from_forgery :except => [:forward]
+
+  layout :select_layout
 
   def pre_dispatch
     params[:title_id] = 1
@@ -87,6 +91,75 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
     @files = Gwcircular::File.where(:parent_id => @item.id)
 
     commission_index
+  end
+
+  def gwbbs_forward
+    item = Gwcircular::Doc.new
+    item.and :id, params[:id]
+    @item = item.find(:first)
+    return http_error(404) unless @item
+
+    @forward_form_url = "/gwbbs/forward_select"
+    @target_name = "gwbbs_form_select"
+    forward_setting
+  end
+
+  def mail_forward
+    item = Gwcircular::Doc.new
+    item.and :id, params[:id]
+    @item = item.find(:first)
+    return http_error(404) unless @item
+
+    _url = Enisys::Config.application["webmail.root_url"]
+    @forward_form_url = URI.join(_url, "/_admin/gw/webmail/INBOX/mails/gw_forward").to_s
+    @target_name = "mail_form"
+
+    forward_setting
+  end
+
+  def forward_setting
+    #機能間転送の為の処理
+    #本文の処理
+    if @item.body.include?("<")
+      @gwcircular_text_body = "-------- Original Message --------<br />"
+      #本文_タイトル
+      @gwcircular_text_body << "タイトル： " + @item.title + "<br />"
+      #本文_作成日時
+      @gwcircular_text_body << "作成日時： " + @item.created_at.strftime('%Y-%m-%d %H:%M') + "<br />"
+      #本文_作成者
+      @gwcircular_text_body << "作成者： " + @item.createrdivision + " " + @item.creater + "<br />"
+      #本文_回覧記事本文
+      @gwcircular_text_body << @item.body
+    else
+      @gwcircular_text_body = "-------- Original Message --------\n"
+      #本文_タイトル
+      @gwcircular_text_body << "タイトル： " + @item.title + "\n"
+      #本文_作成日時
+      @gwcircular_text_body << "作成日時： " + @item.created_at.strftime('%Y-%m-%d %H:%M') + "\n"
+      #本文_作成者
+      @gwcircular_text_body << "作成者： " + @item.createrdivision + " " + @item.creater + "\n"
+      #本文_回覧記事本文
+      @gwcircular_text_body << @item.body
+    end
+    @gwcircular_text_body = Base64.encode64(@gwcircular_text_body).split().join()
+
+    @tmp = ""
+    @name = ""
+    @content_type = ""
+    @size = ""
+    forword = Gwcircular::Doc.find_by_id(@item.id)
+    forword.files.each do |attach|
+      f = File.open(attach.f_name)
+      @tmp.concat "," if @tmp.present?
+      tmp = Zlib::Deflate.deflate(f.read, Zlib::BEST_COMPRESSION)
+      @tmp.concat Base64.encode64(tmp).split().join()
+      @name.concat "," if @name.present?
+      @name.concat attach.filename.to_s
+      @content_type.concat "," if @content_type.present?
+      @content_type.concat attach.content_type.to_s
+      @size.concat "," if @size.present?
+      @size.concat attach.size.to_s
+    end
   end
 
   def new
@@ -261,6 +334,129 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
 
   end
 
+  def forward
+    params[:authenticity_token] = form_authenticity_token
+    get_role_new
+    return authentication_error(403) unless @is_writable
+    default_published = is_integer(@title.default_published)
+    default_published = 14 unless default_published
+    title = ''
+    body = ''
+    readers_json = []
+    spec_config = 3
+    importance = 1
+    expiry_date = default_published.days.since.strftime("%Y-%m-%d %H:00")
+
+    #件名が存在すれば回覧板のタイトルに挿入
+    title = params[:title] if params[:title].present?
+
+    #本文が存在すれば回覧板の本文に挿入
+    __body = Base64.decode64(params[:body]).to_s if params[:body].present?
+    if params[:body].present? && __body.include?("<")
+      body = __body.force_encoding("utf-8")
+    else
+      _body = __body.split("\r\n");
+      _body.each do |b|
+        body << b.force_encoding("utf-8") + "<br />"
+      end
+    end
+
+    @item = Gwcircular::Doc.create({
+      :state => 'preparation',
+      :title_id => @title.id,
+      :latest_updated_at => Time.now,
+      :doc_type => 0,
+      :title => title,
+      :body => body,
+      :section_code => Site.user_group.code,
+      :target_user_id => Site.user.id,
+      :target_user_code => Site.user.code,
+      :target_user_name => Site.user.name,
+      :confirmation => 0,
+      :spec_config => spec_config,
+      :importance => importance,
+      :able_date => Time.now.strftime("%Y-%m-%d %H:%M"),
+      :expiry_date => expiry_date,
+      :readers_json => readers_json
+    })
+    @item.state = 'draft'
+
+    #添付ファイルが存在すれば添付ファイルのコピーを行う
+    if params[:tmp].present?
+      forward = params[:tmp].split(",")
+      name = params[:name].split(",")
+      content_type = params[:content_type].split(",")
+      size = params[:size].split(",")
+      # 添付ファイル情報コピー
+      cnt = 0
+      forward.each do |attach|
+        if content_type[cnt].index("image").blank?
+          @max_size = is_integer(@title.upload_document_file_size_max)
+        else
+          @max_size = is_integer(@title.upload_graphic_file_size_max)
+        end
+        @max_size = 5 if @max_size.blank?
+        if @max_size.megabytes < size[cnt].to_i
+          if size[cnt] != 0
+            mb = size[cnt].to_f / 1.megabyte.to_f
+            mb = (mb * 100).to_i
+            mb = sprintf('%g', mb.to_f / 100)
+          end
+          flash[:notice] = "ファイルサイズが制限を超えているため、ファイルが添付できませんでした。【最大#{@max_size}MBの設定です。】【#{mb}MBのファイルを登録しようとしています。】"
+        elsif name[cnt].bytesize > Enisys.config.application['sys.max_file_name_length']
+          flash[:notice] = I18n.t('rumi.attachment.message.name_too_long')
+        else
+          begin
+            filename = "attach_" + cnt.to_s
+            tmpfile = Tempfile.new(filename)
+
+            t_file = File.open(tmpfile.path,"w+b")
+            at = Base64.decode64(attach)
+            t_file.write(Zlib::Inflate.inflate(at))
+            t_file.close
+            upload = ActionDispatch::Http::UploadedFile.new({
+              :filename => name[cnt],
+              :content_type => content_type[cnt],
+              :size => size[cnt],
+              :memo => '',
+              :title_id => 1,
+              :parent_id => @item.id,
+              :content_id => @title.upload_system,
+              :db_file_id => 0,
+              :tempfile => File.open(t_file.path)
+            })
+
+            tmpfile = Gwcircular::File.new({
+              :content_type => content_type[cnt],
+              :filename => name[cnt],
+              :size => size[cnt],
+              :memo => '',
+              :title_id => 1,
+              :parent_id => @item.id,
+              :content_id => @title.upload_system,
+              :db_file_id => 0
+            })
+            tmpfile._upload_file(upload)
+            tmpfile.save
+          rescue => ex
+            if ex.message=~/File name too long/
+              flash[:notice] = 'ファイル名が長すぎるため保存できませんでした。'
+            else
+              flash[:notice] = ex.message
+            end
+          end
+        end
+        cnt = cnt + 1
+      end
+    end
+
+    render action: :new, layout: "admin/template/mail_forward"
+  end
+
+  def close
+    get_role_new
+  end
+
   def edit
     get_role_new
     return authentication_error(403) unless @is_writable
@@ -308,12 +504,18 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
 
     s_cond = '?cond=owner'
     s_cond = '?cond=admin' if params[:cond] == 'admin'
+    s_cond << '&request_path=' + params[:request_path] if params[:request_path].present?
     if @item.state == 'draft'
-      location = "#{jgw_circular_path}#{s_cond}"
+      if params[:request_path].present?
+        location = "#{jgw_circular_path}/close"
+      else
+        location = "#{jgw_circular_path}#{s_cond}"
+      end
     else
       location = "#{jgw_circular_path}/#{@item.id}/circular_publish#{s_cond}"
     end
-    _update(@item, :success_redirect_uri=>location)
+    _update(@item, :success_redirect_uri=>location) if params[:request_path].blank?
+    _update(@item, :success_redirect_uri=>location,:request_path=>params[:request_path]) if params[:request_path].present?
   end
 
   def destroy
@@ -432,7 +634,11 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
     item.save
     s_cond = '?cond=owner'
     s_cond = '?cond=admin' if params[:cond] == 'admin'
-    redirect_to "#{@title.menus_path}#{s_cond}"
+    if params[:request_path].present?
+      redirect_to "#{jgw_circular_path}/close"
+    else
+      redirect_to "#{@title.menus_path}#{s_cond}"
+    end
   end
 
   private
@@ -553,5 +759,16 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
       end
     end
     return item_order
+  end
+
+protected
+
+  def select_layout
+    layout = "admin/template/gwcircular"
+    case params[:action].to_sym
+    when :gwbbs_forward, :mail_forward
+      layout = "admin/template/forward_form"
+    end
+    layout
   end
 end

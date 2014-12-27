@@ -12,13 +12,13 @@ class System::Admin::ScheduleRolesController < Gw::Controller::Admin::Base
   end
 
   def init_params
-    @is_admin = System::ScheduleRole.is_admin?
+    @is_admin = Gw.is_admin_admin?
     Page.title = "スケジュール権限設定"
     @model = System::ScheduleRole
     @disable_users = System::User.without_enable
     @users = System::User.without_disable
     @groups = System::Group.without_disable
-    @role_schedule = System::Model::Role.get(1, Core.user.id ,'schedule_role', 'admin')
+    @role_schedule = Gw.is_other_admin?('schedule_role')
   end
 
   # === 初期値のグループ、ユーザー情報

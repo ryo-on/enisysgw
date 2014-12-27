@@ -22,7 +22,7 @@ class Attaches::Admin::Sb11Controller < ApplicationController
 
     #IE判定
     chk = request.headers['HTTP_USER_AGENT']
-    chk = chk.index("MSIE")
+    chk = Gw.ie?(chk)
     if chk.blank?
       item_filename = item.filename
     else

@@ -13,7 +13,8 @@ class Gw::Admin::HolidaysController < Gw::Controller::Admin::Base
   end
 
   def init_params
-    @role_schedule = System::Model::Role.get(1, Core.user.id ,'schedule_role', 'admin')
+    #スケジューラー設定権限を持つユーザーかの情報
+    Gw.is_other_admin?('schedule_role')
     @is_gw_admin = Gw.is_admin_admin? || @role_schedule
   end
 

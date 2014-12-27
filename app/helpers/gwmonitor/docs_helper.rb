@@ -18,16 +18,9 @@ module Gwmonitor::DocsHelper
     return ret
   end
 
-  def is_gwmonitor_admin?
-    ret = false
-    ret = true if System::Model::Role.get(1, Site.user.id ,'gwmonitor', 'admin')
-    ret = true if System::Model::Role.get(2, Site.user_group.id ,'gwmonitor', 'admin') unless ret
-    return ret
-  end
-
   def gwmonitor_settings
     ret = %Q[<span class="btSet"><a href="/gwmonitor/custom_groups">設定</a></span>]
-    ret = %Q[<span class="btSetAdd"><a href="/gwmonitor/settings">管理者</a></span>] if is_gwmonitor_admin?
+    ret = %Q[<span class="btSetAdd"><a href="/gwmonitor/settings">管理者</a></span>] if Gw.is_other_admin?('gwmonitor')
     return ret
   end
 

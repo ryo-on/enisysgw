@@ -48,8 +48,7 @@ class Gwmonitor::Admin::ItemdeletesController < Gw::Controller::Admin::Base
 protected
   
   def check_gw_system_admin
-    @is_sysadm = true if System::Model::Role.get(1, Site.user.id ,'gwmonitor', 'admin')
-    @is_sysadm = true if System::Model::Role.get(2, Site.user_group.id ,'gwmonitor', 'admin') unless @is_sysadm
+    @is_sysadm = true if Gw.is_other_admin?('gwmonitor')
     @is_bbsadm = true if @is_sysadm
   end
 

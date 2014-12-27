@@ -5,7 +5,7 @@
       <th><%= System::UsersGroupsCsvdata.human_attribute_name(:code) %></th>
       <th><%= System::UsersGroupsCsvdata.human_attribute_name(:level_no) %></th>
       <th><%= System::UsersGroupsCsvdata.human_attribute_name(:data_type) %></th>
-      <th><%= System::UsersGroupsCsvdata.human_attribute_name(:ldap) %></th>
+      <!--<th><%#= System::UsersGroupsCsvdata.human_attribute_name(:ldap) %></th>-->
       <th><%= System::UsersGroupsCsvdata.human_attribute_name(:state) %></th>
       <th><%= System::UsersGroupsCsvdata.human_attribute_name(:name) %></th>
     </tr>
@@ -18,7 +18,7 @@
       <td><%= group.code -%></td>
       <td><%= group.level_no %></td>
       <td><%= System::UsersGroupsCsvdata.human_attribute_name(:group) %></td>
-      <td><%= System::UsersGroup.ldap_show(group.ldap) -%></td>
+      <!--<td><%#= System::UsersGroup.ldap_show(group.ldap) -%></td>-->
       <td><%= System::UsersGroup.state_show(group.state) -%></td>
       <td><%= group.name -%></td>
     </tr>
@@ -32,7 +32,7 @@
           <td><%= user.code -%></td>
           <td></td>
           <td><%= System::UsersGroupsCsvdata.human_attribute_name(:user) %></td>
-          <td><%= System::UsersGroup.ldap_show(user.ldap) -%></td>
+          <!--<td><%#= System::UsersGroup.ldap_show(user.ldap) -%></td>-->
           <td><%= System::UsersGroup.state_show(user.state) -%></td>
           <td><span style="margin-left:2em;"><%= user.name -%></span></td>
         </tr>
@@ -47,7 +47,7 @@
         <td><%= c_group.code -%></td>
         <td><%= c_group.level_no %></td>
         <td><%= System::UsersGroupsCsvdata.human_attribute_name(:group) %></td>
-        <td><%= System::UsersGroup.ldap_show(c_group.ldap) -%></td>
+        <!--<td><%#= System::UsersGroup.ldap_show(c_group.ldap) -%></td>-->
         <td><%= System::UsersGroup.state_show(c_group.state) -%></td>
         <td><span style="margin-left:2em;"><%= c_group.name -%></span></td>
       </tr>
@@ -60,7 +60,7 @@
             <td><%= user.code -%></td>
             <td></td>
             <td><%= System::UsersGroupsCsvdata.human_attribute_name(:user) %></td>
-            <td><%= System::UsersGroup.ldap_show(user.ldap) -%></td>
+            <!--<td><%#= System::UsersGroup.ldap_show(user.ldap) -%></td>-->
             <td><%= System::UsersGroup.state_show(user.state) -%></td>
             <td><span style="margin-left:4em;"><%= user.name -%></span></td>
           </tr>

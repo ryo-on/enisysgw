@@ -32,4 +32,22 @@ module Gwcircular::DocsHelper
     ret += '</table>'
     return ret
   end
+
+  def open_mail_form(uri)
+    uri = escape_javascript(uri)
+    "openMailForm('#{uri}', '#{mail_form_style}');"
+  end
+
+  def mail_form_style
+    "resizable=yes,scrollbars=yes"
+  end
+
+  def open_gwbbs_form(uri)
+    uri = escape_javascript(uri)
+    "openGwbbsForm('#{uri}', '#{gwbbs_form_style}');"
+  end
+
+  def gwbbs_form_style
+    "resizable=yes,scrollbars=yes"
+  end
 end

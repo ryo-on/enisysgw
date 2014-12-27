@@ -1,0 +1,27 @@
+<h2>
+<%= I18n.t('rumi.message.forward_message.gwbbs.mail_forward_message_1') %><br />
+<%= I18n.t('rumi.message.forward_message.gwbbs.mail_forward_message_2') %><br />
+<%= I18n.t('rumi.message.forward_message.gwbbs.mail_forward_message_3') %><br />
+</h2>
+<%= form_for(:item, :url => @forward_form_url, :method => :post,
+  :html => {:id => "item_form", :multipart => true, :target => @target_name, :style => "display: inline"}) do |f| %>
+  <%= hidden_field_tag :subject, "転送（掲示板から）: #{@item.title}" %>
+  <%= hidden_field_tag :body, "#{@gwbbs_text_body}" %>
+  <% if @tmp.present? %>
+    <%= hidden_field_tag :tmp, @tmp %>
+    <%= hidden_field_tag :name, @name %>
+    <%= hidden_field_tag :content_type, @content_type %>
+    <%= hidden_field_tag :size, @size %>
+  <% end %>
+<%= f.submit '転送（メール）', :id => "item_submit", :class => "mail_forward", :style => "display: none;" %>
+<% end %>
+
+<script type="text/javascript">
+//<![CDATA[
+var my_load = function() {
+  $('item_form').submit();
+}
+
+window.onload = my_load;
+//]]>
+</script>

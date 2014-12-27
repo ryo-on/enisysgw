@@ -26,10 +26,12 @@
           <th><%= System::User.human_attribute_name(:state) %></th>
           <td><%= System::UsersGroup.state_show(@item.state) -%></td>
         </tr>
+        <!--
         <tr>
-          <th><%= System::User.human_attribute_name(:ldap) %></th>
-          <td><%= System::UsersGroup.ldap_show(@item.ldap) -%></td>
+          <th><%#= System::User.human_attribute_name(:ldap) %></th>
+          <td><%#= System::UsersGroup.ldap_show(@item.ldap) -%></td>
         </tr>
+        -->
         <tr>
           <th><%= System::User.human_attribute_name(:name) %></th>
           <td><%= @item.name -%></td>

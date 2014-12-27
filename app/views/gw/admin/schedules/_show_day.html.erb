@@ -79,9 +79,10 @@ show_day_header = render(:partial => '/gw/admin/schedules/show_day_header')
               public =  schedule.is_public_auth?(@is_gw_admin)
             %>
 
+            <% user_id = user.id ? user.id : nil %>
             <%= render(:partial => '/gw/admin/schedules/show_day_one',
               :locals=>{:schedule => schedule, :schedule_data => schedule_data,
-                :participant_schedule_cnt => participant_schedule_cnt, :public => public, :schedule_id => schedule_id}) -%>
+                :participant_schedule_cnt => participant_schedule_cnt, :public => public, :schedule_id => schedule_id, :user_id => user.id}) -%>
 
               <% participant_schedule_cnt += 1 %>
               <% end %><%# if @schedules.each_with_index end%>

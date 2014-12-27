@@ -183,7 +183,9 @@ class Gw::ScheduleProp < Gw::Database
       st_at = Gw.to_time(params[:st_at]) rescue nil
       ed_at = Gw.to_time(params[:ed_at]) rescue nil
 
-      admin = Gw.is_admin_admin? || System::Model::Role.get(1, Core.user.id ,'schedule_prop_admin', 'admin')
+      #施設マスタ権限を持つユーザーかの情報
+      schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
+      admin = Gw.is_admin_admin? || schedule_prop_admin
 
       if st_at.blank? || ed_at.blank? || st_at >= ed_at
         item = {:errors=>'日付が異常です'}

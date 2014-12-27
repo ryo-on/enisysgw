@@ -8,10 +8,14 @@ class Gw::Admin::PropGroupSettingsController < Gw::Admin::PropGenreCommonControl
     @css = %w(/_common/themes/gw/css/prop_extra/schedule.css)
     Page.title = "施設グループ設定"
     @sp_mode = :prop
-    @schedule_prop_admin = System::Model::Role.get(1, Core.user.id ,'schedule_prop_admin', 'admin')
+
+    #施設マスタ権限を持つユーザーかの情報
+    @schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
     @is_gw_admin = Gw.is_admin_admin? || @schedule_prop_admin
+
     @genre = 'group'
     @model = Gw::PropGroupSetting
+
     @prop = Gw::PropType.find(:all,
       :conditions => ["state = ?", "public"],
       :order => "sort_no")

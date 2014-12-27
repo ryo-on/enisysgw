@@ -16,7 +16,9 @@ class Gw::Admin::PropOthersController < Gw::Admin::PropGenreCommonController
     Page.title = "施設マスタ"
     #現状の@prop_typesを施設グループも含めるようにする
     @prop_types = Gw::PropType.find(:all, :conditions => ["state = ?", "public"], :select => "id, name", :order => 'sort_no, id')
-    @schedule_prop_admin = System::Model::Role.get(1, Core.user.id ,'schedule_prop_admin', 'admin')
+
+    #施設マスタ権限を持つユーザーかの情報
+    @schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
     @is_gw_admin = (@is_gw_admin || @schedule_prop_admin)
     gids = Array.new
     Core.user.groups.each do |group|

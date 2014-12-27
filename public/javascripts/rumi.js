@@ -8,7 +8,7 @@ rumi.attachment = function(url, maxsize, maxname, exceeded) {
   this.maxname = maxname;
   this.exceeded = exceeded;
 
-  jQuery("body").on({
+  jQuery("body").live({
     dragover: function(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -81,7 +81,6 @@ rumi.attachment.prototype.file_check = function(files) {
       return false;
     }
   }
-
   return true;
 }
 
@@ -176,7 +175,7 @@ rumi.dragdrop = function(fileMoveAction, folderMoveAction) {
             type: 'hidden', name: 'item[folder]', value: droppable_folder }));
         jQuery('#file_form').append(jQuery('<input />').attr({
             type: 'hidden', name: 'item[ids]', value: ids }));
-        
+
         message = '';
         if (drag_option == 1) {
           message = 'ファイルをコピーしてもよろしいですか？';
@@ -192,14 +191,14 @@ rumi.dragdrop = function(fileMoveAction, folderMoveAction) {
       else {
         // フォルダドラッグの場合
         var draggable_folder = draggable_elem_id.gsub(/^dragfolder_/, '');
-        
+
         jQuery('#folder_tree_form').append(jQuery('<input />').attr({
             type: 'hidden', name: 'drag_option', value: drag_option }));
         jQuery('#folder_tree_form').append(jQuery('<input />').attr({
             type: 'hidden', name: 'item[src_folder]', value: draggable_folder }));
         jQuery('#folder_tree_form').append(jQuery('<input />').attr({
             type: 'hidden', name: 'item[dst_folder]', value: droppable_folder }));
-        
+
         message = '';
         if (drag_option == 1) {
           message = 'フォルダをコピーしてもよろしいですか？';

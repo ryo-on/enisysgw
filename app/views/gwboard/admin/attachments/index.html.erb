@@ -30,7 +30,7 @@
     <%= raw(@max_file_message) %>
     </p>
   <% end %>
-  <%= div_notice %>
+  <%= raw(%Q(<div class="notice">#{required(flash[:notice])}</div>)) unless flash[:notice].blank? %>
   <input type="hidden" name="system" value='<%="#{params[:system]}"%>' />
   <input type="hidden" name="title_id" value='<%="#{params[:title_id]}"%>' />
 <% end -%>

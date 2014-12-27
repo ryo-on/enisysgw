@@ -16,19 +16,21 @@
 <span class="btEdit"><%= link_to '編集', "#{this_path}/#{@item.id}/edit#{s_cond_btn}" %></span>
 <span class="btDestroy"><%= link_to '削除', "#{this_path}/#{@item.id}#{s_cond_btn}", :confirm => '削除をすると元に戻せません。削除しますか', :method => :delete %></span>
 
-  <span class="btForword"><a href="/gwcircular/new?forword_id=<%= @item.id %>">転送する</a></span>
+<span class="btForword"><a href="/gwcircular/new?forword_id=<%= @item.id %>">転送する</a></span>
+<span class="btMailForword">
+<%= link_to "転送（メール）", url_for(action: :mail_forward, :id => @item.id), :class => 'mail_forward', :title => "転送（メール）", :target => '_blank',
+        :onclick => "return mailforwardView('#{raw escape_javascript url_for(action: :mail_forward, :id => @item.id)}');"
+      %>
+</span>
+<span class="btGwbbsForword">
+<%= link_to "転送（掲示板）", url_for(action: :gwbbs_forward, :id => @item.id), :class => 'mail_forward', :title => "転送（掲示板）", :target => '_blank',
+        :onclick => "return gwbbsforwardView('#{raw escape_javascript url_for(action: :gwbbs_forward, :id => @item.id)}');"
+      %>
+</span>
   <span class="btCopy"><a href="/gwcircular/new?copy_id=<%= @item.id %>">複製する</a></span>
 </div>
   
 <div class="docsInnerBox">
-
-<table class="bbsExpirydate">
-  <tr>
-    <td>　回覧期限日時 : </td>
-    <td class="space"></td>
-    <td><%=@item.expiry_date.strftime('%Y-%m-%d %H:%M') unless @item.expiry_date.blank?%></td>
-  </tr>
-</table>
 
 <div class="bbsCreatorInf">
 <table>
@@ -39,6 +41,9 @@
 <td><%= @item.creater %></td>
 <td class="space"></td>
 <td><%= @item.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+<td>　回覧期限日時 : </td>
+<td class="space"></td>
+<td><%=@item.expiry_date.strftime('%Y-%m-%d %H:%M') unless @item.expiry_date.blank?%></td>
 </tr>
 </table>
 </div>
@@ -75,6 +80,49 @@
 <div id="FreezePane" class="FreezePaneOff">
    <div id="InnerFreezePane" class="InnerFreezePane"> </div>
 </div>
+
+<script type="text/javascript">
+//<![CDATA[
+function mailforwardView(uri) {
+  openMailForm(uri, '<%=raw mail_form_style %>');
+  return false;
+}
+function gwbbsforwardView(uri) {
+  openGwbbsForm(uri, '<%=raw gwbbs_form_style %>');
+  return false;
+}
+function openMailForm(uri){
+  var opt = null;
+  var name = 'mail_form';
+  if (arguments.length > 1) {
+    opt = arguments[1];
+  }
+
+  try {
+    var win = window.open(uri, name, opt);
+    win.focus();
+    return win;
+  } catch(e) {
+    return;
+  }
+}
+function openGwbbsForm(uri){
+  var opt = null;
+  var name = "gwbbs_form_select";
+  if (arguments.length > 1) {
+    opt = arguments[1];
+  }
+
+  try {
+    var win = window.open(uri, name, opt);
+    win.focus();
+    return win;
+  } catch(e) {
+    return;
+  }
+}
+//]]>
+</script>
 <!--</div><!--pieceBody-->
 <!--</div><!--bbsDocList circular-->
 

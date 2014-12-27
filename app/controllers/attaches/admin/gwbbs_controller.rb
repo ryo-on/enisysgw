@@ -26,7 +26,7 @@ class Attaches::Admin::GwbbsController < Gw::Controller::Admin::Base
     return authentication_error(403) unless @is_readable
 
     chk = request.headers['HTTP_USER_AGENT']
-    chk = chk.index("MSIE")
+    chk = Gw.ie?(chk)
     if chk.blank?
       item_filename = item.filename
     else

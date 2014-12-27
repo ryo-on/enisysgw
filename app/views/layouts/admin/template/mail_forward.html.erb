@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+<%= render :partial => 'layouts/admin/gw/header_tag' %>
+<link rel="stylesheet" type="text/css" href="/layout/portal_1column/style.css" />
+<link rel="stylesheet" type="text/css" href="/_common/themes/gw/css/style.css" />
+</head>
+<body id="page-gwcircular-<%= params[:action] -%>">
+<div id="container">
+
+<!--ここからメインコンテンツ-->
+<div id="main">
+<div id="wrapper">
+<!--ここからコンテンツ-->
+<div id="content">
+<div id="contentContainer">
+<div id="contentHeader">
+</div>
+<div id="contentBody">
+<div id="FreezePane" class="FreezePaneOff">
+   <div id="InnerFreezePane" class="InnerFreezePane"> </div>
+</div>
+<%= yield %>
+</div>
+<div id="contentFooter"></div>
+</div>
+</div>
+<!--ここまでコンテンツ-->
+</div>
+<!--ここまでメインコンテンツ-->
+</div>
+</body>
+</html>

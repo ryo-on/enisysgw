@@ -243,8 +243,4 @@ class System::ScheduleRole < ActiveRecord::Base
 
     return target_uids
   end
-
-  def self.is_admin?(uid = Site.user.id)
-    System::Model::Role.get(1, uid ,'_admin', 'admin')
-  end
 end

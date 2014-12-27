@@ -20,7 +20,7 @@ module Doclibrary::Admin::Piece::MenusHelper
 
         # 全てのフォルダからカレントフォルダ取得し、最初だけカレントフォルダを展開状態にする
         child_folders = [items[0]]
-        child_folders = items[0].get_child_folders(child_folders)
+        child_folders = items[0].get_child_folders
         child_folders.each do |folder|
           if folder.id == params[:cat].to_i
             open_folders = folder.parent_tree.map(&:id)
@@ -32,6 +32,7 @@ module Doclibrary::Admin::Piece::MenusHelper
       open_folders = params[:open_folders].split(',').map{|id| id.to_i} 
     end
     params[:open_folders] = open_folders.join(',')
+    @user_group_parent_ids = Site.user.user_group_parent_ids
 
     items.each do |item|
      unless @iname == item.id
@@ -62,7 +63,7 @@ module Doclibrary::Admin::Piece::MenusHelper
         ((x.state == 'public') and (x.acl_flag == 0)) || ((x.state == 'public') and (x.acl_flag == 9))
       else
         ((x.state == 'public') and (x.acl_flag == 0)) ||
-        ((x.state == 'public') and (x.acl_flag == 1) and (Site.user.user_group_parent_ids.include?(x.acl_section_id))) ||
+        ((x.state == 'public') and (x.acl_flag == 1) and (@user_group_parent_ids.include?(x.acl_section_id))) ||
         ((x.state == 'public') and (x.acl_flag == 2) and (x.acl_user_id == Site.user.id))
       end
     }.uniq

@@ -9,7 +9,7 @@ class Rumi::WebmailApi < Rumi::AbstractApi
   #  * path: リダイレクト先
   # ==== 戻り値
   #  リダイレクト先へのURL
-  def login(user_code, password, path)
+  def login(user_code, password, path, path_info = nil)
     url = Enisys::Config.application["webmail.root_url"]
     return nil if url.blank?
 
@@ -19,6 +19,7 @@ class Rumi::WebmailApi < Rumi::AbstractApi
 
     if res.present? && res =~ /^OK/i
       second_queries = { account: user_code, token: res.gsub(/^OK /i, ""), path: path }
+      second_queries = { account: user_code, token: res.gsub(/^OK /i, ""), path: path, path_info: path_info } if path_info.present?
       query = second_queries.map{ |k, v| "#{CGI::escape(k.to_s)}=#{CGI::escape(v)}" }.join("&")
 
       return URI.join(url, [action_url, query].join("?")).to_s
@@ -87,7 +88,7 @@ class Rumi::WebmailApi < Rumi::AbstractApi
 
     # Rumi::WebmailApi#loginの呼び出し元メソッド
     def login(user_code, password, path)
-      return self.new.login(user_code, password, path)
+      return self.new.login(user_code, password, path, request.path_info)
     end
 
   end

@@ -7,7 +7,10 @@ class Gwbbs::Admin::DocsController < Gw::Controller::Admin::Base
   include Gwboard::Controller::Authorize
 
   rescue_from ActionController::InvalidAuthenticityToken, :with => :invalidtoken
-  layout "admin/template/gwbbs"
+  protect_from_forgery :except => [:mail_forward]
+  layout :select_layout
+  require 'base64'
+  require 'zlib'
 
   def initialize_scaffold
     @title = Gwbbs::Control.find_by_id(params[:title_id])
@@ -172,6 +175,75 @@ class Gwbbs::Admin::DocsController < Gw::Controller::Admin::Base
 
   end
 
+  def gwcircular_forward
+    item = gwbbs_db_alias(Gwbbs::Doc)
+    item = item.new
+    item.and :id, params[:id]
+    @item = item.find(:first)
+    Gwbbs::Doc.remove_connection
+    @forward_form_url = "/gwcircular/forward"
+    @target_name = "gwcircular_form"
+    forward_setting
+  end
+
+  def mail_forward
+    item = gwbbs_db_alias(Gwbbs::Doc)
+    item = item.new
+    item.and :id, params[:id]
+    @item = item.find(:first)
+    Gwbbs::Doc.remove_connection
+    _url = Enisys::Config.application["webmail.root_url"]
+    @forward_form_url = URI.join(_url, "/_admin/gw/webmail/INBOX/mails/gw_forward").to_s
+    @target_name = "mail_form"
+    forward_setting
+  end
+
+  def forward_setting
+    #機能間転送の為の処理
+    #本文の処理
+    if @item.body.include?("<")
+      @gwbbs_text_body = "-------- Original Message --------<br />"
+      #本文_タイトル
+      @gwbbs_text_body << "タイトル: " + @item.title + "<br />"
+      #本文_作成日時
+      @gwbbs_text_body << "作成日時: " + @item.created_at.strftime('%Y-%m-%d %H:%M') + "<br />"
+      #本文_作成者
+      @gwbbs_text_body << "作成者: " + @item.name_creater_section + " " + @item.creater + "<br />"
+      #本文_回覧記事本文
+      @gwbbs_text_body << @item.body
+    else
+      @gwbbs_text_body = "-------- Original Message --------\n"
+      #本文_タイトル
+      @gwbbs_text_body << "タイトル: " + @item.title + "\n"
+      #本文_作成日時
+      @gwbbs_text_body << "作成日時: " + @item.created_at.strftime('%Y-%m-%d %H:%M') + "\n"
+      #本文_作成者
+      @gwbbs_text_body << "作成者: " + @item.name_creater_section + " " + @item.creater + "\n"
+      #本文_回覧記事本文
+      @gwbbs_text_body << @item.body
+    end
+    @gwbbs_text_body = Base64.encode64(@gwbbs_text_body).split().join()
+
+    @tmp = ""
+    @name = ""
+    @content_type = ""
+    @size = ""
+
+    forword = Gwbbs::File.where(parent_id: @item.id)
+    forword.each do |attach|
+      f = File.open(attach.f_name)
+      @tmp.concat "," if @tmp.present?
+      tmp = Zlib::Deflate.deflate(f.read, Zlib::BEST_COMPRESSION)
+      @tmp.concat Base64.encode64(tmp).split().join()
+      @name.concat "," if @name.present?
+      @name.concat attach.filename.to_s
+      @content_type.concat "," if @content_type.present?
+      @content_type.concat attach.content_type.to_s
+      @size.concat "," if @size.present?
+      @size.concat attach.size.to_s
+    end
+  end
+
   def get_recogusers
     item = gwbbs_db_alias(Gwbbs::Recognizer)
     item = item.new
@@ -215,6 +287,130 @@ class Gwbbs::Admin::DocsController < Gw::Controller::Admin::Base
     @item.inpfld_024 = '家族' if @title.form_name == "form003"
     Gwbbs::Doc.remove_connection
     users_collection unless @title.recognize == 0
+  end
+
+  def forward
+    get_role_new
+    return http_error(404) unless @is_sysadm || @title.state == 'public'
+    return http_error(404) unless @is_bbsadm || @title.view_hide
+    return authentication_error(403) unless @is_writable
+
+    default_published = is_integer(@title.default_published)
+    default_published = 3 unless default_published
+
+    title = ''
+    body = ''
+
+    #件名が存在すれば回覧板のタイトルに挿入
+    title = params[:title].to_s if params[:title].present?
+
+    #本文が存在すれば回覧板の本文に挿入
+    __body = Base64.decode64(params[:body]).to_s if params[:body].present?
+    if params[:body].present? && __body.include?("<")
+      body = __body.force_encoding("utf-8")
+    else
+      _body = __body.split("\r\n");
+      _body.each do |b|
+        body << b.force_encoding("utf-8") + "<br />"
+      end
+    end
+
+    item = gwbbs_db_alias(Gwbbs::Doc)
+    @item = item.create({
+      :state => 'preparation',
+      :title_id => @title.id,
+      :latest_updated_at => Time.now,
+      :importance=> 1,
+      :one_line_note => 0,
+      :title => title,
+      :body => body,
+      :section_code => Core.user_group.code,
+      :category4_id => 0,
+      :able_date => Time.now.strftime("%Y-%m-%d"),
+      :expiry_date => "#{default_published.months.since.strftime("%Y-%m-%d")} 23:59:59",
+      #表示する名称 初期表示：ユーザ名と所属名
+      :name_type => 2,
+      #表示する所属 初期表示：自所属
+      :name_editor_section_id => Core.user_group.code,
+      :name_editor_section => Core.user_group.name
+    })
+
+    @item.state = 'draft'
+    @item.inpfld_024 = '家族' if @title.form_name == "form003"
+
+    #添付ファイルが存在すれば添付ファイルのコピーを行う
+    if params[:tmp].present?
+      forward = params[:tmp].split(",")
+      name = params[:name].split(",")
+      content_type = params[:content_type].split(",")
+      size = params[:size].split(",")
+      # 添付ファイル情報コピー
+      cnt = 0
+      forward.each do |attach|
+        @max_size = is_integer(@title.upload_document_file_size_max)
+        @max_size = 3 unless @max_size
+        if @max_size.megabytes < size[cnt].to_i
+          if size[cnt] != 0
+            mb = size[cnt].to_f / 1.megabyte.to_f
+            mb = (mb * 100).to_i
+            mb = sprintf('%g', mb.to_f / 100)
+          end
+          flash[:notice] = "ファイルサイズが制限を超えているため、ファイルが添付できませんでした。【最大#{@max_size}MBの設定です。】【#{mb}MBのファイルを登録しようとしています。】"
+        else
+          begin
+            filename = "attach_" + cnt.to_s
+            tmpfile = Tempfile.new(filename)
+
+            t_file = File.open(tmpfile.path,"w+b")
+            at = Base64.decode64(attach)
+            t_file.write(Zlib::Inflate.inflate(at))
+            t_file.close
+            title_id = 1
+            title_id = params[:title_id] if params[:title_id].present?
+            upload = ActionDispatch::Http::UploadedFile.new({
+              :filename => name[cnt],
+              :content_type => content_type[cnt],
+              :size => size[cnt],
+              :memo => '',
+              :title_id => title_id,
+              :parent_id => @item.id,
+              :content_id => @title.upload_system,
+              :db_file_id => 0,
+              :tempfile => File.open(t_file.path)
+            })
+
+            tmpfile = Gwbbs::File.new({
+              :content_type => content_type[cnt],
+              :filename => name[cnt],
+              :size => size[cnt],
+              :memo => '',
+              :title_id => title_id,
+              :parent_id => @item.id,
+              :content_id => @title.upload_system,
+              :db_file_id => 0
+            })
+            tmpfile._upload_file(upload)
+            tmpfile.save
+          rescue => ex
+            if ex.message=~/File name too long/
+              flash[:notice] = 'ファイル名が長すぎるため保存できませんでした。'
+            else
+              flash[:notice] = ex.message
+            end
+          end
+        end
+        cnt = cnt + 1
+      end
+    end
+
+    Gwbbs::Doc.remove_connection
+    users_collection unless @title.recognize == 0
+
+    render action: :new, layout: "admin/template/mail_forward"
+  end
+
+  def close
+    get_role_new
   end
 
   def edit
@@ -372,12 +568,17 @@ class Gwbbs::Admin::DocsController < Gw::Controller::Admin::Base
     else
       next_location = "#{@title.docs_path}#{gwbbs_params_set}"
     end
+    if params[:request_path].present?
+      next_location = "/gwbbs/docs/close?title_id=" + params[:title_id]
+    end
     if @title.recognize == 0
-      _update_plus_location(@item, next_location)
+      _update_plus_location(@item, next_location) if params[:request_path].blank?
+      _update_plus_location(@item, next_location, :request_path=>params[:request_path]) if params[:request_path].present?
     else
       recog_item = gwbbs_db_alias(Gwbbs::Recognizer)
       Gwbbs::Recognizer.remove_connection
-      _update_after_save_recognizers(@item, recog_item, next_location)
+      _update_after_save_recognizers(@item, recog_item, next_location) if params[:request_path].blank?
+      _update_after_save_recognizers(@item, recog_item, next_location, :request_path=>params[:request_path]) if params[:request_path].present?
     end
   end
 
@@ -744,4 +945,14 @@ class Gwbbs::Admin::DocsController < Gw::Controller::Admin::Base
     return str
   end
 
+protected
+
+  def select_layout
+    layout = "admin/template/gwbbs"
+    case params[:action].to_sym
+    when :gwcircular_forward, :mail_forward
+      layout = "admin/template/forward_form"
+    end
+    layout
+  end
 end

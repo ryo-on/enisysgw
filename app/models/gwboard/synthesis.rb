@@ -3,9 +3,7 @@ class Gwboard::Synthesis < Gw::Database
   include System::Model::Base::Content
   
   def gwbbs_readable_syntheses(date)
-    is_sysadm = 
-      System::Model::Role.get(1, Site.user.id, 'gwbbs', 'admin') || 
-      System::Model::Role.get(2, Site.user_group.id, 'gwbbs', 'admin')
+    is_sysadm = Gw.is_other_admin?('gwbbs')
     
     self.and :state, 'public'
     self.and :system_name, 'gwbbs'
@@ -42,9 +40,7 @@ class Gwboard::Synthesis < Gw::Database
   end
   
   def gwfaq_readable_syntheses(date)
-    is_sysadm = 
-      System::Model::Role.get(1, Site.user.id, 'gwfaq', 'admin') || 
-      System::Model::Role.get(2, Site.user_group.id, 'gwfaq', 'admin')
+    is_sysadm = Gw.is_other_admin?('gwfaq')
     
     self.and :state, 'public'
     self.and :system_name , 'gwfaq'
@@ -80,9 +76,7 @@ class Gwboard::Synthesis < Gw::Database
   end
   
   def gwqa_readable_syntheses(date)
-    is_sysadm = 
-      System::Model::Role.get(1, Site.user.id, 'gwqa', 'admin') || 
-      System::Model::Role.get(2, Site.user_group.id, 'gwqa', 'admin')
+    is_sysadm = Gw.is_other_admin?('gwqa')
     
     self.and :state, 'public'
     self.and :system_name, 'gwqa'
@@ -118,9 +112,7 @@ class Gwboard::Synthesis < Gw::Database
   end
   
   def doclibrary_readable_syntheses(date)
-    is_sysadm = 
-      System::Model::Role.get(1, Site.user.id, 'doclibrary', 'admin') || 
-      System::Model::Role.get(2, Site.user_group.id, 'doclibrary', 'admin')
+    is_sysadm = Gw.is_other_admin?('doclibrary')
     
     parent_group_codes = Site.user_group.parent_tree.map{|g| g.code}
     
@@ -172,9 +164,7 @@ class Gwboard::Synthesis < Gw::Database
   end
   
   def digitallibrary_readable_syntheses(date)
-    is_sysadm = 
-      System::Model::Role.get(1, Site.user.id, 'digitallibrary', 'admin') || 
-      System::Model::Role.get(2, Site.user_group.id, 'digitallibrary', 'admin')
+    is_sysadm = Gw.is_other_admin?('digitallibrary')
     
     self.and :state, 'public'
     self.and :system_name, 'digitallibrary'

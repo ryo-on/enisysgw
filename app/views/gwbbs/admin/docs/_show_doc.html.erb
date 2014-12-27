@@ -29,7 +29,16 @@
     <span class="btReproduce"><%= link_to '複製', "#{clone_gwbbs_doc_path(@item,{:title_id=>@item.title_id})}#{gwbbs_params_set}", :confirm => 'この記事を複製しますか' %></span>
   <% end %>
 <% end unless @title.id == 1 %>
-
+<span class="btMailForword">
+<%= link_to "転送（メール）", url_for(action: :mail_forward, :id => @item.id, :title_id => @title.id), :class => 'mail_forward', :title => "転送（メール）", :target => '_blank',
+        :onclick => "return mailforwardView('#{raw escape_javascript url_for(action: :mail_forward, :id => @item.id, :title_id => @title.id)}');"
+      %>
+</span>
+<span class="btGwcircularForword">
+<%= link_to "転送（回覧板）", url_for(action: :gwcircular_forward, :id => @item.id, :title_id => @title.id), :class => 'gwcircular_forward', :title => "転送（回覧板）", :target => '_blank',
+        :onclick => "return gwcircularforwardView('#{raw escape_javascript url_for(action: :gwcircular_forward, :id => @item.id, :title_id => @title.id)}');"
+      %>
+</span>
 <% if @is_editable %><!--編集権限あり-->
   <% unless @title.delete_forbidden %>
    <% if @title.id != 17 || ( @title.id == 17 && @is_admin ) %>
@@ -149,3 +158,45 @@
   <% end %>
 </div>
 <% end %>
+<script type="text/javascript">
+//<![CDATA[
+function mailforwardView(uri) {
+  openMailForm(uri, '<%=raw mail_form_style %>');
+  return false;
+}
+function gwcircularforwardView(uri) {
+  openGwcircularForm(uri, '<%=raw gwcircular_form_style %>');
+  return false;
+}
+function openMailForm(uri){
+  var opt = null;
+  var name = 'mail_form';
+  if (arguments.length > 1) {
+    opt = arguments[1];
+  }
+
+  try {
+    var win = window.open(uri, name, opt);
+    win.focus();
+    return win;
+  } catch(e) {
+    return;
+  }
+}
+function openGwcircularForm(uri){
+  var opt = null;
+  var name = "gwcircular_form";
+  if (arguments.length > 1) {
+    opt = arguments[1];
+  }
+
+  try {
+    var win = window.open(uri, name, opt);
+    win.focus();
+    return win;
+  } catch(e) {
+    return;
+  }
+}
+//]]>
+</script>

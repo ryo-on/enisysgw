@@ -36,6 +36,7 @@ var my_submit = function(state) {
     FreezeScreen('<%= I18n.t('rumi.freezescreen.default') %>');
     break;
   }
+  $('item_submit').disabled = true;
   $('itemForm').submit();
 }
 function FreezeScreen(msg) {
