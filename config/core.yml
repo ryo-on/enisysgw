@@ -1,0 +1,15 @@
+common: &common
+  title  : Gw
+  uri    : http://127.0.0.1/
+  proxy  : 
+  map_key: 
+  mail_domain : 127.0.0.1
+
+development:
+  <<: *common
+
+test:
+  <<: *common
+
+production:
+  <<: *common

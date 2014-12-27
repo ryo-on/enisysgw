@@ -1,0 +1,191 @@
+
+<%= raw(required_head) %>
+<table class="show">
+<%
+i_key = ''
+i_val = ''
+ ##　編集 && 一般ユーザー　&& 編集者の場合
+ if @action == 'edit' && @is_gw_admin != true && ( @item.owner_uid != Site.user.id )
+   i_key = :disabled
+   i_val = 'disabled'
+%>
+<tr>
+  <th>状態<%= raw(required) %></th>
+  <td><%= raw(radio f, :state, @item.states, :class => 'state', i_key => i_val) %>
+    <%= f.hidden_field :state , :value=>@item.state %>
+  </td>
+</tr>
+<%= f.hidden_field  :is_default         ,:value=>@item.is_default %>
+<tr>
+  <th>名称<%= raw(required) %></th>
+  <td><%= f.text_field :name ,  :class => 'name', :size=>30 , :maxlength=>30, i_key => i_val %>
+    <%= f.hidden_field  :name         ,:value=>@item.name %></td>
+</tr>
+
+<%= f.hidden_field  :name_en         ,:value=>@item.name_en %>
+<tr>
+  <th>並び順</th>
+  <td><%= f.text_field :sort_no, :class => 'num', :size=>5 , :maxlength=>4, i_key => i_val %>
+    <%= f.hidden_field  :sort_no         ,:value=>@item.sort_no %> ※数値の小さい順に表示されます。</td>
+
+</tr>
+
+<% elsif @is_gw_admin == true %>
+
+<tr>
+  <th>状態<%= raw(required) %></th>
+  <td><%= raw(radio f, :state, @item.states, :class => 'state') %></td>
+</tr>
+<tr>
+  <th>デフォルト</th>
+  <td><%= f.check_box :is_default %>デフォルトグループに設定する</td>
+</tr>
+<tr>
+  <th>名称<%= raw(required) %></th>
+  <td><%= f.text_field :name ,  :class => 'name', :size=>30 , :maxlength=>30 %></td>
+</tr>
+<tr>
+  <th>名称（英語）</th>
+  <td><%= f.text_field :name_en ,  :class => 'name_en', :size=>30 , :maxlength=>30 %></td>
+</tr>
+<tr>
+  <th>並び順</th>
+  <td><%= f.text_field :sort_no, :class => 'num', :size=>5 , :maxlength=>4 %> ※数値の小さい順に表示されます。</td>
+</tr>
+
+<% else %>
+
+<tr>
+  <th>状態<%= raw(required) %></th>
+  <td><%= raw(radio f, :state, @item.states, :class => 'state') %></td>
+</tr>
+<%= f.hidden_field  :is_default         ,:value=>@item.is_default %>
+<tr>
+  <th>名称<%= raw(required) %></th>
+  <td><%= f.text_field :name ,  :class => 'name', :size=>30 , :maxlength=>30 %></td>
+</tr>
+<%= f.hidden_field  :name_en         ,:value=>@item.name_en %>
+<tr>
+  <th>並び順</th>
+  <td><%= f.text_field :sort_no, :class => 'num', :size=>5 , :maxlength=>4 %> ※数値の小さい順に表示されます。</td>
+</tr>
+
+<% end %>
+
+
+
+<%
+ display_roles = ''
+ if @is_gw_admin != true
+  display_roles = "style='display:none;'"
+ end
+%>
+<tr <%=display_roles%> >
+  <th>編集所属</th>
+  <td>
+    <%= render :partial => '/system/admin/custom_groups/form_admin_group_roles', :locals => {:f => f} %>
+  </td>
+</tr>
+<tr <%=display_roles%> >
+  <th>編集者</th>
+  <td>
+    <%= render :partial => '/system/admin/custom_groups/form_admin_user_roles', :locals => {:f => f} %>
+  </td>
+</tr>
+<tr <%=display_roles%> >
+  <th>スケジュール登録所属</th>
+  <td>
+    <%= render :partial => '/system/admin/custom_groups/form_edit_roles', :locals => {:f => f} %>
+  </td>
+</tr>
+<tr <%=display_roles%> >
+  <th>スケジュール登録者</th>
+  <td>
+    <%= render :partial => '/system/admin/custom_groups/form_edit_user_roles', :locals => {:f => f} %>
+  </td>
+</tr>
+<tr <%=display_roles%> >
+  <th>スケジュール表示所属</th>
+  <td>
+    <%= render :partial => '/system/admin/custom_groups/form_roles', :locals => {:f => f} %>
+  </td>
+</tr>
+<tr <%=display_roles%> >
+  <th>スケジュール表示者</th>
+  <td>
+    <%= render :partial => '/system/admin/custom_groups/form_read_user_roles', :locals => {:f => f} %>
+  </td>
+</tr>
+<tr>
+  <th>関連づけるユーザー</th>
+  <td>
+    <%= render :partial => '/system/admin/custom_groups/form_user', :locals => {:f => f} %>
+  </td>
+</tr>
+</table>
+<script type="text/javascript">
+//<![CDATA[
+  var add_users = function() {
+    add_list('item_schedule_users_uid', 'item_schedule_users_add_buf')
+  }
+  var del_users = function() {
+    del_list('item_schedule_users_add_buf')
+  }
+  var add_list = function(fr_id, to_id) {
+    var fr = $(fr_id);
+    var idxs = select_options_selected_indexes(fr);
+    var to = $(to_id);
+    for (var i = 0; i < idxs.length; i++)
+      select_options_push(to, fr[idxs[i]].value, fr[idxs[i]].innerHTML, 1);
+  };
+  var del_list = function(fr_id) {
+    var fr = $(fr_id);
+    var vals = select_options_selected_values(fr);
+    for (var i = 0; i < vals.length; i++)
+      select_options_delete(fr, vals[i]);
+  };
+  var set_users_json = function() {
+    var fr = $('item_schedule_users_add_buf');
+    var ary = [];
+    for (var i = 0; i < fr.options.length; i++)
+      ary.push([fr[i].title, fr[i].value, fr[i].innerHTML]);
+    var to = $('item_schedule_users_json');
+    to.value = Object.toJSON(ary);
+  }
+  var my_submit = function() {
+    var fr = $('item_schedule_users_add_buf');
+    var ary = [];
+    for (var i = 0; i < fr.options.length; i++)
+      ary.push([fr[i].title, fr[i].value, fr[i].innerHTML]);
+    var to = $('item_schedule_users_json');
+    to.value = Object.toJSON(ary);
+    fr.selectedIndex = -1; // fr の送信を抑止
+
+    $('itemForm').submit();
+  }
+  var my_load_core = function(mode) {
+    if (mode == "user") {
+      var u = $('init_schedule_users_json');
+      var to = $('item_schedule_users_add_buf');
+    }
+
+    if ( u != undefined && u.value != '') {
+      var roles = eval(u.value);
+      for (var i = 0; i < roles.length; i++) {
+        if (mode == 'user') {
+          select_options_push(to, roles[i][1], roles[i][2], roles[i][0], roles[i][3], roles[i][4], roles[i][5]);
+        } else {
+          select_options_push(to, roles[i][1], roles[i][2], roles[i][0]);
+        }
+      }
+    }
+  }
+
+var my_load = function() {
+  my_load_core('user');
+}
+
+window.onload = my_load;
+//]]>
+</script>
+<%= raw(gw_js_include_full) %>

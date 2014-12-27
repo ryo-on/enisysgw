@@ -1,0 +1,25 @@
+<div class="left">
+<div class="leftbanner"></div>
+<div class="sideMenu">
+<div class="menuBody">
+<%=render(:partial => 'search')%>
+<%#所属の時は、所属-期限日-月別%>
+<% if params[:category] == "GROUP" %>
+  <%= render(:partial => "groups") %>
+  <%= render(:partial => "expirydates") %>
+  <%= render(:partial => "monthlies") %>
+<%#月別の時は、月別-期限日-所属-%>
+<% elsif params[:category] == "DATE" %>
+  <%= render(:partial => "monthlies") %>
+  <%= render(:partial => "expirydates") %>
+  <%= render(:partial => "groups") %>
+<%#上記以外の時は、期限日-月別-所属%>
+<% else %>
+  <%= render(:partial => "expirydates") %>
+  <%= render(:partial => "monthlies") %>
+  <%= render(:partial => "groups") %>
+<% end %>
+</div>
+</div>
+</div>
+

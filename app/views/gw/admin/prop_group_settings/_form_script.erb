@@ -1,0 +1,64 @@
+<script type="text/javascript">
+//<![CDATA[
+var add_prop = function() {
+  var fr = $('item_prop_group_settings_prop_id');
+  var idxs = select_options_selected_indexes(fr);
+  var to = $('item_prop_group_settings_add_buf');
+  for (var i = 0; i < idxs.length; i++) {
+    select_options_push(to, fr[idxs[i]].value, fr[idxs[i]].innerHTML, fr[idxs[i]].title);
+  }
+}
+
+var del_prop = function() {
+  var fr = $('item_prop_group_settings_add_buf');
+  var vals = select_options_selected_values(fr);
+  for (var i = 0; i < vals.length; i++){
+    select_options_delete(fr, vals[i]);
+  }
+};
+
+var my_load_core = function(mode) {
+  var u = $('init_prop_group_settings_json');
+  var to = $('item_prop_group_settings_add_buf');
+  if ( u != undefined && u.value != '') {
+    var users = eval(u.value);
+    for (var i = 0; i < users.length; i++) {
+      select_options_push(to, users[i][1], users[i][2], users[i][0]);
+    }
+  }
+  if (to.options.length == 0 && $('init_prop_id').value != '' && $('init_prop_cls').value != "other") {
+    select_options_push(to, $('init_prop_id').value, $('init_prop_name').value, $('init_prop_cls').value);
+  }
+  if (to.options.length == 0 && $('init_prop_id').value != '' && $('init_prop_cls').value == 'other') {
+    select_options_push(to, $('init_prop_id').value, "(" + $('init_prop_gcode').value + ")" + $('init_prop_name').value, $('init_prop_cls').value);
+  }
+}
+
+var update_prop_cand = function () {
+
+  var notice = $('notice_ajax_prop');
+  notice.update('');
+
+  var fr = $('item_prop_group_settings_prop_type_id');
+  var genre = fr.options[fr.selectedIndex].value;
+
+  type_id = $("item_prop_group_settings_prop_type_id").value;
+
+  params = ['type_id=' + type_id]
+  url = '/gw/prop_group_settings/getajax.json?type_id=' + type_id;
+  var to = $('item_prop_group_settings_prop_id');
+  to.options.length = 0;
+  ajax_request(url, function(r){
+    if (xha['errors'] != undefined) {
+      notice.update(xha['errors']);
+    } else {
+      for (var i=0; i<xha.length; i++) {
+        xh = xha[i];
+        to.options[i] = new Option(xh[2], xh[1]);
+        to.options[i].title = xh[0];
+      }
+    }
+  });
+}
+//]]>
+</script>

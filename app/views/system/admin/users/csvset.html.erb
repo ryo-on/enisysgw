@@ -1,0 +1,29 @@
+<%
+if @count == 0
+  disabled = true
+else
+  disabled = false
+end
+%>
+<div class="piece AdminSetting AdminUsers">
+<%= render :partial => 'header' %>
+  <div class="pieceBody">
+    <%= render :partial => '/system/admin/users/header_menu' %>
+    <%= render :partial => '/system/admin/users/csv_menu' %>
+    <%= div_notice %>
+
+    <h3><%= t("rumi.config_settings.base.user_and_group.csv.feature.save.name") %></h3>
+    <div class="user_explanation">
+      <%=raw t("rumi.config_settings.base.user_and_group.csv.feature.save.message.note") %>
+    </div>
+    <%= form_for :item, :url => "#{csvset_system_users_path}?do=synchro", :html => {:method => :post, :multipart => true, :id => 'itemForm'} do |f| %>
+    <%= hidden_field_tag('item[csv]','set') %>
+    <%= f.error_messages %>
+    <div class="submitters">
+      <%= submit_tag t("rumi.config_settings.base.user_and_group.csv.feature.save.name"),
+            onclick: "return confirm('#{t("rumi.config_settings.base.user_and_group.csv.feature.save.message.help")}');",
+            disabled: disabled, disable_with: t("rumi.message.disable_with") %>
+    </div>
+    <% end %>
+  </div>
+</div>

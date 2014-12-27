@@ -1,0 +1,131 @@
+<% content_for(:header) do -%>
+<%= stylesheet_link_tag '/_common/themes/gw/css/circular' %>
+<%= javascript_tag do -%>
+  listForm_obj = new rumi.listForm();
+<% end -%>
+<% end -%>
+<script type="text/javascript">
+//<![CDATA[
+  var attach_obj = new rumi.attachment(
+         "<%= url_for(action: :create, system: params[:system],
+                      title_id: params[:title_id]) %>",
+         <%= [is_integer(@title.upload_document_file_size_max),
+              is_integer(@title.upload_graphic_file_size_max)].max %>,
+         <%= Enisys.config.application['sys.max_file_name_length'] %>, false);
+//]]>
+</script>
+
+<%
+  _form_id = 'item_body'  #デフォルト値
+  _form_id = params[:form_id].to_s unless params[:form_id].blank?
+
+  system_name = "gwcircular"
+%>
+<%= form_for :item, :url => {:action => :create}, :html => {:multipart => true} do |f| %>
+  <p>
+  <label for="item">ファイル指定::</label>
+  <%= f.file_field :upload %>
+  <%= submit_tag 'ファイルを登録する',
+                 onclick: "return attach_obj.file_check(document.getElementById('item_upload').files);" %>
+  </p>
+<% end -%>
+<div class="notice"><%= flash[:notice] %></div>
+
+<hr />
+
+<script type="text/javascript">
+//<![CDATA[
+  function mceInsertContent(value) {
+    parent.tinyMCE.execInstanceCommand('<%= _form_id %>', 'mceInsertContent', true, value);
+  }
+//]]>
+</script>
+
+<%= form_tag '#', :method => :post, :id => 'attach_list_form' do |f| -%>
+  <table class="list">
+  <tr>
+    <td colspan="7">
+      <div class="attachmentsDelete">
+        <%= button_tag(t('rumi.label.all_check'),
+            {:type => 'button',
+             :onclick => 'return listForm_obj.checkAll("attach_list_form",
+                 "file_check", true);'}) %>
+      </div>
+      <div class="attachmentsDelete">
+        <%= button_tag(t('rumi.label.all_uncheck'),
+            {:type => 'button',
+             :onclick => 'return listForm_obj.checkAll("attach_list_form",
+                 "file_check", false);'}) %>
+      </div>
+      <div class="attachmentsDelete">
+        <%= button_tag(t("rumi.label.delete"),
+            {:type => "button",
+             :onclick => "return listForm_obj.attachmentsDelete(
+                 'attach_list_form', 'file_check',
+                 '#{@title.system_name}', #{@title.id}, #{@parent_id});"}) %>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <th style="width: 25px;"></th>
+    <th style="width: 25px; text-align: center;"></th>
+    <th style="text-align: left;">
+      <%= t('rumi.attachment.label.file_name') %>
+    </th>
+    <th style="width: 120px; text-align: center;">
+      <%= t('rumi.attachment.label.file_size') %>
+    </th>
+    <% if @doc_type == 0 %>
+    <th style="width: 60px; text-align: center;">
+      <%= t('rumi.attachment.label.insert_link') %>
+    </th>
+    <th style="width: 60px; text-align: center;">
+      <%= t('rumi.attachment.label.insert_image') %>
+    </th>
+    <% end %>
+  </tr>
+  <% for item in @items %>
+    <tr>
+    <td class="checker">
+      <% checked =
+          (params[:file_check])? params[:file_check].include?(item.id.to_s) : false %>
+      <%= check_box_tag 'file_check[]', item.id, checked %>
+    </td>
+    <% if item.is_image %>
+      <td style="text-align: center;"><img src="<%=item.file_uri(system_name)%>" style="<%= item.gwbd_reduced_size(:width => 80, :height => 40, :output => :css) %>" alt= ''/></td>
+    <% else %>
+      <td><%= link_to '', item.file_uri(system_name), :class => item.icon_type %></td>
+    <% end %>
+    <td>
+      <% if item.is_image %>
+        <%= link_to "#{item.filename} (#{item.eng_unit})", "#{item.file_uri(system_name)}", :target => '_blank' %>
+      <% else %>
+        <%= link_to "#{item.filename} (#{item.eng_unit})", "#{item.file_uri(system_name)}" %>
+      <% end %>
+    </td>
+    <td style="text-align: center;"><%= item.eng_unit %><%=raw item.graphic_size %></td>
+    <% if @doc_type == 0 %>
+      <td style="text-align: center;">
+        <% content = link_to "#{item.filename} (#{item.eng_unit})", item.file_uri(system_name), :class => item.icon_type %>
+        <%= link_to t('rumi.attachment.label.insert_link'), '#',
+            :id => "link_attach#{item.id}",
+            :onclick => "mceInsertContent('#{escape_javascript(content)}'); return false;" %>
+      </td>
+      <td style="text-align: center;">
+        <% if item.is_image %>
+          <%
+            if item.is_big_width(900)
+              rst = item.regulate_size(900)
+              content = %Q(<img src="#{item.file_uri(system_name)}" alt="#{item.filename}" height="#{rst[:height]}" width="#{rst[:width]}" />)
+            else
+              content = %Q(<img src="#{item.file_uri(system_name)}" alt="#{item.filename}" />)
+            end
+          %>
+          <a href="#" onclick="mceInsertContent('<%=escape_javascript content %>'); return false;">貼付</a>
+        <% end %>
+      </td>
+    <% end %>
+  </tr>
+  <% end %>
+  </table>
+<% end %>

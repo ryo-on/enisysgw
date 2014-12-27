@@ -1,0 +1,20 @@
+development:
+  host: 127.0.0.1
+  port: 389
+  base: dc=city,dc=enisys,dc=co,dc=jp
+  rootdn: cn=Manager,dc=city,dc=enisys,dc=co,dc=jp
+  rootpw: enisys
+
+test:
+  host:
+  port:
+  base:
+  rootdn:
+  rootpw:
+
+production:
+  host: 127.0.0.1
+  port: 389
+  base: dc=city,dc=enisys,dc=co,dc=jp
+  rootdn: cn=Manager,dc=city,dc=enisys,dc=co,dc=jp
+  rootpw: enisys

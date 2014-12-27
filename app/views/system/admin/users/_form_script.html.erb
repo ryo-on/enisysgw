@@ -1,0 +1,16 @@
+<script type="text/javascript">
+//<![CDATA[
+
+var BlockEnter = function (evt) {
+  evt = (evt) ? evt : event;
+  var charCode=(evt.charCode) ? evt.charCode :
+        ((evt.which) ? evt.which : evt.keyCode);
+  if ( Number(charCode) == 13 || Number(charCode) == 3) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+//]]>
+</script>

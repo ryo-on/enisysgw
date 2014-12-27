@@ -1,0 +1,99 @@
+<%= javascript_tag do -%>
+  listForm_obj = new rumi.listForm();
+<% end %>
+
+<h4 class="docFileTitle">ファイル一覧</h4>
+<%= form_tag '/doclibrary/docs', :method => :get, :id => 'file_form' do |f| -%>
+  <%= hidden_field_tag(:title_id, params[:title_id]) unless params[:title_id].blank? %>
+  <%= hidden_field_tag(:cat, params[:cat]) unless params[:cat].blank? %>
+  <%= hidden_field_tag(:state, params[:state]) unless params[:state].blank? %>
+  <%= hidden_field_tag(:kwd, params[:kwd]) unless params[:kwd].blank? %>
+  <%= hidden_field_tag(:creator, params[:creator]) unless params[:creator].blank? %>
+  <%= hidden_field_tag(:term_start, params[:term_start]) unless params[:term_start].blank? %>
+  <%= hidden_field_tag(:term_finish, params[:term_finish]) unless params[:term_finish].blank? %>
+  <table class="docFormDownloader">
+    <tr>
+      <td>
+       <div>
+          <%= button_tag(t('rumi.label.all_check'), {:type => 'button',
+              :onclick => 'listForm_obj.checkAll("file_form", "file_check", true); return false;'}) %>
+        </div>
+        <div>
+          <%= button_tag(t('rumi.label.all_uncheck'), {:type => 'button',
+             :onclick => 'listForm_obj.checkAll("file_form", "file_check", false); return false;'}) %>
+        </div>
+        <div>
+          <%= submit_tag(t('rumi.doclibrary.download'),
+              {:name => 'download', :class=> 'download'}) %>
+        </div>
+      </td>
+    </tr>
+    <% if flash[:error].present? %>
+      <tr>
+        <td>
+          <div class="notice">
+            <%= flash[:error] %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+  <table class="docformTitle">
+    <tr>
+      <% if @is_category_index_form && @parent.admin_user? %>
+        <th style="width:5px; border-right:0px;"></th>
+      <% end %>
+      <th style="width:20px; border-left:0px;"></th>
+      <% if @is_doc_searching || (params[:state] != 'CATEGORY') %>
+        <th style="text-align:left; width:50%;">
+          <%= t('activerecord.attributes.doclibrary/doc.title') %>
+        </th>
+        <th style="width:30%; text-align:left;">
+          <%= t('activerecord.attributes.doclibrary/doc.category1') %>
+        </th>
+      <% else %>
+        <th style="text-align:left; width:80%;">
+          <%= t('activerecord.attributes.doclibrary/doc.title') %>
+        </th>
+      <% end %>
+      <th style="width:20%; text-align:left;">
+        <%= t('activerecord.attributes.doclibrary/doc.section') %>
+      </th>
+      <th style="width:120px; text-align:center;">更新日時</th>
+    </tr>
+
+    <% for item in @items %>
+      <tr>
+        <% if @is_category_index_form && @parent.admin_user? %>
+          <td class="icondrag draggable ui-draggable" id="dragfile_<%= item.id%>"></td>
+        <% end %>
+        <td class="checker" style="text-align:center;">
+          <% checked = (params[:file_check])? params[:file_check].include?(item.id.to_s) : false %>
+          <%= check_box_tag 'file_check[]', item.id, checked %>
+        </td>
+        <% if @is_doc_searching || (params[:state] != 'CATEGORY') %>
+          <td class="title">
+            <%= link_to item.title, "#{doclibrary_show_uri(item,params)}#{doclib_params_set_index}" %>
+          </td>
+          <td>
+            <% unless item.parent.blank? %>
+              <%= link_to get_doc_folder(item.parent),
+                  item.parent.link_list_path,
+                  {:title => "#{create_doc_folder_tooltip(item.parent)}"} %>
+            <% end %>
+          </td>
+        <% else %>
+          <td class="title">
+            <%= link_to item.title, "#{doclibrary_show_uri(item,params)}#{doclib_params_set_index}" %>
+          </td>
+        <% end %>
+        <td><%= gwbd_category_name(@groups, item.section_code) %></td>
+        <td style="border-right:none">
+          <%= item.updated_at.strftime('%Y-%m-%d %H:%M') %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+<%= paginate @items %>
+<%= render :partial => "#{@title.doclib_form_name}limit_change" %>

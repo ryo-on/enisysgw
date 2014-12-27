@@ -1,0 +1,50 @@
+<%# 個人設定 %>
+
+<div class="titleLine">
+  <p class="title"><%= t("rumi.config_settings.scheduler.scheduler.name") -%></p>
+</div>
+<ul>
+<li>
+  <span class="function"><a href="/gw/schedules/setting_ind_schedules"><%= t("rumi.config_settings.scheduler.scheduler.name") -%></a></span>
+  <span class="explanation">
+  <%= t("rumi.config_settings.scheduler.scheduler.message") -%>
+  </span>
+</li>
+<li>
+  <span class="function"><a href="/system/custom_groups">カスタムグループ設定</a></span>
+  <span class="explanation">
+  個人毎にスケジュールに表示させるグループの設定ができます。
+  </span>
+</li>
+<li>
+  <span class="function"><a href="/gw/schedule_settings/import"><%= t("rumi.config_settings.scheduler.import.name") -%></a></span>
+  <span class="explanation">
+  <%= t("rumi.config_settings.scheduler.import.message") -%>
+  </span>
+</li>
+<li>
+  <span class="function"><a href="/gw/schedule_settings/export" data-confirm="<%= t("rumi.config_settings.scheduler.export.confirm") -%>"><%= t("rumi.config_settings.scheduler.export.name") -%></a></span>
+  <span class="explanation">
+  <%= t("rumi.config_settings.scheduler.export.message") -%>
+  </span>
+</li>
+</ul>
+<div class="titleLine">
+  <p class="title">回覧板設定</p>
+</div>
+<ul>
+<li>
+  <span class="function"><%= link_to '宛先リスト設定', "/gwcircular/custom_groups" %></span>
+  <span class="explanation">個人毎に宛先リストの雛形が登録できます。</span>
+</li>
+</ul>
+
+<div class="titleLine">
+  <p class="title"><%= t("rumi.config_settings.user_passwords.name") %></p>
+</div>
+<ul>
+  <li>
+    <span class="function"><%= link_to t("rumi.config_settings.user_passwords.action.edit.name"), edit_gw_user_password_path(Core.user.id) %></span>
+    <span class="explanation"><%= t("rumi.config_settings.user_passwords.action.edit.message.help") %></span>
+  </li>
+</ul>

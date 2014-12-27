@@ -1,0 +1,190 @@
+dn: uid=00100,ou=999001地方自治長,ou=999000地方自治長,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 999000地方自治長
+ou: 999001地方自治長
+uid: 00100
+departmentNumber: 100
+mail: enisys-tarou@city.enisys.co.jp
+userPassword: 100
+sn: 縁sys
+givenName: 太郎
+cn: 縁sys　太郎
+cn;lang-ja;phonetic: １１　１１
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00101,ou=999001地方自治長,ou=999000地方自治長,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 999000地方自治長
+ou: 999001地方自治長
+uid: 00101
+departmentNumber: 101
+mail: jirou@city.enisys.co.jp
+userPassword: 101
+sn: 副
+givenName: 次郎
+cn: 副　次郎
+cn;lang-ja;phonetic: フク　ジロウ
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00200,ou=010010総務課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 010000総務部
+ou: 010010総務課
+uid: 00200
+departmentNumber: 200
+mail: ichiro@city.enisys.co.jp
+userPassword: 200
+sn: 佐藤
+givenName: 一郎
+cn: 佐藤　一郎
+cn;lang-ja;phonetic: サトウ　イチロー
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00201,ou=010010総務課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 010000総務部
+ou: 010010総務課
+uid: 00201
+departmentNumber: 201
+mail: suzuki-kei@city.enisys.co.jp
+userPassword: 201
+sn: 鈴木
+givenName: 敬
+cn: 鈴木　敬
+cn;lang-ja;phonetic: スズキ　ケイ
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00202,ou=010020秘書広報課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 010000総務部
+ou: 010020秘書広報課
+uid: 00202
+departmentNumber: 202
+mail: yamada-daichi@city.enisys.co.jp
+userPassword: 202
+sn: 山田
+givenName: 大地
+cn: 山田　大地
+cn;lang-ja;phonetic: ヤマダ　ダイチ
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00203,ou=010020秘書広報課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 010000総務部
+ou: 010020秘書広報課
+uid: 00203
+departmentNumber: 203
+mail: nishikori@city.enisys.co.jp
+userPassword: 203
+sn: 錦織
+givenName: 花子
+cn: 錦織　花子
+cn;lang-ja;phonetic: ニシコリ　ハナコ
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00204,ou=010530情報企画課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 010000総務部
+ou: 010530情報企画課
+uid: 00204
+departmentNumber: 204
+mail: saitou-harumi@city.enisys.co.jp
+userPassword: 204
+sn: 斉藤
+givenName: 晴美
+cn: 斉藤　晴美
+cn;lang-ja;phonetic: サイトウ　ハルミ
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00205,ou=010530情報企画課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 010000総務部
+ou: 010530情報企画課
+uid: 00205
+departmentNumber: 205
+mail: enishi-chiharu@city.enisys.co.jp
+userPassword: 205
+sn: 縁
+givenName: 千春
+cn: 縁　千春
+cn;lang-ja;phonetic: エニシ　チハル
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00300,ou=500010出納室,ou=500000出納室,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 500000出納室
+ou: 500010出納室
+uid: 00300
+departmentNumber: 300
+mail: suzuki-yuusaku@city.enisys.co.jp
+userPassword: 300
+sn: 鈴木
+givenName: 勇作
+cn: 鈴木　勇作
+cn;lang-ja;phonetic: スズキ　ユウサク
+preferredLanguage: ja
+st: 縁sys市
+
+
+dn: uid=00301,ou=500010出納室,ou=500000出納室,dc=city,dc=enisysmail,dc=co,dc=jp
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+o: 500000出納室
+ou: 500010出納室
+uid: 00301
+departmentNumber: 301
+mail: matuda-shima@city.enisys.co.jp
+userPassword: 301
+sn: 松田
+givenName: 志摩
+cn: 松田　志摩
+cn;lang-ja;phonetic: マツダ　シマ
+preferredLanguage: ja
+st: 縁sys市
+
+

@@ -1,0 +1,20 @@
+<table class="show">
+  <tr>
+    <th>施設グループ名<%= required %></th>
+    <td>
+      <%= f.text_field :name, :size => 50 %>
+    </td>
+  </tr>
+  <tr>
+    <th>親グループ<%= raw(required) %></th>
+    <td>
+      <%= f.select(:parent_id, options_from_collection_for_select(@parent, :id, :name, @groupitem.parent_id)) %>
+    </td>
+  </tr>
+  <tr>
+    <th>並び順<%= required %></th>
+    <td>
+      <%= f.text_field :sort_no, :size => 50 %> ※数値の小さい順に表示されます。
+    </td>
+  </tr>
+</table>

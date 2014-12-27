@@ -1,0 +1,106 @@
+<div class="piece AdminSetting AdminUsersGroups">
+<% csv_header = System::UsersGroupsCsvdata.csv_header %>
+<%= render :partial => 'header' %>
+  <div class="pieceBody">
+    <%= render :partial => '/system/admin/users/header_menu' %>
+    <%= render :partial => '/system/admin/users/csv_menu' %>
+    <%= div_notice %>
+
+    <table class="show">
+      <tbody>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:state) %></th>
+          <td><%= System::UsersGroup.state_show(@item.state) %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:data_type) %></th>
+          <td><%= System::UsersGroupsCsvdata.data_type_show(@item.data_type) %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:level_no) %></th>
+          <td><%= @item.level_no %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:parent_code) %></th>
+          <td><%= @item.parent_code %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:code) %></th>
+          <td><%= @item.code %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:category) %></th>
+          <td><%= System::Group.category_show(@item.category) %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:ldap) %></th>
+          <td><%=System::UsersGroup.ldap_show(@item.ldap) %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:job_order) %></th>
+          <td><%= System::UsersGroup.job_order_show(@item.job_order) %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:name) %></th>
+          <td><%= @item.name %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:name_en) %></th>
+          <td><%= @item.name_en %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:password) %></th>
+          <td><%= @item.password %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:email) %></th>
+          <td><%= @item.email %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:sort_no) %></th>
+          <td><%= @item.sort_no %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:official_position) %></th>
+          <td><%= @item.official_position %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:assigned_job) %></th>
+          <td><%= @item.assigned_job %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:start_at) %></th>
+          <td><%= Gw.date_str(@item.start_at) %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:end_at) %></th>
+          <td><%= Gw.date_str(@item.end_at) %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:add_column1) %></th>
+          <td><%= @item.add_column1 %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:add_column2) %></th>
+          <td><%= @item.add_column2 %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:add_column3) %></th>
+          <td><%= @item.add_column3 %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:add_column4) %></th>
+          <td><%= @item.add_column4 %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroupsCsvdata.human_attribute_name(:add_column5) %></th>
+          <td><%= @item.add_column5 %></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="btReturn">
+      <%=link_to '戻る', csv_system_users_path %>
+    </div>
+  </div>
+</div>

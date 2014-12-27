@@ -1,0 +1,6 @@
+<h2 class="pieceTitle"><%= Page.title -%></h2>
+<div class="btsHeaderLeft">
+<% if @genre == 'other' && (@is_gw_admin || @schedule_prop_admin) %>
+<span class="btNew"><%= link_to '新規作成', "/gw/prop_#{@genre}s/new?cls=#{@cls}" %></span>
+<% end %>
+</div>

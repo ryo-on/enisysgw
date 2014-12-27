@@ -1,0 +1,75 @@
+<script type="text/javascript">
+//<![CDATA[
+var update_item_st_at = function() {
+  year = $('item_st_at_1i').value;
+  month = $('item_st_at_2i').value;
+  day = $('item_st_at_3i').value;
+  hour = $('item_st_at_4i').value;
+  _min = $('item_st_at_5i').value;
+  min = "0" + _min;
+  ymd = year + '-' + month + '-' + day;
+  hn = hour + ':' + min.slice(-2);
+
+  ret = ymd + ' ' + hn;
+  $('item_st_at').value = ret;
+}
+var update_item_st_at_from_calendar = function() {
+  value = $('item_st_at').value;
+
+  var match = value.match(/^\s*(\d{4})-(\d{1,2})-(\d{1,2}) +(\d{1,2}):(\d{1,2})\s*$/);
+  for (var i=1; i<=5; i++)
+    $('item_st_at_'+i+'i').selectedIndex = select_options_get_index_by_value($('item_st_at_'+i+'i'), match[i].sub(/^0/, ''));
+
+  ymd = $('item_st_at_1i').value + '-' + $('item_st_at_2i').value + '-' + $('item_st_at_3i').value;
+  hn = $('item_st_at_4i').value + ':' + ("0" + $('item_st_at_5i').value).slice(-2);
+
+  ret = ymd + ' ' + hn;
+  $('item_st_at').value = ret;
+}
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var update_item_ed_at = function() {
+  ymd = $('item_ed_at_1i').value + '-' + $('item_ed_at_2i').value + '-' + $('item_ed_at_3i').value;
+  hn = $('item_ed_at_4i').value + ':' + ("0" + $('item_ed_at_5i').value).slice(-2);
+  ret = ymd + ' ' + hn;
+  $('item_ed_at').value = ret;
+}
+var update_item_ed_at_from_calendar = function() {
+  value = $('item_ed_at').value;
+
+  var match = value.match(/^\s*(\d{4})-(\d{1,2})-(\d{1,2}) +(\d{1,2}):(\d{1,2})\s*$/);
+  for (var i=1; i<=5; i++)
+    $('item_ed_at_'+i+'i').selectedIndex = select_options_get_index_by_value($('item_ed_at_'+i+'i'), match[i].sub(/^0/, ''));
+  ymd = $('item_ed_at_1i').value + '-' + $('item_ed_at_2i').value + '-' + $('item_ed_at_3i').value;
+  hn = $('item_ed_at_4i').value + ':' + ("0" + $('item_ed_at_5i').value).slice(-2);
+  ret = ymd + ' ' + hn;
+  $('item_ed_at').value = ret;
+}
+
+var my_submit = function() {
+  var s_year = $('item_st_at_1i').value;
+  var s_month = $('item_st_at_2i').value;
+  var s_day = $('item_st_at_3i').value;
+  var s_hour = $('item_st_at_4i').value;
+  var s_min = $('item_st_at_5i').value;
+
+  var e_year = $('item_ed_at_1i').value;
+  var e_month = $('item_ed_at_2i').value;
+  var e_day = $('item_ed_at_3i').value;
+  var e_hour = $('item_ed_at_4i').value;
+  var e_min = $('item_ed_at_5i').value;
+
+  var s_date = new Date(s_year,s_month - 1,s_day,s_hour,s_min,0,0);
+  var e_date = new Date(e_year,e_month - 1,e_day,e_hour,e_min,0,0);
+  if ( s_year != s_date.getFullYear() || s_month != s_date.getMonth() + 1 || s_day != s_date.getDate() ||
+       e_year != e_date.getFullYear() || e_month != e_date.getMonth() + 1 || e_day != e_date.getDate() ||
+       s_date >= e_date) {
+      alert('絞込開始日時と絞込終了日時の指定が間違っています。');
+      return false;
+  }
+}
+//]]>
+</script>

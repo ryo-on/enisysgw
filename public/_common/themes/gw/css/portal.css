@@ -1,0 +1,287 @@
+@charset "UTF-8";
+@import "/_common/themes/gw/css/base.css";
+@import "/_common/themes/gw/css/portal_common.css";
+@import "/_common/themes/gw/css/schedule.css";
+/* =========================================================
+   _common/themes/gw/css/portal.css
+========================================================= */
+
+/* ・ｽX・ｽP・ｽW・ｽ・ｽ・ｽ[・ｽ・ｽ・ｽ・ｽ・ｽ迚ｺ・ｽ@・ｽJ・ｽ・ｽ・ｽ・ｽ・ｽﾝ抵ｿｽ
+---------------------------------------------*/
+#content {
+  float: right;
+  width: 100%;
+  margin-left: -210px;
+  margin-bottom:20px;
+  padding: 0px;
+}
+#contentContainer {
+  margin-left: 210px;
+}
+#menu {
+  float: left;
+  width: 200px;
+}
+
+/* ・ｽE・ｽJ・ｽ・ｽ・ｽ・ｽ・ｽ@・ｽ・ｽg
+----------------------------------------------- */
+#content .pieceBody {
+  border: none;
+}
+
+/*  buttonSchedule
+------------------------------------------------*/
+#docTab .btSchedule {
+  position: absolute;
+  right: 10px;
+  top: 0;
+}
+#docTab .btSchedule a {
+  display: inline-block;
+  width: 112px;
+  height: 0;
+  margin-left: 10px;
+  padding-top: 19px;
+  overflow: hidden;
+  background-image: url("/_common/themes/gw/files/schedule/bt-sw-schedule-onoff.gif");
+  background-position: 0 -19px;
+  background-repeat: no-repeat;
+}
+#docTab .btSchedule a.off {
+  background-position: 0 0;
+}
+
+/*  tab
+------------------------------------------------*/
+#docTab {
+  position: relative;
+}
+#docTab a.button {
+  float: right;
+  position: absolute;
+  right: 10px;
+  top: 0;
+  width: auto;
+  height: auto;
+  line-height: 1.2;
+  margin-right: 13px;
+  padding: 1px 4px;
+  border-top: 1px solid #AAA;
+  border-right: 1px solid #666;
+  border-bottom: 1px solid #666;
+  border-left: 1px solid #AAA;
+  background: none;
+}
+
+/* ・ｽE・ｽJ・ｽ・ｽ・ｽ・ｽ・ｽ@・ｽ・ｽ・ｽ}・ｽC・ｽ・ｽ・ｽ_・ｽ[
+----------------------------------------------- */
+/*.reminder {
+  background-image: url(/_common/themes/gw/files/title/title_remainder.gif);
+}
+.reminder h3 {
+  background-image: url(/_common/themes/gw/files/title/title_re_red.gif);
+  background-repeat: repeat-x;
+}*/
+.reminder .pieceHeader{
+  background-color: rgb(165,0,33);
+  color: #fff;
+}
+.reminder .borderbox {
+  margin-bottom: -25px;
+  padding-top: 1px;
+  padding-left: 5px;
+  padding-bottom: 20px;
+  border-left: 2px solid rgb(165,0,33);
+  border-bottom: 2px solid rgb(165,0,33);
+  border-right: 2px solid rgb(165,0,33);
+}
+#content .reminder {
+  margin-top: 0;
+}
+#content .reminder table {
+  width: 100%;
+}
+#content .reminder table td{
+  background-color: #fff;
+  border-bottom: solid 1px #ccc;
+}
+#content .reminder table td.date_ste {
+  width: 100px;
+  padding-left: 10px;
+  line-height: 2.3;
+}
+#content .reminder table td.cls {
+  width: 115px;
+}
+#content .reminder .borderbox .pieceBody {
+  border: none;
+}
+#content .reminder .borderbox .pieceBody div b {
+  color: #6D231E;
+}
+.reminder td.cls span {
+  display: inline-block;
+  padding-left: 22px;
+}
+.reminder td.memo span {
+  background-image: url(/_common/themes/gw/files/icon/ic-rem-memo.gif);
+}
+.reminder td.todo span {
+  background-image: url(/_common/themes/gw/files/icon/ic-rim-todo.gif);
+}
+.reminder td.denshiKessai span {
+  background-image: url(/_common/themes/gw/files/icon/ic-rim-denshiketu.gif);
+}
+.reminder td.notification span {
+  background-image: url(/_common/themes/gw/files/icon/ic-rem-kyousai.gif);
+}
+.reminder td.soumu span {
+  background-image: url(/_common/themes/gw/files/icon/ic-rem-general.gif);
+}
+.reminder td.circular span {
+  background-image: url(/_common/themes/gw/files/icon/ic-rem-circulation.gif);
+}
+.reminder td.monitor span {
+  background-image: url("/_common/themes/gw/files/icon/ic-rem-electronic-reference.gif");
+}
+.reminder td.hss_checkup span {
+  background-image: url(/_common/themes/gw/files/icon/ic-rem-medical.gif);
+}
+.reminder table .expired td.date_ste {
+  color: red;
+}
+.reminder td.plus_update span {
+  background-image: url(/_common/themes/gw/files/icon/ic-rem-plus.gif);
+}
+
+.reminder-col-datetime {
+  width: 100px !important;
+}
+.reminder-checkbox {
+    width: 60px;
+    text-align: center;
+}
+
+/* ・ｽE・ｽJ・ｽ・ｽ・ｽ・ｽ・ｽ@・ｽ・ｽ・ｽﾌ托ｿｽ
+----------------------------------------------- */
+.gadget {
+  margin-top: -10px;
+}
+#content .gadget table {
+  table-layout: auto;
+}
+#content .gadget .pieceHeader h3 {
+  line-height: 29px;
+  padding: 0 0 0 10px;
+  font-size: 100%;
+}
+#content .gadget .pieceHeader h3 span.btNew {
+  position: absolute;
+  top: 5px;
+}
+#content .gadget .pieceBody {
+  padding: 5px 5px 20px 5px;
+  border-left: 1px solid #de5353;
+  border-right: 1px solid #de5353;
+  border-bottom: 1px solid #de5353;
+}
+#content .gadget h4 {
+  padding: 5px 0 5px 7px;
+  background-image: none;
+  background-color: #C6D1E8;
+}
+.gadget.bbs {
+  background-image: url(/_common/themes/gw/files/title/title_board_new.gif);
+}
+.gadget.rss {
+  background-image: url(/_common/themes/gw/files/title/title_rss.gif);
+}
+.rss table .published_at {
+  width: 120px;
+}
+table.index {
+  margin: 5px 0 0;
+}
+table.index th {
+  padding: 0;
+}
+.bbs table.index td.title {
+  border-left: none;
+}
+.bbs table.index td.title a {
+  display: inline-block;
+  padding-left: 15px;
+  background-image: url(/_common/themes/gw/files/icon/linkallow_right.gif);
+  background-position: 0 4px;
+  background-repeat: no-repeat;
+}
+.pieceBody .bbsContinue {
+  margin-top: 5px;
+  margin-left: 40px;
+}
+
+/* ・ｽT・ｽC・ｽh・ｽ・ｽ・ｽj・ｽ・ｽ・ｽ[
+----------------------------------------------- */
+#menu .headLine h3 {
+  height: 29px;
+  font-size: 100%;
+  font-weight: normal;
+  background-color: rgb(175, 175, 175);
+}
+#menu .headLine .head h3 {
+  margin-top: -10px;
+}
+#menu .headLine h3 a {
+  line-height: 29px;
+  padding-left: 10px;
+  color: #000;
+  display: inline-block;
+  height: 29px;
+  overflow: hidden;
+}
+#menu .headLine .repeat,
+#menu .headLine span.repeat {
+  display: block;
+  margin-left: 6px;
+}
+#menu .headLine ul {
+  margin: 5px 5px 10px;
+}
+#menu .headLine li {
+  margin: 10px 0 10px 7px;
+}
+#menu .headLine li a {
+  display: block;
+  padding: 3px 0 3px 7px;
+  border-left: solid 2px rgb(128, 128, 128);
+}
+#menu .headLine li a.ext {
+  display: inline-block;
+  padding-left: 19px;
+}
+.borderbox2 {
+  padding-bottom: 5px;
+  padding-top: 1px;
+}
+
+/* ・ｽL・ｽ・ｽ・ｽﾝ抵ｿｽ
+---------------------------------------*/
+.adUpper {
+  margin-bottom: 10px;
+  padding-top: 5px;
+  background-color: #EEE;
+  text-align: center;
+}
+.adUpper img {
+  margin-bottom: 5px;
+  vertical-align: bottom;
+}
+.adLower {
+  padding: 15px 0 15px;
+  background-color: #EEE;
+  text-align: center;
+}
+.adLower img {
+  vertical-align: bottom;
+}
+

@@ -1,0 +1,82 @@
+<% parent_group_id = Core.user_group.parent_id %>
+<% group_child_groups = build_select_parent_groups(System::Group.child_groups_to_select_option(parent_group_id)) %>
+<% no_limit_group_child_groups = build_select_parent_groups(
+     System::Group.child_groups_to_select_option(System::Group.no_limit_group_id)) %>
+
+<% affiliated_group_id = Core.user_group.id %>
+<% user_child_group = build_select_users(System::UsersGroup.affiliated_users_to_select_option(affiliated_group_id)) %>
+
+<table class="show">
+  <tr>
+    <th class="blueIndex">管理部門設定<%= raw(required('<br />所属する全ての人が管理者になります')) %></th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: parent_group_id, child_groups: group_child_groups,
+        hidden_item_name: "item[admingrps_json]", values: @item.admingrps_json,
+        ui_mode: ui_mode_groups_default
+      } %>
+    </td>
+  </tr>
+  <tr>
+    <th class="blueIndex">管理者設定<%= raw(required('<br />指定された個人が管理者になります')) %></th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: affiliated_group_id, child_groups: user_child_group,
+        hidden_item_name: "item[adms_json]", values: @item.adms_json,
+        ui_mode: ui_mode_users_default
+      } %>
+    </td>
+  </tr>
+</table>
+
+<table class="show">
+  <tr>
+    <th class="blueIndex">編集部門設定<%= raw(required('<br />自動的に閲覧権限も付与されます')) %></th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: parent_group_id, child_groups: group_child_groups,
+        hidden_item_name: "item[editors_json]", values: @item.editors_json,
+        ui_mode: ui_mode_groups_include_no_limit
+      } %>
+    </td>
+  </tr>
+  <tr>
+    <th class="blueIndex">編集者設定<%= raw(required('<br />指定された個人に編集権限が付与されます。<br /><br />自動的に閲覧権限も付与されます')) %></th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: affiliated_group_id, child_groups: user_child_group,
+        hidden_item_name: "item[sueditors_json]", values: @item.sueditors_json,
+        ui_mode: ui_mode_users_default
+      } %>
+    </td>
+  </tr>
+</table>
+
+<table class="show">
+  <tr>
+    <th class="blueIndex">閲覧部門設定</th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: System::Group.no_limit_group_id, child_groups: no_limit_group_child_groups,
+        hidden_item_name: "item[readers_json]", values: @item.readers_json,
+        ui_mode: ui_mode_groups_include_no_limit
+      } %>
+    </td>
+  </tr>
+  <tr>
+    <th class="blueIndex">閲覧者設定<%= raw(required('<br />指定された個人に閲覧権限が付与されます。')) %></th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: affiliated_group_id, child_groups: user_child_group,
+        hidden_item_name: "item[sureaders_json]", values: @item.sureaders_json,
+        ui_mode: ui_mode_users_default
+      } %>
+    </td>
+  </tr>
+</table>
+
+<script>
+var my_submit = function() {
+  $('itemForm').submit();
+};
+</script>

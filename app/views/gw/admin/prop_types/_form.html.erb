@@ -1,0 +1,10 @@
+<table class="show">
+  <tr>
+    <th>種別<%= required %></th>
+    <td><%= f.text_field :name, :size => 50 %></td>
+  </tr>
+  <tr>
+    <th>並び順<%= required %></th>
+    <td><%= f.text_field :sort_no, :size => 50 %> ※数値の小さい順に表示されます。</td>
+  </tr>
+</table>

@@ -1,0 +1,7 @@
+//
+// 索引ツリー更新処理
+//
+jQuery('#folder_trees').html(
+  "<%= escape_javascript(render :partial => 'folder_trees', :layout => false,
+      :locals => {:obj => @items}) %>"
+);

@@ -1,0 +1,126 @@
+<div class="piece AdminSetting AdminUsers">
+  <%= render :partial => 'header' %>
+  <div class="pieceBody">
+    <%= div_notice %>
+    <div class="editingBox">
+      <% if @role_editable_profile %>
+        <span class="btEdit">
+          <%= link_to "編集" , "/system/users/#{@item.code}/edit_profile" if @is_add_column_used -%>
+        </span>
+        <span class="btPhontsAttach">
+          <%= link_to "写真を登録する", "/system/users/#{@item.code}/profile_upload" -%>
+        </span>
+      <% end %>
+    </div>
+    <div class="imgBox<%= @is_profile_image ? "" : " noImage" -%>">
+      <% if @is_profile_image %>
+        <%= raw(%Q(<img src="#{@item.user_profile_image.path}" alt="#{@item.user_profile_image.note}" />)) -%>
+      <% end %>
+    </div>
+
+    <br/>
+    <table class="show">
+      <tbody>
+        <% if @model.column_used?('name') %>
+        <tr>
+          <th><%= @model.get_column_name('name') -%></th>
+          <td><%= @item.name -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('name_en') %>
+        <tr>
+          <th><%= @model.get_column_name('name_en') -%></th>
+          <td><%= @item.name_en -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('email') %>
+        <tr>
+          <th><%= @model.get_column_name('email') -%></th>
+          <td><%= @item.email -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('official_position') %>
+        <tr>
+          <th><%= @model.get_column_name('official_position') -%></th>
+          <td><%= @item.official_position -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('assigned_job') %>
+        <tr>
+          <th><%= @model.get_column_name('assigned_job') -%></th>
+          <td><%= @item.assigned_job -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column1') && @model.get_column_name('add_column1').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column1') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column1 -%><% end %></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column2') && @model.get_column_name('add_column2').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column2') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column2 -%><% end %></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column3') && @model.get_column_name('add_column3').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column3') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column3 -%><% end %></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column4') && @model.get_column_name('add_column4').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column4') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column4 -%><% end %></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column5') && @model.get_column_name('add_column5').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column5') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column5 -%><% end %></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <br/>
+    <div>現在の所属状況</div>
+
+    <table class="show">
+      <colgroup class="_groups"></colgroup>
+      <colgroup class="job_order"></colgroup>
+      <colgroup class="_parent_name"></colgroup>
+      <tbody>
+        <tr>
+          <th><%= System::UsersGroup.human_attribute_name(:group_id) %></th>
+          <th><%= System::UsersGroup.human_attribute_name(:job_order) %></th>
+          <th><%= System::Group.human_attribute_name(:parent_id) %></th>
+        </tr>
+        <%
+        @user_groups = @item.user_groups
+        %>
+        <% for user_group in @user_groups %>
+        <%
+        group = user_group.group
+        if group.blank?
+          parent_name = ""
+        else
+          parent_name = group.parent.blank? ? group.name : group.parent.name
+        end
+        %>
+        <tr>
+          <td><%= user_group.group.display_name -%></td>
+          <td><%= System::UsersGroup.job_order_show(user_group.job_order) -%></td>
+          <td><%= parent_name -%></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+    
+    <div class="btReturn">
+      <%=link_to 'トップページに戻る', root_path %>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<%
+recognizers  = []
+str = []
+unless @select_recognizers.blank?
+  recognizers = @select_recognizers
+  for i in 1..5
+    str << recognizers[i.to_s]
+  end
+else
+  for i in 1..5
+    str << ""
+  end
+end
+%>
+
+<% values = [] %>
+<% recognizers.each { |key, user_id| values << System::User.find(user_id).to_json_option if user_id.present? } %>
+<% affiliated_group_id = Core.user_group.id %>
+<% user_child_group = build_select_users(System::UsersGroup.affiliated_users_to_select_option(affiliated_group_id)) %>
+
+<table class="show" style="margin-top: 10px;">
+  <tr>
+    <th>承認者</th>
+    <td>
+      <table>
+        <tr>
+          <td>
+            <%= render partial: "shared/select_group", locals: {
+              uniq_id: "recognizers_select_group_ui",
+              parent_group_selected: affiliated_group_id, child_groups: user_child_group,
+              hidden_item_name: "dummy_hidden_item_name", values: [],
+              ui_mode: ui_mode_users_default
+            } %>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<% form_name = f.object_name.to_s %>
+<% hidden_item_name_prefix = form_name + "[_recognizers]" %>
+<% 5.times do |i| %>
+  <%= hidden_field_tag("#{hidden_item_name_prefix}[#{i + 1}]", str[i]) %>
+<% end %>
+<input type="hidden" id="<%= form_name + "__recognition_after_process" %>" name="<%= form_name + "[_recognition][after_process]" %>" value="" />
+
+<%= javascript_tag "recognizers_select_group_ui.setApprovalHook('#{hidden_item_name_prefix}', 5);" %>
+<%= javascript_tag "recognizers_select_group_ui.initSelected(#{update_select_group_values(values.to_s)});" %>

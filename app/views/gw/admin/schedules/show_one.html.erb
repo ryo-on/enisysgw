@@ -1,0 +1,216 @@
+<%
+destroy_confirm_s = '削除してよろしいですか？'
+if @item.schedule_props.length > 1
+  destroy_confirm_s = "複数の施設が予約されています。全ての施設予約を#{destroy_confirm_s}"
+end
+#if @item.schedule_users.collect{|x|[x.class_id, x.uid]}.reject{|x| x[0] == 1 && x[1] == Site.user.id }.length > 0
+#  destroy_confirm_s = "この予定は、複数の参加者が登録されています。この予定は、参加者全員のスケジュールからも削除されます。#{destroy_confirm_s}"
+#if @item.schedule_users.length > 0
+if @item.schedule_users.collect{|x|[x.class_id, x.uid]}.reject{|x| x[0] == 1 && x[1] == Site.user.id }.length > 0
+  destroy_confirm_s = "この予定は、あなた以外の参加者が登録されています。参加者全員のスケジュールから削除されます。\n#{destroy_confirm_s}"
+end
+if @repeated
+#  destroy_confirm_repeated_s = "\nなお、繰り返し期間に属している場合、その繰り返しに属する全ての予定が削除されますので、ご注意ください。"
+  destroy_confirm_repeated_s = "\nなお、本スケジュールを含む、[繰り返しあり]で登録した全てのスケジュールが削除されますので、ご注意ください。"
+else
+  destroy_confirm_repeated_s = ""
+end
+
+is_pref_admin_users = @item.is_schedule_pref_admin_users?
+if is_pref_admin_users && @is_pref_admin
+  quote_flg = true
+elsif is_pref_admin_users && !@is_pref_admin
+  quote_flg = false
+elsif !is_pref_admin_users
+  quote_flg = true
+else
+  quote_flg = true
+end
+
+if @item.delete_state == 1
+  delete_flg = true
+else
+  delete_flg = false
+end
+%>
+<%
+user_id = Site.user.id
+%>
+<div class="piece schedulePiece showOne">
+  <div class="pieceHeader">
+    <%= render(:partial => 'piece_header') %>
+
+  </div>
+  <div class="pieceBody">
+    <div class="pieceBodyHeader">
+    </div>
+    <% if params[:action] == 'show_one' || params[:action] == 'delete_schedule'  || params[:action] == 'delete_schedule_repeat' %>
+      <% link_date = Gw.datetime_to_date(@item.st_at) %>
+      <%= render(:partial => '/gw/admin/schedules/schedule_bt_box' , :locals=>{:d=>link_date, :mode=>'form'}) %>
+    <% end %>
+    <div class="pieceBodyBody">
+      <% if params[:action] == 'show_one' && delete_flg %>
+        <div class="deleteSchedule" id="deleteSchedule">
+          <%=  t("rumi.schedule.message.deleted_schedule") -%>
+        </div>
+      <% end %>
+      <div class="editingBox">
+      <% if @schedule_edit_flg %>
+        <% if @item.unseen?(Site.user.id) %>
+          <div class="btReadLarge">
+            <%= link_to '', {:action => :finish, :id => @item.id} %>
+          </div>
+        <% end %>
+        <div class="btEdit">
+          <% if @auth_level[:edit_level] == 1 && !delete_flg %>
+
+            <%= link_to '編集', {:action => :edit, :id => @item.id} %>
+          <% end %>
+        </div>
+        <% if @auth_level[:edit_level] == 1 && @repeated && !delete_flg && @auth_flg %>
+          <div class="btEditRepeat">
+            <%= link_to_edit(@item.id, nil, :qs=>"repeat=1") %>
+          </div>
+        <% end %>
+        <% if quote_flg && @prop_edit && !delete_flg %>
+          <div class="btQuote">
+            <%= link_to '引用作成', {:action => :quote, :id => @item.id} %>
+          </div>
+        <% end %>
+
+        <% if @auth_level[:delete_level] == 1 && !delete_flg %>
+          <div class="btDestroy">
+            <%#= link_to_destroy @item.id, nil, :confirm=>destroy_confirm_s -%>
+            <%= link_to '削除', {:action => :delete_schedule, :id => @item.id}, :confirm=>destroy_confirm_s %>
+          </div>
+          <% if @repeated && !delete_flg && @auth_flg %>
+            <div class="btDestroyRepeat">
+              <%= link_to '繰返一括削除', {:action => :delete_schedule_repeat, :id => @item.id},:method => :get, :target=>:_blank, :confirm=>destroy_confirm_s + destroy_confirm_repeated_s %>
+            </div>
+          <% end %>
+        <% end %>
+
+      <% else %>
+        <div>※参加者（<%= @target_user %>）に対するスケジュール登録権限がないため、編集・引用作成・削除等を行えません。</div>
+        <br>
+        <% if @item.unseen?(Site.user.id) %>
+          <div class="btReadLarge">
+            <%= link_to '', {:action => :finish, :id => @item.id} %>
+          </div>
+        <% end %>
+      <% end %><%#= スケジュール権限判断終了 %>
+
+        <span class="showLink">
+          <%= link_to '一般施設スケジュール画面へ', {:controller=> :schedule_props, :action => :show_week, :s_data => @item.st_at.strftime("%Y%m%d"), :cls =>"other", :s_genre =>"other"} if @item.schedule_props.present? %>
+        </span>
+      </div>
+
+      <% if @item.repeated?  %>
+        <table class="show">
+          <tr>
+            <td colspan="2">
+              繰り返し予定です。<%= @item.repeat.st_date_at.strftime('%Y年%m月%d日') %>～<%= @item.repeat.ed_date_at.strftime('%Y年%m月%d日') %>まで繰り返されてます。
+            </td>
+          </tr>
+        </table>
+      <% end %>
+
+      <% if @item.schedule_props.length > 1 %>
+         <%= required("※複数の施設が予約されています。") %>
+         <% if @schedule_edit_flg && @prop_edit && @auth_level[:edit_level] == 1 %>
+           <%= required("全てを削除しない場合は編集を行ってください。") %>
+         <% end %>
+      <% end %>
+      <% if @item.schedule_users.length > 1 %>
+         <BR><%= required("※複数の参加者が予約されています。全てを削除しない場合は編集を行ってください。") %>
+      <% end %>
+
+      <%= raw(div_notice) %>
+      <%= required(raw(I18n.t("rumi.schedule.message.success.action.delete_no_auth"))) if !@auth_flg && params[:action] == 'delete_schedule' %>
+      <%= required(raw(I18n.t("rumi.schedule.message.success.action.delete_repeat_no_auth"))) if !@auth_flg && params[:action] == 'delete_schedule_repeat' %>
+      <%
+      title_category = Gw.yaml_to_array_for_select('gw_schedules_title_categories', :include_blank=>1).to_a.rassoc(@item.title_category_id.to_i) # 件名カテゴリ
+
+      # 開始日時、終了日時の文字列
+      time_show = @item.time_show
+      st_at_s = "#{@item.st_at.strftime('%Y-%m-%d')} （#{Gw.weekday(@item.st_at.wday)}） #{time_show[:st_at_show]}"
+      ed_at_s = "#{@item.ed_at.strftime('%Y-%m-%d')} （#{Gw.weekday(@item.ed_at.wday)}） #{time_show[:ed_at_show]}"
+    %>
+
+      <table class="show">
+        <tr>
+          <th>開始日時</th>
+          <td><%= st_at_s %></td>
+        </tr>
+        <tr>
+          <th>終了日時</th>
+          <td><%= ed_at_s %></td>
+        </tr>
+        <tr>
+          <th>件名（用務名等）</th>
+          <td><%= "【#{title_category[0]}】　" unless title_category.blank? %><%= @item.title %></td></tr>
+        <tr>
+          <th>場所</th>
+          <td><%= @item.place %></td>
+        </tr>
+        <tr>
+          <th>メモ</th>
+          <td><%= @item.memo %></td>
+        </tr>
+        <tr>
+          <th>作成者</th>
+          <td><%= @item.creator_gname %>　<%= @item.creator_uname %></td>
+        </tr>
+        <tr>
+          <th>作成日</th>
+          <td><%= @item.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+        </tr>
+        <tr>
+          <th>最終更新者</th>
+          <td><%= @item.updater_gname %>　<%= @item.updater_uname %></td>
+        </tr>
+        <tr>
+          <th>最終更新日</th>
+          <td><%= @item.updated_at.strftime('%Y-%m-%d %H:%M') %></td>
+        </tr>
+        <% if @use_prop %>
+          <tr>
+            <th>連絡先電話番号</th>
+            <td><%= @item.inquire_to %></td>
+          </tr>
+        <% end %>
+        <tr>
+          <th>公開</th>
+          <td><%= @public_show %></td>
+        </tr>
+        <% if @item.is_public == 2 %>
+          <tr>
+            <th>公開所属</th>
+            <td><%= raw(Gw.join([@item.public_groups_display], '<br />')) %></td>
+          </tr>
+        <% end %>
+      </table>
+      <%= raw(Gw::ScheduleUser.users_state_view(@item, :caption => '参加者')) %>
+      <% if @item.schedule_props.length > 0 -%>
+        <table class="show" id="schedules_props">
+          <tr><th colspan="4">施設予約</th></tr>
+          <% @item.schedule_props.each do |schedule_prop| -%>
+            <%
+            prop = schedule_prop.prop
+            if prop.present?
+              type = prop.prop_type
+              if type.present?
+                type_name = type.name
+              else
+                type_name == ""
+              end
+            -%>
+              <tr><th>名称 <%= "（#{type_name}）" -%></th><td><%= schedule_prop.prop.name -%></td>
+                <th>管理所属</th><td><%= schedule_prop.owner_s -%></td></tr>
+            <% end -%><%# if prop.present? %>
+          <% end -%>
+        </table>
+      <% end -%>
+    </div>
+  </div>
+</div>

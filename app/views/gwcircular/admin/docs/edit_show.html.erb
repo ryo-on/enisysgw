@@ -1,0 +1,59 @@
+<%= render :partial => 'header' %>
+
+<div class="docsInnerBox">
+
+<table class="bbsExpirydate">
+  <tr>
+    <td>　回覧期限日時 : </td>
+    <td class="space"></td>
+    <td><%= @parent.expiry_date.strftime('%Y-%m-%d %H:%M') unless @parent.expiry_date.blank? %></td>
+  </tr>
+</table>
+
+<div class="bbsCreatorInf">
+<table>
+<tr>
+<td>回覧作成 : &nbsp;</td>
+<td><%= @parent.createrdivision %></td>
+<td class="space"></td>
+<td><%= @parent.creater %></td>
+<td class="space"></td>
+<td><%= @parent.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+</tr>
+</table>
+</div>
+
+<div class="bbsUserform">
+<table class="bbsUserformBody">
+<tr><td class="docTitle"><span><%= hbr(@parent.title) %></span></td></tr>
+<tr><td class="spaceBottom"></td></tr>
+<tr><td><%= raw(@parent.body) %></td></tr>
+</table>
+</div>
+
+</div><!--docsInnerBox-->
+
+<table class="show">
+<tr><th><%= Gwcircular::Doc.human_attribute_name(:spec_config) %></th>
+<td><%= @item.spec_config_name_status %></td></tr>
+<tr><th>回覧期限日</th>
+<td><%= @parent.expiry_date.strftime('%Y-%m-%d %H:%M') unless @parent.expiry_date.blank? %></td></tr>
+</table>
+
+<table class="show">
+<tr><th>状態</th>
+<td><%= raw(status_name_show(@item)) %></td></tr>
+<tr><th>受信者</th>
+<td><%= @item.target_user_name%></td></tr>
+<tr><th>返信欄</th>
+<td><%= @item.body%></td></tr>
+<tr><th>最終更新日時</th>
+<td><%=@item.display_editdate %></td></tr>
+</table>
+
+<%=render(:partial => 'library_index')%>
+
+<!--戻るボタン-->
+<div class="btReturn">
+  <%=link_to '戻る', "#{show_path(@myitem)}#{cond_param(params[:cond])}" %><%=  %>
+</div>

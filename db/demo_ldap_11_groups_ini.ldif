@@ -1,0 +1,53 @@
+dn: ou=999000地方自治長,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: 999000地方自治長
+objectClass: organizationalunit
+objectClass: top
+
+
+dn: ou=999001地方自治長,ou=999000地方自治長,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: 999001地方自治長
+objectClass: organizationalunit
+objectClass: top
+
+
+dn: ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: 010000総務部
+objectClass: organizationalunit
+objectClass: top
+
+
+dn: ou=010010総務課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: 010010総務課
+objectClass: organizationalunit
+objectClass: top
+
+
+dn: ou=010020秘書広報課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: 010020秘書広報課
+objectClass: organizationalunit
+objectClass: top
+
+
+dn: ou=010530情報企画課,ou=010000総務部,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: 010530情報企画課
+objectClass: organizationalunit
+objectClass: top
+
+
+dn: ou=500000出納室,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: 500000出納室
+objectClass: organizationalunit
+objectClass: top
+
+
+dn: ou=500010出納室,ou=500000出納室,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: 500010出納室
+objectClass: organizationalunit
+objectClass: top
+
+dn: ou=SYSTEMシステム管理,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: SYSTEMシステム管理
+objectClass: organizationalunit
+objectClass: top
+
+

@@ -1,0 +1,31 @@
+<%
+  #本来は一ヶ所で判別するのが良いが、変更の過渡期なのでわけてある。
+  files_uri = gwcircular_attachments_path(item.id)
+  class_mode = ""
+  is_requied = false
+  if mode.present?
+    class_mode = " bbsFile2"
+    is_requied = true
+  end
+%>
+<table class="bbsFile<%= class_mode %>">
+  
+  <tr>
+    <% if is_requied %>
+      <th>添付ファイル<%= raw(required('<br/>' + t("rumi.circular.file_notice"))) -%></th>
+    <% else %>
+      <th>添付ファイル</th>
+    <% end %>
+    <td>
+      <a href="#" onclick="chageDisp(this,'attach_form');return false;">開く▼</a>
+    </td>
+  </tr>
+</table>
+
+<table id="attach_form" border="0" class="show" style="display: none;">
+  <tr>
+    <td>
+      <iframe src="<%= files_uri %>" frameborder="0"></iframe>
+    </td>
+  </tr>
+</table>

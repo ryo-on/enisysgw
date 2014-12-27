@@ -1,0 +1,89 @@
+<div class="piece AdminSetting">
+<%= render :partial => 'header' %>
+
+<div class="pieceBanner">
+</div>
+
+<div class="pieceBody">
+
+<%#= render :partial => '/gw/admin/config_settings/menu' if @u_role==true %>
+
+<%#if @u_role == true %>
+  <%# if @admin_role == true %>
+    <%#
+    params[:c2]=9
+    %>
+    <%#= render :partial => '/gw/admin/config_settings/tabs_admin' %>
+  <%# else %>
+    <%#= render :partial => '/gw/admin/config_settings/tabs_editor' %>
+  <%# end %>
+<%# end %>
+
+
+<%= div_notice %>
+<% if @admin_role == true %>
+<!--
+<div class="titleLine">
+  <p class="title">アクセス解析</p>
+</div>
+-->
+<div style="margin-bottom: 10px;"></div>
+<div style="margin-bottom: 30px;">
+<%= form_tag '', :method => :get, :id => 'itemForm' do %>
+  <table class="show" id="inputDatetimeNormal">
+    <tbody>
+      <tr class="start">
+        <th>絞込開始日時<%= raw(required) %></th>
+          <td class="day">
+            <%= raw(date_picker_prop 'item', 'st_at', :mode=>:datetime, :value=>@start_date.to_time, :minute_interval=>'5') %>
+          </td>
+        </tr>
+      <tr class="close">
+      <th>絞込終了日時<%= raw(required) %></th>
+        <td class="day">
+          <%= raw(date_picker_prop 'item', 'ed_at', :mode=>:datetime, :value=>@end_date.to_time, :minute_interval=>'5') %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <%= submit_tag '更新する', :name => :submit, :onclick => ('return my_submit();'), :style => 'margin:0px; float:left;' %>
+<% end %>
+<%= form_for(:item, :url => {:action => :export}, :html => {:method => :post}) do |f| %>
+<%= hidden_field_tag :s_date, @start_date %>
+<%= hidden_field_tag :e_date, @end_date %>
+<%= hidden_field_tag :data_cnt, @data_cnt %>
+  <%= f.submit 'CSV出力', :name => :submit, :style => 'margin-left: 5px; float:left;' %>
+<% end %><br />
+</div>
+<%= render(:partial => 'form_at_script') %>
+<div id="graph-container">
+  <div id="graph-row">
+    <%= high_chart("column-graph", @column_graph) %>
+  </div>
+</div>
+<table class="show">
+  <tr>
+    <th>アクセス日時</th>
+    <th>IPアドレス</th>
+    <th>ユーザID</th>
+    <th>ユーザ名</th>
+    <th>機能名</th>
+  </tr>
+  <% @logs.each do |log| %>
+  <tr>
+    <td><%= log.created_at.strftime("%Y-%m-%d %X") %></td>
+    <td><%= log.ipaddress %></td>
+    <td><%= log.user_code %></td>
+    <td><%= log.user_name %></td>
+    <td><%= log.feature_name %></td>
+  </tr>
+  <% end %>
+</table>
+<% end %>
+
+<%= paginate @logs %>
+<div class="btReturn">
+  <%=link_to '管理者設定へ戻る', '/gw/config_settings?c1=1&c2=9' %>
+</div>
+</div>
+</div>

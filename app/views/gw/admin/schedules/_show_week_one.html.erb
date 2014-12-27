@@ -1,0 +1,32 @@
+<%
+public =  schedule.is_public_auth?(@is_gw_admin)
+
+if nz(@schedule_settings[:view_schedule_title_display], 0).to_i == 1
+  class_str = "schedule-show-ellipsis"
+  schedule_show_time = schedule.show_time_ellipsis(week_add_day)
+else
+  class_str = "schedule-show-all"
+  schedule_show_time = schedule.show_time(week_add_day)
+end
+-%>
+
+<% if public -%>
+  <div title="<%= create_schedule_tooltip(schedule, @ie) -%>" class="ind <%= class_str -%>" id="<%= schedule_id -%>">
+    <a class="<%= schedule.get_category_class -%>" href="/gw/schedules/<%= schedule.id -%>/show_one">
+      <%# if schedule.unseen?(Site.user.id) %>
+      <% if schedule.remind_unseen?(schedule) %>
+      <span class="new">new</span>
+      <% end %>
+      <span><%= schedule_show_time -%></span>
+      <span class="title"><%= schedule.title -%></span>
+      <% if @schedule_settings[:view_place_display] == '1' && schedule.place.present? %>
+        <span class="place">（<%= schedule.place -%>）</span>
+      <% end %>
+    </a>
+  </div>
+<% else %>
+  <div title="<%= @ie ? "#{schedule.show_time(week_add_day)} [非公開予定]" : "<span>#{schedule.show_time(week_add_day)} [非公開予定]</span>" -%>" id="<%= schedule_id -%>" class="ind <%= class_str -%>">
+    <a class="category0"><span><%= schedule_show_time -%></span>
+    <span class="title">[非公開予定]</span></a>
+  </div>
+<% end -%><%# public end %>

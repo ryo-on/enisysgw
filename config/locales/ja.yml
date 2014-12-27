@@ -1,0 +1,444 @@
+ja: 
+  activerecord: 
+    models: 
+    attributes: 
+    errors:
+      models:
+        system/users_groups_csvdata:
+          attributes:
+            data_type:
+              inclusion: は「group」、「user」のみ入力可能です。
+            parent_id:
+              blank: 所属グループまたは所属グループの親グループが見つかりません。
+              parent_group_disabled: 所属グループの状態が「無効」のため配属させることができません。
+            state:
+              inclusion: は「有効」、「無効」のみ入力可能です。
+              child_group_enabled: は子グループの状態が「有効」または、所属するユーザーが存在する場合は「有効」を入力してください。
+              parent_group_disabled: は所属グループの状態が「無効」の場合は「無効」を入力してください。
+            ldap:
+              inclusion: は「同期」、「非同期」のみ入力可能です。
+            level_no:
+              inclusion: は「2」、「3」のみ入力可能です。
+            category:
+              inclusion: は「組織」、「任意」のみ入力可能です。
+            job_order:
+              inclusion: は「本務」、「兼務」、「仮所属」のみ入力可能です。
+              uniqueness: :rumi.system.user.job_order_0.message.unique
+            password:
+              blank: はLDAPが「非同期」の場合は必ず入力してください。
+            end_at:
+              blank: は状態が「無効」の場合は「yyyy-mm-dd」、「yyyy/mm/dd」のフォーマットで入力してください。
+              invalid: 状態が「有効」の場合は空欄とし、開始日より後、かつ本日以前の日付を入力してください。
+            start_at:
+              invalid: は本日以前の日付を入力してください。
+              blank: は「yyyy-mm-dd」、「yyyy/mm/dd」のフォーマットで入力してください。
+
+  activemodel:
+    attributes:
+      rumi_helper/csv_form:
+        nkf: 文字コード
+        file: ファイル
+    errors:
+      models:
+        rumi_helper/csv_form:
+          attributes:
+            nkf: :activerecord.errors.messages
+            file: :activerecord.errors.messages
+  errors:
+    template:
+      header:
+        #one: "%{model}にエラーが発生しました。"
+        one: "入力内容に誤りがあります。"
+        #other: "%{model}に%{count}つのエラーが発生しました。"
+        other: "%{count}個の入力内容に誤りがあります。"
+      # The variable :count is also available
+      body: "次の項目を確認してください。"
+  will_paginate:
+    page_gap: …
+  rumi:
+    message:
+      empty:
+        list: 表示する内容はありません。
+      disable_with: 処理中
+    label:
+      all_check: 全選択
+      all_uncheck: 解除
+      delete: 削除
+    reminder:
+      name: 新着情報
+      total_count: " 全%{total_count}件"
+      overflow_count: "他%{overflow_count}件"
+      delimiter: ・
+      feature:
+        bbs:
+          name: 掲示板
+          action:
+            open: が公開されました。
+        circular:
+          name: 回覧板
+          action:
+            create: が作成されました。
+            update: が更新されました。
+        mail:
+          name: メール
+          action:
+            receive: を受信しました。
+        schedule:
+          name: スケジュール
+          action:
+            create: が作成されました。
+            update: が更新されました。
+            delete: が削除されました。
+        schedule_prop:
+          name: 施設予約
+          action:
+            create: が作成されました。
+            update: が更新されました。
+            delete: が削除されました。
+        doclibrary:
+          name: ファイル管理
+          action:
+            approve: が承認されました。
+            request: の承認依頼が届きました。
+      datetime: 日時
+      title: 概要
+      sort_asc: ▲
+      sort_desc: ▼
+      all_seen: 一括既読
+    top_page:
+      name: トップページ
+    link_piece:
+      name: :rumi.config_settings.top_page.link_piece.name
+    link_piece_css:
+      name: リンクピース適用CSS編集
+    bbs:
+      name: :rumi.reminder.feature.bbs.name
+      expiry_date_message: 公開終了日時を設定しない場合は、公開終了日時の日付を手動で空にしてください。
+    circular:
+      name: :rumi.reminder.feature.circular.name
+      file_notice: 添付ファイルの状態は、「返信・既読」ボタンを押下しなくても保持されます。
+      search_description: 選択されている区分（未読・既読等）の回覧を検索します。
+      sort_asc: ▲
+      sort_desc: ▼
+      spec_config_state:
+        only: 本人以外の受信者を表示しない
+        other_name: 全ての受信者の名前を表示する
+        other_all: 全ての受信者の名前と返信内容を表示する
+      csv_fields:
+        parent_id: 回覧id
+        title: タイトル
+        doc_id: 返信id
+        status: 状態
+        section_code: 返信者所属コード
+        section_name: 返信者所属名
+        user_code: 返信者コード
+        user_name: 返信者名
+        body: 返信欄
+        editdate: 返信日時
+    mail:
+      name: :rumi.reminder.feature.mail.name
+    schedule:
+      name: :rumi.reminder.feature.schedule.name
+      schedule_user:
+        state: 状態
+        state_unread: 未読
+        state_already: 既読
+        add_user: 参加者名
+        already_at: 確認日時
+      schedule_title:
+        time_no_set: （時未）
+        time_all: 終日
+      message:
+        deleted_schedule: このスケジュールは削除されたスケジュールです。
+        success:
+          action:
+            create: 予定を登録しました。
+            update: 予定を編集しました。
+            update_repeat: 繰り返し予定を一括編集しました。
+            delete: 予定を削除しました。
+            delete_no_auth: 参加者にスケジュール登録に権限が必要なユーザーを含むため、予定の削除は行えません。
+            delete_repeat: 繰り返し予定を一括削除しました。
+            delete_repeat_no_auth: 参加者にスケジュール登録に権限が必要なユーザーを含むため、予定の繰返し一括削除は行えません。
+            already: 予定を既読にしました。
+      zaichou:
+        pref_executive:
+          name: 市長・副市長
+          page_title: 市長・副市長在庁表示
+        pref_director:
+          name: 教育長
+          page_title: 教育長在庁表示
+      error_message:
+        prop_other_reservation_conflict_datetime: "終了日時は他の予定と競合しています。別の予定時間を入力してください。"
+        prop_other_reservation_conflict_date: "終了日は他の予定と競合しています。別の予定時間を入力してください。"
+      submit:
+        new_confirm: スケジュールを作成します。よろしいですか？
+        edit_confirm: スケジュールを編集します。よろしいですか？
+        repeat_edit_confirm: 繰り返しスケジュールを一括編集します。よろしいですか？
+        create: スケジュール作成中です
+        edit: スケジュール編集中です
+        repeat_edit: スケジュール一括編集中です
+    schedule_prop:
+      name: :rumi.reminder.feature.schedule_prop.name
+      form:
+        add_user_comment: 施設予約時任意
+        add_prop_comment: 「開始日時」から「終了日時」の時間帯で予約可能なものを表示しています。
+      submit:
+        new_confirm: 施設予約を登録します。よろしいですか？
+        edit_confirm: 施設予約を編集します。よろしいですか？
+        repeat_edit_confirm: 繰り返し施設予約を一括編集します。よろしいですか？
+        create: 施設予約登録中です
+        edit: 施設予約編集中です
+        repeat_edit: 施設予約一括編集中です
+    prop_other:
+      message:
+        errors:
+          inport_limit_over: で設定された所属あたりの制限数を超えて登録しようとしています。制限数を増やしてください。
+          input_limit_over: は、施設マスタ件数制限で設定された所属あたりの制限数を超えて登録しようとしています。所属（%{group_names}）の制限数を増やしてから登録を行ってください。
+    doclibrary:
+      name: :rumi.reminder.feature.doclibrary.name
+    config_settings:
+      base:
+        user_and_group:
+          name: ユーザー・グループ管理
+          message: ユーザー及びグループ情報の閲覧、登録及び編集を行います。
+          users_group:
+            message:
+              destroy: 削除はユーザーの所属情報を削除します。
+              edit: 編集はユーザーの状態が無効の場合は編集画面を表示できますが所属情報の更新はできません。
+              note: スケジュールなどでユーザー選択できるのは、「組織グループであれば階層レベル3のグループに配属されている」又は<br />「任意グループであれば階層レベル2、3のグループに配属されている」、かつ状態が有効のユーザーに限ります。
+          user:
+            message:
+              destroy: 削除はユーザーと所属情報の状態を「無効」にし、ログイン不可とします。
+              new: :rumi.config_settings.base.user_and_group.users_group.message.note
+          group:
+            message:
+              destroy: 削除はユーザーが所属しているか、下位に有効な所属があるときは、できません。<br />また、削除は、終了日を設定し、状態を「無効」に変更するだけです。ID・名称の再利用はできませんので、注意してください。
+          add:
+            name: 追加 →
+          remove:
+            name: ← 削除
+          csv:
+            name: CSV管理
+            data_type:
+              group: グループ
+              user: ユーザー
+            feature:
+              output:
+                name: CSV出力
+                message:
+                  note: 出力対象を、指定の文字コードで出力します。
+                  help: 文字コードを選択して実行してください
+              input:
+                name: CSV仮登録
+                message:
+                  note: CSVデータを仮登録します。<br />この時点では、実際にデータは登録されません。CSV本登録を実行すると反映されます。<br />なお、この操作を実行すると、現在のCSV仮データは全て削除されますので、ご注意ください。<br />CSVファイル内容に不備があった場合、エラー情報を記載したCSVファイルをダウンロードします。
+                  help: 仮登録対象CSVファイルと文字コードを選択して実行してください
+              index:
+                name: CSV仮データ確認
+              save:
+                name: CSV本登録
+                message:
+                  note: CSV仮データについて、ユーザーおよびグループの情報として正式に登録します。現在のユーザーおよびグループの情報は上書きされます。<br />また、現在のユーザーの中で、CSV仮データには存在しないユーザーおよびグループは、無効化されますので、ご注意ください。<br />現在のユーザー情報はバックアップをお願いします。
+                  help: CSV仮データを実際のユーザー情報として登録します。現在のユーザー情報は上書きされます。
+                  errors:
+                    not_included_system_admin_user: 状態が有効な管理画面の管理者権限を持つユーザーが仮データに含まれていません。
+
+        user_profile_setting:
+          name: プロフィール項目管理
+          title_item: 項目名
+          title_used: 使用する
+      auto_delete:
+        bbs:
+          name: 掲示板記事削除設定
+      scheduler:
+        holiday:
+          name: 休日管理
+        pref_executive:
+          name: 市長・副市長在庁表示設定
+          message: 市長・副市長の在庁表示の設定を行います。
+          page_title: 市長・副市長在庁表示管理
+        pref_director:
+          name: 教育長在庁表示設定
+          message: 教育長の在庁表示の設定を行います。
+          page_title: 教育長在庁表示管理
+        scheduler:
+          name: スケジュール設定
+          message: 週初めの変更（日曜日or月曜日）、場所の表示の有無、トップページ画面での表示の有無、表示方法の変更（全部表示or一部表示）を設定できます。
+        import:
+          name: インポート
+          message: CSV (MS Outlook)形式、およびiCalendar形式のファイルをインポートできます。
+        export:
+          name: エクスポート
+          message: iCalendar形式のファイルをエクスポートできます。
+          confirm: エクスポートしますか？
+        toppage_display_setting:
+          name: トップページ表示設定
+        title_display_setting:
+          name: スケジュール件名表示設定
+          display_all: 全部表示
+          display_not_all: 一部表示
+      bbs_etc:
+        doclibrary:
+          name: ファイル管理設定
+          message: ファイル管理の設定を行います。
+      top_page:
+        name: トップページ設定
+        message:
+          name: メッセージ
+          message: トップページに表示するメッセージを設定します。表示するメッセージは２つまで設定できます。
+        link_piece:
+          name: リンクピース編集
+          message: トップページ画面のリンクピースの編集を行います。
+      user_passwords:
+        name: ログインパスワード設定
+        action:
+          edit:
+            name: パスワード変更
+            message:
+              help: ログインパスワードを変更することができます。
+              note: 半角英数字混在8文字以上<br />※パスワード変更を行うとログイン画面に遷移します。変更後のパスワードでログインしてください。
+              errors:
+                confirmation: と確認用パスワードが一致しません。
+    rumi_helper:
+      submit:
+        update: 確定する
+      csv_form:
+        file:
+          message:
+            invalid: は拡張子が「csv」のファイルを指定してください。
+        nkf:
+          message:
+            invalid: はファイルの文字コードと同じにしてください。
+    system:
+      user:
+        state:
+          message:
+            invalid: は管理グループではないグループにユーザーが所属しているときは、無効にできません。
+            has_uneditable_users_group: 管理グループではないグループにユーザーが所属しているときは、無効にできません。
+        job_order_0:
+          name: 本務
+          message:
+            unique: はユーザーの本務は既に登録されているため兼務または仮所属を入力してください。
+        job_order_1:
+          name: 兼務
+        job_order_9:
+          name: 仮所属
+        code:
+          message:
+            invalid: は半角英数字、および半角アンダーバーのみのデータとしてください。
+        user_profile:
+          name: プロフィール
+          upload_name: プロフィール写真
+          upload_title_name: プロフィール写真アップロード
+          upload_message: このユーザーのプロフィールに表示する写真を添付します。<br />既に写真が存在した場合、写真を差し替えます。
+          upload_item: ファイル指定：
+          upload_note: ファイル備考：
+          upload_size: サイズ（幅x高さ）
+          error_message:
+            no_image: 画像以外はアップロードできません。
+            fail_mkdir: ディレクトリの作成に失敗しました。
+            no_file: 添付画像ファイルを選択してください。
+          success_message:
+            upload_create: の追加に成功しました。
+            upload_delete: の削除に成功しました。
+      group:
+        state:
+          message:
+            has_enable_child_or_users_group: はユーザーが所属しているか、下位に有効な所属があるときは、無効にできません。
+    gwboard:
+      no_limit:
+        name: 制限なし
+      message:
+        attached_file_not_found: 添付ファイルが見つかりませんでした。
+    doclibrary:
+      keyword: キーワード
+      creator: 作成者
+      created_at: 作成日
+      search_start: から
+      search_end: まで
+      download: 一括ダウンロード
+      folder_selector: フォルダ選択
+      category_order:
+        folder: ﾌｫﾙﾀﾞ順
+        section: 所属順
+        date: 日付順
+      submit:
+        public_confirm: 公開します。よろしいですか？
+        recognize_confirm: 承認依頼します。よろしいですか？
+        draft_confirm: 下書き保存します。よろしいですか？
+        f_create_confirm: フォルダ登録します。よろしいですか？
+        f_edit_confirm: フォルダ修正します。よろしいですか？
+        send: 公開中です
+        recognize: 承認依頼中です
+        draft: 下書き保存中です
+        f_create: フォルダ登録中です
+        f_edit: フォルダ修正中です
+      file_folder_option:
+        label: ファイル／フォルダ操作
+        move: 移動
+        copy: コピー
+      message:
+        attached_file_not_selected: ダウンロードするファイルを選択してください。
+        attached_file_not_found: 添付ファイルが見つかりませんでした。
+        file_name_too_long: フォルダ名、またはファイル名が長すぎるため、zipファイルが作成できませんでした。
+        cannot_create_zip_file: zipファイルが作成できませんでした。
+        concurrent_editing: 他の利用者が編集中のため更新を行うことができませんでした。
+      drag_and_drop:
+        message:
+          move_file: ファイルの移動に成功しました。
+          copy_file: ファイルのコピーに成功しました。
+          move_folder: フォルダの移動に成功しました。
+          copy_folder: フォルダのコピーに成功しました。
+          file_move_error: ファイルを移動できませんでした。
+          file_copy_error: ファイルをコピーできませんでした。
+          folder_move_error: フォルダを移動できませんでした。
+          folder_copy_error: フォルダをコピーできませんでした。
+          no_authority_to_edit_folder: フォルダへの編集権限がありません。
+          src_move_file_not_found: 移動元ファイルが見つかりませんでした。
+          src_move_folder_not_found: 移動元フォルダが見つかりませんでした。
+          dst_move_folder_not_found: 移動先フォルダが見つかりませんでした。
+          src_copy_file_not_found: コピー元ファイルが見つかりませんでした。
+          src_copy_folder_not_found: コピー元フォルダが見つかりませんでした。
+          dst_copy_folder_not_found: コピー先フォルダが見つかりませんでした。
+          attached_file_not_found: 添付ファイルが見つかりませんでした。
+          has_exceeded_capacity: ファイルの利用可能容量を超過しています。
+          cannot_move_folder: 指定フォルダへフォルダを移動できません。
+          no_movement: 移動元と移動先が同じフォルダです。
+    gwbbs:
+      search_start: から
+      search_end: まで
+      submit:
+        public_confirm: 公開します。よろしいですか？
+        public_update_confirm: 受信者の状態が全て未読に戻ります。\n編集された内容で再公開してよろしいですか？
+        recognize_confirm: 承認依頼します。よろしいですか？
+        draft_confirm: 下書き保存します。よろしいですか？
+        send: 公開中です
+        recognize: 承認依頼中です
+        draft: 下書き保存中です
+    gwcircular:
+      search_start: から
+      search_end: まで
+      submit:
+        public_confirm: 配信します。よろしいですか？
+        public_update_confirm: 受信者の状態が全て未読に戻ります。（返信内容は残ります）\n編集された内容で再配信してよろしいですか？
+        draft_confirm: 下書き保存します。よろしいですか？
+        send: 配信中です
+        draft: 下書き保存中です
+      custom_group:
+        message:
+          blank: 宛先リストを事前に登録してください
+      message:
+        attached_file_not_found: 添付ファイルが見つかりませんでした。
+    attachment:
+      message:
+        name_too_long: ファイル名が長すぎるため保存できませんでした。
+        exceed_max_size: "ファイルサイズが制限を超えています。【最大%{max_size}MBの設定です。】【%{file_size}MBのファイルを登録しようとしています。】"
+        exceed_capacity: ファイルの利用可能容量を超過しています。
+      label:
+        file_name: ファイル名
+        file_size: サイズ（幅x高さ）
+        insert_link: リンク貼付
+        insert_image: 画像貼付
+    freezescreen:
+      default: 処理中です
+        

@@ -1,0 +1,14 @@
+<div class="piece AdminSetting AdminMessage">
+<%= render :partial => 'header' %>
+<div class="pieceBody">
+
+<%= form_for :item, :url => system_users_path do |f| %>
+  <%= div_notice %>
+  <%= f.error_messages %>
+  <%= error_messages_for "users_group" %>
+  <%= render :partial => 'form', :locals => {:f => f} %>
+  <%= submit_for(f, {:caption => '登録する'}) %>
+<% end %>
+
+</div>
+</div>

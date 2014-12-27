@@ -1,0 +1,37 @@
+<div class="piece AdminMessage">
+
+<%= render :partial => 'header' %>
+<div class="pieceBody">
+<div class="editingBox">
+  <% if !@target_user_disable_flg %>
+    <span class="btEdit">
+      <%= link_to "編集", :action => :edit, :id => @items.id %>
+    </span>
+  <% end %>
+  <span class="btDestroy">
+    <%= link_to_destroy @items.id, :confirm => "本当に削除しますか？" %>
+  </span>
+</div>
+
+<table class="show">
+  <tr>
+    <th>対象ユーザー名</th>
+    <td><%= @items.target %></td>
+  </tr>
+  <tr>
+    <th>権限付与所属</th>
+    <td><%= raw(Gw.join [@items.groups], '<br />') -%></td>
+  </tr>
+  <tr>
+    <th>権限付与者</th>
+    <td><%= raw(Gw.join [@items.users], '<br />') -%></td>
+  </tr>
+</table>
+
+<!--戻るボタン-->
+<div class="btReturn">
+  <%=link_to '戻る',  "/system/schedule_roles" %>
+</div>
+
+</div>
+</div>

@@ -1,0 +1,43 @@
+<div class="piece schedulePiece setting">
+  <div class="pieceHeader">
+  <%= render :partial => '/gw/admin/schedules/piece_header' -%>
+  </div>
+  <div class="pieceBody">
+    <div class="pieceBodyHeader">
+      <%= raw(div_notice) %>
+      <div class="titleLine">
+      <span class="title">個人設定メニュー</span>
+      </div><!--titleLine-->
+    </div>
+    <div class="pieceBodyBody">
+      <ul>
+        <li>
+          <span class="function"><a href="/gw/schedules/setting_ind_schedules"><%= t("rumi.config_settings.scheduler.scheduler.name") -%></a></span>
+          <span class="explanation">
+            <%= t("rumi.config_settings.scheduler.scheduler.message") -%>
+          </span>
+        </li>
+        <li>
+          <span class="function">
+            <a href="/system/custom_groups">カスタムグループ設定</a>
+          </span>
+          <span class="explanation">
+            カスタムグループを設定できます。
+          </span>
+        </li>
+        <li>
+          <span class="function"><a href="/gw/schedule_settings/import"><%= t("rumi.config_settings.scheduler.import.name") -%></a></span>
+          <span class="explanation">
+            <%= t("rumi.config_settings.scheduler.import.message") -%>
+          </span>
+        </li>
+        <li>
+          <span class="function"><a href="/gw/schedule_settings/export" data-confirm="<%= t("rumi.config_settings.scheduler.export.confirm") -%>"><%= t("rumi.config_settings.scheduler.export.name") -%></a></span>
+          <span class="explanation">
+            <%= t("rumi.config_settings.scheduler.export.message") -%>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

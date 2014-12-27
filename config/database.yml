@@ -1,0 +1,57 @@
+# Common settings
+common: &common
+  adapter: mysql2
+  encoding: utf8
+  reconnect: false
+  pool: 5
+  socket: /var/lib/mysql/mysql.sock
+
+# Account settings
+development_concern: &development_concern
+  username: enisys
+  password: pass
+  <<: *common
+
+production_concern: &production_concern
+  username: enisys
+  password: pass
+  <<: *common
+
+# Development environment
+development:
+  database: development_jgw_core
+  <<: *development_concern
+
+development_jgw_gw:
+  database: development_jgw_gw
+  <<: *development_concern
+
+development_jgw_gw_pref:
+  database: development_jgw_gw_pref
+  <<: *development_concern
+
+# Test environment
+test:
+  database: test_jgw_core
+  <<: *development_concern
+
+test_jgw_gw:
+  database: test_jgw_gw
+  <<: *development_concern
+
+test_jgw_gw_pref:
+  database: test_jgw_gw_pref
+  <<: *development_concern
+
+# Production environment
+production:
+  database: production_jgw_core
+  <<: *production_concern
+
+production_jgw_gw:
+  database: production_jgw_gw
+  <<: *production_concern
+
+production_jgw_gw_pref:
+  database: production_jgw_gw_pref
+  <<: *production_concern

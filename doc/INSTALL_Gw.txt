@@ -1,0 +1,351 @@
+## Enisys Gw 1.0.0 インストールマニュアル                   2014.05.30
+
+**********************************************************************
+ 1 想定環境
+**********************************************************************
+
+[システム]
+OS         : CentOS 6.5
+サーバ     : Apache 2.2
+DBシステム : MySQL 5.1
+Ruby       : Ruby 2.1.2
+Rails      : Rails 3.2.18
+キャッシュ : memcached 1.4.4
+ホスト名   : enisysgw.co.jp
+
+※ホスト名は一例です。ご利用の環境に応じて変更してください。
+
+**********************************************************************
+ 2 CentOS のインストール
+**********************************************************************
+
+CentOSをインストールします。
+
+インストール完了後、ご利用の環境に合わせて適切なセキュリティ設定を行ってください。
+CentOSに関するセキュリティ設定については、本マニュアルの範囲外となります。
+
+[設定]
+接続を許可します。
+
+  # vi /etc/sysconfig/iptables
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  #接続を許可するportを設定します。
+  -A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
+  iptablesを再起動します
+  # service iptables restart
+
+hostsを設定します。
+
+  # vi /etc/hosts
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # 後ろにホスト名を追記する。
+  127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 enisysgw.co.jp
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+SELinuxを無効にします。
+
+  # vi /etc/sysconfig/selinux
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  SELINUX=disabled
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+kernel panic対策として起動時のオプションを変更します。
+
+  # vi /boot/grub/grub.conf
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # 後ろに「selinux=0」を追記する。
+        kernel /vmlinuz-2.6.32-220.11.2.el6.i686 ro ... rd_NO_DM selinux=0
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+再起動します。
+
+  # shutdown -r now
+
+**********************************************************************
+ 3 事前準備
+**********************************************************************
+
+rootユーザに変更します。
+
+  # su -
+
+Enisys Gw の実行に必要なパッケージをインストールします。
+
+  # yum install -y wget make gcc-c++ patch readline readline-devel zlib zlib-devel libyaml-devel libffi-devel
+  # yum install -y openssl-devel make bzip2 autoconf automake libtool bison iconv-devel libjpeg-devel libpng-devel
+  # yum install -y ImageMagick ImageMagick-devel curl-devel libevent libevent-devel mysql-server mysql-devel httpd httpd-devel
+  # yum install -y libxslt libxslt-devel libxml2-devel librsvg2-devel ghostscript-devel shared-mime-info memcached
+
+
+Enisys Gwソースコードを設置します。
+
+  # mkdir /var/share
+  # tar xvzf enisysgw-1.0.0.tar.gz -C /var/share
+  # chown -R apache:apache /var/share/enisysgw
+
+**********************************************************************
+ 4 Apache の設定
+**********************************************************************
+
+Apacheの設定ファイルを編集します。
+
+  # vi /etc/httpd/conf/httpd.conf
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  #ホスト名を設定します
+  ServerName enisysgw.co.jp
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+設定ファイルにエラーがないことを確認し、Apacheを起動します。
+
+  # /sbin/service httpd configtest
+  # /sbin/service httpd start
+
+自動起動に設定します。
+
+  # /sbin/chkconfig httpd on
+
+**********************************************************************
+ 5 MySQL の設定
+**********************************************************************
+
+MySQLを初期化
+
+ # /etc/init.d/mysqld start
+
+MySQLの設定を行います。
+文字エンコーディングの標準を UTF-8 に設定します。
+
+
+  # vi /etc/my.cnf
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  [mysqld]
+  character-set-server=utf8
+  default-table-type=innodb
+  
+  [mysql]
+  default-character-set = utf8
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  ## [mysqld]に設定を追加、[mysql]と設定を追加。
+  
+MySQLを再起動します。
+
+  # /sbin/service mysqld restart
+
+自動起動に設定します。
+
+  # /sbin/chkconfig mysqld on
+
+rootユーザのパスワードを設定します。
+  # /usr/bin/mysqladmin -u root password "pass"
+
+enisysユーザを作成します。
+  # /usr/bin/mysql -u root -p -e "grant all on *.* to enisys@localhost IDENTIFIED BY 'pass'"
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # パスワード入力を要求した場合は、rootユーザーのパスワードを入力する。
+  Enter password: [rootのpassword]
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+**********************************************************************
+ 6 Ruby on Rails のインストール
+**********************************************************************
+
+======================================================================
+ 6.1 Ruby のインストール
+======================================================================
+
+RVM(Ruby Version Manager)をインストールします。
+
+  # bash -s stable < <(curl -s https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer )
+  # [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" 
+
+Rubyをインストールします。
+（ RVMのインストール後、一旦ログアウトして、再度ログインしてから行います。 )
+  # rvm get head
+  # rvm get stable
+  # rvm install 2.1.2
+
+======================================================================
+ 6.2 Phusion Passenger のインストール
+======================================================================
+
+Phusion Passengerをインストールします。
+
+  # gem install passenger -v 4.0.42
+  # passenger-install-apache2-module
+
+  ( 画面の内容を確認して Enterキーを押してください。 )
+
+======================================================================
+ 6.3 gemライブラリ のインストール
+======================================================================
+
+必要ライブラリをインストールします。
+
+  # cd /var/share/enisysmail
+  # bundle install
+
+ネットワーク経由でファイルのダウンロードとインストールが行われます。
+正しく完了すれば次のようなメッセージが表示されます。
+  =>Your bundle is complete! Use `bundle show [gemname]` to see where a bundled gem is installed.
+
+**********************************************************************
+  7 Enisys Gw のインストール
+**********************************************************************
+
+Enisys Gwを配置したディレクトリに移動します。
+
+  # cd /var/share/enisysgw
+
+======================================================================
+ 7.1 設定ファイル
+======================================================================
+
+環境に応じて設定ファイルを編集します。
+
+DB接続情報
+
+  # vi config/database.yml
+
+LDAP接続情報
+
+  # vi config/ldap.yml
+
+SMTP接続情報
+
+  # vi config/environments/development.rb
+  ※ production環境の場合は # vi config/environments/production.rb
+
+  ※メール機能を利用する場合はSMTPの設定が必要です。
+
+======================================================================
+ 7.2 データベースの作成
+======================================================================
+
+※作業の途中でmysqlに設定したパスワードを聞かれますのでご用意ください。
+
+データベース、テーブルを作成します。
+
+  # cd /var/share/enisysgw
+  # mysql -u root -p -e "create database development_jgw_bbs_000001"
+  # mysql -u root -p -e "create database development_jgw_core"
+  # mysql -u root -p -e "create database development_jgw_gw"
+  # mysql -u root -p -e "create database development_jgw_gw_pref"
+  # rake db:jgw_bbs:migrate RAILS_ENV=development
+  # rake db:jgw_core:migrate RAILS_ENV=development
+  # rake db:jgw_gw:migrate RAILS_ENV=development
+  # rake db:jgw_gw_pref:migrate RAILS_ENV=development
+  
+※Railsの実行環境がproductionの場合、データベース名及びRAILS_ENVの指定は下記のようにしてください。
+  production_jgw_bbs_000001
+  RAILS_ENV=production
+
+初期（サンプル）データを登録します。
+
+  # mysql -u root -p development_jgw_core < ./db/demo_jgw_core_init.sql
+  # mysql -u root -p development_jgw_gw < ./db/demo_jgw_gw_init.sql
+  # mysql -u root -p development_jgw_gw_pref < ./db/demo_jgw_gw_pref_init.sql
+  # mysql -u root -p development_jgw_bbs_000001 < ./db/demo_jgw_bbs_000001_init.sql
+
+※Railsの実行環境がproductionの場合、データベース名は下記のようにしてください。
+  (.sqlファイルの名前はそのまま)
+  production_jgw_core
+  production_jgw_gw
+  production_jgw_gw_pref
+  production_jgw_bbs_000001
+  さらに環境設定のために次のSQL文を実行してください。
+  # /usr/bin/mysql -u root -p -e "UPDATE production_jgw_gw.gwbbs_controls SET dbname = 'production_jgw_bbs_000001' WHERE gwbbs_controls.id =1;"
+
+
+======================================================================
+ 7.3 memcached のインストール
+======================================================================
+
+自動起動に設定します。
+
+  # chkconfig memcached on
+
+memcachedを起動します。
+
+  # /sbin/service memcached start
+
+======================================================================
+ 7.4 VirtualHost の反映
+======================================================================
+
+Apacheに設定を追加します。
+
+  # cp /var/share/enisysmail/config/samples/enisysgw.conf /etc/httpd/conf.d/
+
+Apache を再起動します。
+  # /sbin/service httpd configtest
+  # /sbin/service httpd restart
+
+以上でEnisys Gwのインストールが完了しました。
+
+
+**********************************************************************
+ 8 定期実行設定
+**********************************************************************
+
+ここではcrontabによる定期実行に関する設定例を説明しています。
+
+削除期間が過ぎた情報を削除します。
+以下の例は毎日3時～4時にかけて削除しています。
+動作環境が development 以外の場合は -e development の箇所をご利用の環境に書き換えてください。
+例）
+rails runner -e development 'Scriptname' → rails runner -e production 'Scriptname'
+
+　　# su - 
+
+削除期間が過ぎたスケジュールを削除します。
+
+  # crontab -e
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  00 3 * * * cd /var/share/enisysgw; /usr/local/ruby script/rails runner -e development 'Gw::Script::Schedule.delete'
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+期限切れで削除期間が過ぎた掲示板を削除します。
+
+  # crontab -e
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  10 3 * * * cd /var/share/enisysgw; /usr/local/ruby script/rails runner -e development 'Gwbbs::Script::Task.delete'
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+期限切れで削除期間が過ぎた回覧板を削除します。
+
+  # crontab -e
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  20 3 * * * cd /var/share/enisysgw; /usr/local/ruby script/rails runner -e development 'Gwcircular::Script::Task.delete'
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+不要となったセッションのデータを削除します。
+
+  # crontab -e
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  30 3 * * * cd /var/share/enisysgw; /usr/local/ruby script/rails runner -e development 'System::Script::Session.delete_expired_sessions'
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+不要となった掲示板のデータを削除します。
+
+  # crontab -e
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  40 3 * * * cd /var/share/enisysgw; /usr/local/ruby script/rails runner -e development 'Gwbbs::Script::Task.preparation_delete'
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+不要となったファイル管理のデータを削除します。
+
+  # crontab -e
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  50 3 * * * cd /var/share/enisysgw; /usr/local/ruby script/rails runner -e development 'Doclibrary::Script::Task.preparation_delete'
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+幹部・部課長の在席表示を全てoffにします。
+
+  # crontab -e
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  0 0 * * * cd /var/share/enisysgw; /usr/local/ruby script/rails runner -e development 'Gw::Script::PrefExective.state_all_off'
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+**********************************************************************

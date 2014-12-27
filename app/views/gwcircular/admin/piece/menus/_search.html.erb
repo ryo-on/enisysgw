@@ -1,0 +1,38 @@
+<div class="search">
+<%= form_tag "#{gwcircular_menus_path}", :method => :get do %>
+  <%# 検索対象を絞り込み範囲内に制限する パラメータの持ち回り %>
+  <%#= hidden_field_tag 'title_id'   ,params[:title_id]  -%>
+  <%#= hidden_field_tag 'state'      ,params[:state]     -%>
+  <%#= hidden_field_tag 'limit'      ,params[:limit]     -%><%# 行数　 param -%>
+  <%#= hidden_field_tag 'grp'        ,params[:grp]       -%><%# 所属別 param -%>
+  <%#= hidden_field_tag 'cat1'       ,params[:cat1]      -%><%# 分類別 param -%>
+  <%#= hidden_field_tag 'yyyy'       ,params[:yyyy]      -%><%# 月別　 param -%>
+  <%#= hidden_field_tag 'mm'         ,params[:mm]        -%><%# 月別　 param -%>
+  <%#= hidden_field_tag(:title_id, "#{params[:title_id]}") %>
+  <%#= hidden_field_tag(:state, "#{params[:state]}") %>
+  <span class="required" style="margin-top:10px; margin-right:10px; margin-left:10px;"><%= I18n.t('rumi.circular.search_description') %></span>
+  <h4 class="iconSideKey">キーワード</h4>
+  <%= text_field_tag 'kwd', params[:kwd], :size => '16' %>
+  <%# 作成者、公開日を検索項目として追加 %>
+  <h4 class="iconSideKey">作成者</h4>
+  <%= text_field_tag 'creator', params[:creator], :size => '16' %>
+  <h4 class="iconSideKey">期限日</h4>
+  <%= calendar_date_select_tag :expirydate_start, params[:expirydate_start], :class => 'dateTime', :time=> false, :size => '7', :image => "/_common/themes/gw/files/icon/ic_act_calendar.png"%></td>
+  <span style="margin-left:5px;"><%= t('rumi.gwcircular.search_start')  %></span><br>
+  <%= calendar_date_select_tag :expirydate_end, params[:expirydate_end], :class => 'dateTime', :time=> false, :size => '7', :image => "/_common/themes/gw/files/icon/ic_act_calendar.png" %></td>
+  <span style="margin-left:5px;"><%= t('rumi.gwcircular.search_end')  %></span><br>
+  <h4 class="iconSideKey">作成日</h4>
+  <%= calendar_date_select_tag :createdate_start, params[:createdate_start], :class => 'dateTime', :time=> false, :size => '7', :image => "/_common/themes/gw/files/icon/ic_act_calendar.png"%></td>
+  <span style="margin-left:5px;"><%= t('rumi.gwcircular.search_start')  %></span><br>
+  <%= calendar_date_select_tag :createdate_end, params[:createdate_end], :class => 'dateTime', :time=> false, :size => '7', :image => "/_common/themes/gw/files/icon/ic_act_calendar.png" %></td>
+  <span style="margin-left:5px;"><%= t('rumi.gwcircular.search_end')  %></span><br>
+  <input type="hidden" name="cond" value='<%= params[:cond] %>' />
+  <input type="hidden" name="title_id" value='<%= params[:title_id] %>' />
+  <input type="hidden" name="limit" value='<%= params[:limit] %>' />
+  <div class="submitters">
+    <%= submit_tag '検索', :name => :search, :onclick => "return my_search_submit();" %>
+    <%= submit_tag 'リセット', :name => :reset %>
+  </div><!--submitters-->
+  <%= raw(render(:partial => 'gwcircular/admin/menus/form_script')) %>
+<% end %><!--form_tag-->
+</div><!--search-->

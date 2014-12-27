@@ -1,0 +1,106 @@
+<%= required_head %>
+<table class="show">
+  <% if params[:action].in?('new', 'create') %>
+  <tr>
+    <th><%= System::User.human_attribute_name(:code) %><%= required %></th>
+    <td><%= f.text_field :code, :class => 'string', :style => 'width: 200px;' %></td>
+  </tr>
+  <% else %>
+  <tr>
+    <th><%= System::User.human_attribute_name(:code) %></th>
+    <td><%= @item.code%></td>
+  </tr>
+  <% end %>
+  <tr>
+    <th><%= System::User.human_attribute_name(:state) %><%= required %></th>
+    <td><%= radio f, :state, Gw.yaml_to_array_for_select('system_states') %></td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:ldap) %><%= required %></th>
+    <td><%= radio f, :ldap, Gw.yaml_to_array_for_select('system_users_ldaps') %></td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:name) %><%= required %></th>
+    <td><%= f.text_field :name, :class => 'string name', :style => 'width: 200px;' %></td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:kana) %></th>
+    <td><%= f.text_field :kana, :class => 'string name', :style => 'width: 200px;' %></td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:name_en) %></th>
+    <td><%= f.text_field :name_en, :class => 'string name', :style => 'width: 200px;' %></td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:password) %></th>
+    <td><%= f.text_field :password, :class => 'string name', :style => 'width: 200px;' %></td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:email) %></th>
+    <td><%= f.text_field :email, :class => 'string email', :style => 'width: 400px;' %></td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:sort_no) %><%= Gw.required %></th>
+    <td><%= f.text_field :sort_no, class: "num" %> ※数値の小さい順に表示されます。</td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:official_position) %></th>
+    <td><%= f.text_field :official_position, :class => 'string name', :style => 'width: 400px;' %></td>
+  </tr>
+  <tr>
+    <th><%= System::User.human_attribute_name(:assigned_job) %></th>
+    <td><%= f.text_field :assigned_job, :class => 'string name', :style => 'width: 400px;' %></td>
+  </tr>
+</table>
+
+<% if params[:action].in?('new', 'create') %>
+
+<br />
+<div>登録するユーザーの所属を指定してください</div>
+<div style="margin-top:5px;"><%=raw t("rumi.config_settings.base.user_and_group.user.message.new") %></div>
+<table class="show">
+  <tr>
+    <th><%= System::UsersGroup.human_attribute_name(:group_id) %><%= required %></th>
+    <td>
+      <% selected_group_id = params[:ug].present? ? params[:ug][:group_id] : nil %>
+      <%= select_tag('ug[group_id]', 
+        options_for_select(build_select_parent_groups(@groups),
+        selected: selected_group_id, disabled: @disabled_group_ids), include_blank: true,
+        onchange: %Q!rumi.setDisabledForIncludeList(#{@any_group_ids}, this.value, "input[id^='ug_job_order']");!,
+        class: "single-selector") %>
+    </td>
+  </tr>
+  <tr>
+    <th><%= System::UsersGroup.human_attribute_name(:job_order) %><%= required %></th>
+    <td>
+      <%= radio_button_tag 'ug[job_order]', 0, params[:ug] ? params[:ug][:job_order] == '0' : false %>
+      <%= label_tag 'ug_job_order_0', t("rumi.system.user.job_order_0.name") %>
+
+      <%= radio_button_tag 'ug[job_order]', 1, params[:ug] ? params[:ug][:job_order] == '1' : false %>
+      <%= label_tag 'ug_job_order_1', t("rumi.system.user.job_order_1.name") %>
+
+      <%= radio_button_tag 'ug[job_order]', 9, params[:ug] ? params[:ug][:job_order] == '9' : true  %>
+      <%= label_tag 'ug_job_order_9', t("rumi.system.user.job_order_9.name") %>
+    </td>
+  </tr>
+  <tr>
+    <th><%= System::UsersGroup.human_attribute_name(:start_at) %><%= required %></th>
+    <td>
+      <%= text_field_tag 'ug[start_at]', safe{params[:ug] ? params[:ug][:start_at] : Gw.date_str(Time.now)} %>
+      <button type="button" id="ug_start_at_bt" onclick="showCalendar('ug_start_at_bt','ug_start_at')" class="show_cal_bt"></button>
+    </td>
+  </tr>
+  <tr>
+    <th><%= System::UsersGroup.human_attribute_name(:end_at) %></th>
+    <td>
+      <%= text_field_tag 'ug[end_at]', safe{params[:ug][:end_at]} %>
+      <button type="button" id="ug_end_at_bt" onclick="showCalendar('ug_end_at_bt','ug_end_at')" class="show_cal_bt"></button>
+    </td>
+  </tr>
+</table>
+
+<%= javascript_tag %Q!rumi.setDisabledForIncludeList(#{@any_group_ids}, '#{selected_group_id.to_s}', "input[id^='ug_job_order']");! %>
+
+<% end %>
+
+<%= raw(gw_js_include_full) %>

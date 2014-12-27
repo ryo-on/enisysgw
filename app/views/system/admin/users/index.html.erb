@@ -1,0 +1,79 @@
+<div class="piece AdminSetting AdminUsers">
+<%= render :partial => 'header' %>
+  <div class="pieceBody">
+    <%= render :partial => '/system/admin/users/header_menu' %>
+    <%= div_notice %>
+    <div class="editingBox">
+      <span class="btNew"><%= link_to '新規作成', new_system_user_path %></span>
+    </div>
+    <%= render :partial => 'navi' %>
+
+    <%= form_tag '', :method => :get, :class => 'search' do %>
+    <table>
+      <tr>
+        <td colspan=2>
+          表示行数
+          <%= select_tag( 'limit' ,options_for_select(Gw.limit_select, @limit.to_i) ) %>
+
+          <%= System::User.human_attribute_name(:ldap) %>
+          <%= filter_select_tag :ldap, 'system_users_ldaps', params, :default => :all %>
+
+          <%= System::User.human_attribute_name(:state) %>
+          <%= filter_select_tag :state, 'system_states', params, :default => :enabled %>
+        </td>
+      </tr>
+      <tr>
+        <% search_target_names = [System::User.human_attribute_name(:code), System::User.human_attribute_name(:name),
+             System::User.human_attribute_name(:name_en), System::User.human_attribute_name(:email)].join("・") %>
+        <th>検索条件 <%= search_target_names %></th>
+        <td><%= text_field_tag('s_keyword', params[:s_keyword] , :size => 50 ) %></td>
+        <td class="submitters">
+          <%= submit_tag '検索',     :name => :search %>
+          <%= submit_tag 'リセット', :name => :reset %>
+        </td>
+      </tr>
+    </table>
+    <% end %>
+    <table class="index">
+      <colgroup class="action"></colgroup>
+      <colgroup class="code"></colgroup>
+      <colgroup class="ldap"></colgroup>
+      <colgroup class="state"></colgroup>
+      <colgroup class="name"></colgroup>
+      <colgroup class="name_en"></colgroup>
+      <colgroup class="email"></colgroup>
+      <colgroup class="official_position"></colgroup>
+      <colgroup class="_groups"></colgroup>
+      <tbody>
+        <tr>
+          <th></th>
+          <th><%= System::User.human_attribute_name(:code) %></th>
+          <th><%= System::User.human_attribute_name(:ldap) %></th>
+          <th><%= System::User.human_attribute_name(:state) %></th>
+          <th><%= System::User.human_attribute_name(:name) %></th>
+          <th><%= System::User.human_attribute_name(:name_en) %></th>
+          <th><%= System::User.human_attribute_name(:email) %></th>
+          <th><%= System::User.human_attribute_name(:official_position) %></th>
+          <th><%= System::UsersGroup.human_attribute_name(:group_id) %></th>
+        </tr>
+        <% for item in @items %>
+        <tr class="<%= cycle '', 'cycle' %>">
+          <td>
+            <a href="/system/users/<%= item.id -%>">詳細</a>
+          </td>
+          <td><%= item.code -%></td>
+          <td><%= System::UsersGroup.ldap_show(item.ldap) -%></td>
+          <td><%= System::UsersGroup.state_show(item.state) -%></td>
+          <td><%= item.name -%></td>
+          <td><%= item.name_en -%></td>
+          <td><%= item.email -%></td>
+          <td><%= item.official_position -%></td>
+          <td><%= item.show_group_name -%></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <br />
+    <%= paginate @items %>
+  </div>
+</div>

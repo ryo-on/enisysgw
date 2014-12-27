@@ -1,0 +1,56 @@
+<div class="piece prop index">
+  <div class="pieceHeader">
+    <%= render :partial => 'piece_header' -%>
+  </div>
+  <div class="pieceBody">
+    <div class="pieceBodyHeader">
+    <%= render(:partial => '/gw/admin/prop_others/prop_master_menu') %>
+    <%= render(:partial => '/gw/admin/prop_others/titleline') %>
+
+    </div>
+    <div class="pieceBodyBody">
+      <% if @items.blank? -%>
+        <%= Gw.div_notice('表示する項目はありません。') -%>
+      <% else -%>
+        <%= div_notice -%>
+        <table class="index">
+          <colgroup class="name"></colgroup>
+          <colgroup class="name"></colgroup>
+          <colgroup class="name"></colgroup>
+          <colgroup class="name"></colgroup>
+          <colgroup class="group"></colgroup>
+          <colgroup class="action"></colgroup>
+          <colgroup class="action"></colgroup>
+          <tr>
+            <th>設定名称</th>
+            <th>種別</th>
+            <th>予約可能期間</th>
+            <th>予約可能時間</th>
+            <th>所属</th>
+            <th></th>
+            <th></th>
+          </tr>
+          <% @items.each do |item| %>
+            <tr>
+              <td><%= item.name %></td>
+              <td><%= safe{item.prop_type.name} %></td>
+              <% if item.span_limit==1 %>
+                <td>無制限</td>
+              <% else %>
+                <td><%= item.span %>日</td>
+              <% end %>
+              <% if item.time_limit==1 %>
+                <td>無制限</td>
+              <% else %>
+                <td><%= item.span_hour %>時間
+              <% end %>
+              <td><%= truncate_group_names(item.admin) %></td>
+              <td><%= link_to('編集', :action => :edit, :id => item.id) %></td>
+              <td><%= link_to_destroy item.id %></td>
+            </tr>
+          <% end %>
+        </table>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,118 @@
+<div class="piece gadget reminder">
+<div class="pieceHeader"><h3><%= t("rumi.reminder.name") %></h3>
+  <div class="btsHeaderRight">
+    <span class="btAllRead">
+     <%= link_to '一括既読', '#', {:onclick => 'return unseen_check();', :class => 'all_seen'} %>
+    </span>
+  </div>
+</div>
+<div class="borderbox">
+<div class="pieceBody">
+
+<%= form_tag('', {:id => "listForm", :name => "listForm",:method => "post", :multipart => true}) do %>
+<%= hidden_field_tag(:uid, Site.user.id) %>
+<%= hidden_field_tag(:ucode, Site.user.code) %>
+<%= hidden_field_tag(:uname, Site.user.name) %>
+<%= hidden_field_tag(:gcode, Site.user_group.code) %>
+<%= hidden_field_tag(:gname, Site.user_group.name) %>
+<% @reminders.each do |category, reminder| %>
+  <% total_count = reminder[:total_count] %>
+  <div class="reminder-category-title">
+    <!-- 機能名 全N件 -->
+    <%= link_to_reminders_feature(reminder[:title], reminder[:url]) %>
+    <%= t("rumi.reminder.total_count", total_count: total_count) %>
+  </div>
+  <table class="index reminder-table">
+    <tr>
+      <th class="reminder-col-datetime">
+        <!-- 日時 -->
+        <%= t("rumi.reminder.datetime") %>
+        <!-- ▲ -->
+        <%= link_to t("rumi.reminder.sort_asc"), root_path(sort_key: "datetime", order: "asc") %>
+        <!-- ▼ -->
+        <%= link_to t("rumi.reminder.sort_desc"), root_path(sort_key: "datetime", order: "desc") %>
+      </th>
+      <th>
+        <!-- 概要 -->
+        <%= t("rumi.reminder.title") %>
+        <!-- ▲ -->
+        <%= link_to t("rumi.reminder.sort_asc"), root_path(sort_key: "title", order: "asc") %>
+        <!-- ▼ -->
+        <%= link_to t("rumi.reminder.sort_desc"), root_path(sort_key: "title", order: "desc") %>
+      </th>
+      <% if @all_seen_category.include?("#{category}") %>
+      <th class="reminder-checkbox">
+        <!-- 一括既読のチェックボックス -->
+        <%= t("rumi.reminder.all_seen") %>
+      </th>
+      <% end %>
+    </tr>
+    <% reminder[:factors].each do |remind| %>
+      <tr>
+        <td class="reminder-col-datetime">
+          <!-- 日時 -->
+          <%= remind[:datetime].to_datetime.strftime("%m/%d %H:%M") %>
+        </td>
+        <td class='<%= "reminder-#{category}" %>'>
+          <!-- 概要 -->
+          <%= link_to truncate_remind_title(category, remind[:action], remind[:title]), remind[:url], class: category %>
+        </td>
+        <% if @all_seen_category.include?("#{category}") %>
+        <td class="reminder-checkbox">
+          <!-- 一括既読のチェックボックス -->
+          <%= check_box_tag "checkd_reminders_#{category}[#{remind[:id]}]", remind[:id], nil, :id => "checked_reminders_#{remind[:id]}" %>
+        </td>
+        <% end %>
+      </tr>
+    <% end %>
+    <% overflow_count = total_count - 20 %>
+    <% if overflow_count > 0 %>
+      <!-- 他N件 -->
+      <tr>
+      <% if @all_seen_category.include?("#{category}") %>
+        <td colspan="3"><%= t("rumi.reminder.overflow_count", overflow_count: overflow_count) %></td>
+      <% else %>
+        <td colspan="2"><%= t("rumi.reminder.overflow_count", overflow_count: overflow_count) %></td>
+      <% end %>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<% if @reminders.blank? %>
+  <span style="color: #080;"><%= t("rumi.message.empty.list") %></span>
+<% end %>
+
+<% end %>
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+  function unseen_check() {
+    var frm = document.listForm;
+    var len = frm.elements.length;
+    var chk = 0;
+    for ( var i = 0; i < len; i++) {
+      if (frm.elements[i].checked != true) continue;
+        chk += 1;
+    }
+    if (chk == 0) {
+      alert("既読する対象にチェックを入れてください。");
+       return false;
+    }
+    else {
+      <% all_seen_params = {} %>
+      <% all_seen_params[:controller] =  'gw/admin/piece/reminder' %>
+      <% all_seen_params[:action] = 'all_seen_remind' %>
+      return post('<%=raw escape_javascript  url_for(all_seen_params) %>');
+    }
+  }
+
+  function post(action) {
+    var form = $('listForm');
+    form.action = action;
+    form.submit();
+    return false;
+  }
+</script>

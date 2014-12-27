@@ -1,0 +1,15 @@
+<% values = params[:item] && params[:item][:schedule_users_json] ? params[:item][:schedule_users_json] : nz(@users_json) %>
+
+<table class="show">
+  <tr>
+    <th>参加者<%= raw(required('※<br/>' + t("rumi.schedule_prop.form.add_user_comment"))) -%></th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: @selected_parent_group_id_to_user,
+        child_groups: build_select_users(@selectable_affiliated_users),
+        hidden_item_name: "item[schedule_users_json]", values: values,
+        ui_mode: ui_mode_users_schedule, fix_json_value: "1"
+      } %>
+    </td>
+  </tr>
+</table>

@@ -1,0 +1,19 @@
+/var/share/rumigw/log/production.log
+/var/share/rumigw/log/dump.log
+{
+  daily
+  dateext
+  missingok
+  rotate 3650
+  compress
+  delaycompress
+  sharedscripts
+  noolddir
+  postrotate
+    touch /var/share/rumigw/tmp/restart.txt
+    wget --spider http://localhost
+  endscript
+  lastaction
+    mv /var/share/rumigw/log/*.gz /var/log/enisyslog/gw1/ > /dev/null 2>&1
+  endscript
+}

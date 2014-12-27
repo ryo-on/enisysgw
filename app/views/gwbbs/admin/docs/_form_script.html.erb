@@ -1,0 +1,181 @@
+<script type="text/javascript">
+//<![CDATA[
+var my_submit = function(state, action) {
+  supressBeforeUnload = true;
+  var st = $('item_state');
+  st.value = state;
+
+  var item_able_date_text = document.getElementById('item_able_date').value;
+  var item_expiry_date_text = document.getElementById('item_expiry_date').value;
+  var regex = /^\d{4}[\-\/]\d{1,2}[\-\/]\d{1,2}( +\d{1,2}\:\d{1,2}(:\d{1,2})?)?$/;
+  // 終了日を設定しないフラグの設定
+  if (item_expiry_date_text == "") {
+    $("item_inpfld_001").value = "1";
+  }
+  else {
+    $("item_inpfld_001").value = null;
+  }
+
+  // 公開開始日の日付チェック
+  if (item_able_date_text == "") {
+    alert("公開開始日時を入力してください。");
+    return false;
+  }
+  if (!item_able_date_text.match(regex)) {
+    alert("公開開始日時を正しく入力してください。");
+    return false;
+  }
+  // 公開開始日の存在チェック
+  if(item_able_date_text != "") {
+    var match_st = item_able_date_text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})( +(\d{1,2}):(\d{1,2}))?$/);
+    if (!match_st) return false;
+    var s_year = match_st[1];
+    var s_month = match_st[2];
+    var s_day = match_st[3];
+    var s_hour = match_st[5];
+    var s_min = match_st[6];
+    if (typeof s_hour === "undefined"){
+      s_hour = 0;
+    }
+    if (typeof s_min === "undefined"){
+      s_min = 0;
+    }
+    var s_date = new Date(s_year,s_month - 1,s_day,s_hour,s_min,0,0);
+    if ( s_year != s_date.getFullYear() || s_month != s_date.getMonth() + 1 || s_day != s_date.getDate() ||
+      s_hour != s_date.getHours() || s_min != s_date.getMinutes()) {
+        alert('公開開始日時に存在しない日時が設定されています。');
+        return false;
+    }
+  }
+
+  // 公開終了日の日付チェック
+  if (item_expiry_date_text != "" && !item_expiry_date_text.match(regex)) {
+    alert("公開終了日時を正しく入力してください。");
+    return false;
+  }
+  // 公開終了の存在チェック
+  if(item_expiry_date_text != "") {
+    var match_ed = item_expiry_date_text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})( +(\d{1,2}):(\d{1,2}))?$/);
+    if (!match_ed) return false;
+    var e_year = match_ed[1];
+    var e_month = match_ed[2];
+    var e_day = match_ed[3];
+    var e_hour = match_ed[5];
+    var e_min = match_ed[6];
+    if (typeof e_hour === "undefined"){
+      e_hour = 0;
+    }
+    if (typeof e_min === "undefined"){
+      e_min = 0;
+    }
+    var e_date = new Date(e_year,e_month - 1,e_day,e_hour,e_min,0,0);
+    if ( e_year != e_date.getFullYear() || e_month != e_date.getMonth() + 1 || e_day != e_date.getDate() ||
+      e_hour != e_date.getHours() || e_min != e_date.getMinutes()) {
+        alert('公開終了日時に存在しない日時が設定されています。');
+        return false;
+    }
+  }
+  switch (state) {
+  case "public":
+    if (action == 'edit') {
+      var res = confirm('<%= raw I18n.t('rumi.gwbbs.submit.public_update_confirm') %>');
+    }else {
+      var res = confirm('<%= I18n.t('rumi.gwbbs.submit.public_confirm') %>');
+    }
+    if(res == true ){
+      FreezeScreen('<%= I18n.t('rumi.gwbbs.submit.send') %>');
+    } else {
+      return false;
+    }
+    break;
+  case "recognize":
+    var res = confirm('<%= I18n.t('rumi.gwbbs.submit.recognize_confirm') %>');
+    if(res == true ){
+      FreezeScreen('<%= I18n.t('rumi.gwbbs.submit.recognize') %>');
+    } else {
+      return false;
+    }
+    break;
+  case "draft":
+    var res = confirm('<%= I18n.t('rumi.gwbbs.submit.draft_confirm') %>');
+    if(res == true ){
+      FreezeScreen('<%= I18n.t('rumi.gwbbs.submit.draft') %>');
+    } else {
+      return false;
+    }
+    break;
+  default:
+    FreezeScreen('<%= I18n.t('rumi.freezescreen.default') %>');
+    break;
+  }
+  $('itemForm').submit();
+}
+
+var my_search_submit = function() {
+  var item_startdate_text = document.getElementById('startdate').value;
+  var item_enddate_text = document.getElementById('enddate').value;
+  var regex = /^\d{4}[\-\/]\d{1,2}[\-\/]\d{1,2}$/;
+  // 公開開始日の日付チェック
+  if (item_startdate_text != "" && !item_startdate_text.match(regex)) {
+    alert("公開日（期間開始）を正しく入力してください。");
+    return false;
+  }
+  // 公開終了日の日付チェック
+  if (item_enddate_text != "" && !item_enddate_text.match(regex)) {
+    alert("公開日（期間終了）を正しく入力してください。");
+    return false;
+  }
+  // 公開開始日の存在チェック
+  if(item_startdate_text != "") {
+    var match_st = item_startdate_text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (!match_st) return false;
+    var s_year = match_st[1];
+    var s_month = match_st[2];
+    var s_day = match_st[3];
+    var s_date = new Date(s_year,s_month - 1,s_day,0,0,0,0);
+    if ( s_year != s_date.getFullYear() || s_month != s_date.getMonth() + 1 || s_day != s_date.getDate()) {
+        alert('公開日（期間開始）に存在しない日付が設定されています。');
+        return false;
+    }
+  }
+  // 公開終了の存在チェック
+  if(item_enddate_text != "") {
+    var match_ed = item_enddate_text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (!match_ed) return false;
+    var e_year = match_ed[1];
+    var e_month = match_ed[2];
+    var e_day = match_ed[3];
+    var e_date = new Date(e_year,e_month - 1,e_day,0,0,0,0);
+    if ( e_year != e_date.getFullYear() || e_month != e_date.getMonth() + 1 || e_day != e_date.getDate()) {
+        alert('公開日（期間終了）に存在しない日付が設定されています。');
+        return false;
+    }
+  }
+  return true;
+}
+var BlockEnter = function (evt) {
+    evt = (evt) ? evt : event;
+    var charCode=(evt.charCode) ? evt.charCode :
+          ((evt.which) ? evt.which : evt.keyCode);
+    if ( Number(charCode) == 13 || Number(charCode) == 3) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+function FreezeScreen(msg) {
+  scroll(0,0);
+  var outerPane = document.getElementById('FreezePane');
+  var innerPane = document.getElementById('InnerFreezePane');
+  if (outerPane) {
+    outerPane.className = 'FreezePaneOn';
+    var h = Math.max.apply( null, [document.body.clientHeight ,
+                                   document.body.scrollHeight,
+                                   document.documentElement.scrollHeight,
+                                   document.documentElement.clientHeight] )  + 'px';
+    outerPane.style.height = h;
+  }
+  if (innerPane) innerPane.innerHTML = msg;
+}
+//]]>
+</script>

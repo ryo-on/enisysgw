@@ -1,0 +1,78 @@
+<%
+  box_width = 'width:300px;'  #承認者設定枠の幅
+  concat raw hidden_field_tag('init[admins_json]', @item.admins_json)
+  concat raw hidden_field_tag('init[readers_json]', @item.readers_json)
+  user_groups = Gwboard::Group.level
+  groups = Gwboard::Group.level2_only
+%>
+
+<% parent_group_id = Core.user_group.parent_id %>
+<% group_child_groups = build_select_parent_groups(System::Group.child_groups_to_select_option(parent_group_id)) %>
+
+<% affiliated_group_id = Core.user_group.id %>
+<% user_child_group = build_select_users(System::UsersGroup.affiliated_users_to_select_option(affiliated_group_id)) %>
+
+<table class="show">
+  <tr>
+    <th colspan="3" class="titleTop">グループ管理権限設定<%= required('<br />※所属する全ての人に管理権限が設定されます。') %></th>
+  </tr>
+  <tr>
+    <td class="userChange">
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: parent_group_id, child_groups: group_child_groups,
+        hidden_item_name: "item[admin_groups_json]", values: @item.admin_groups_json,
+        ui_mode: ui_mode_groups_default
+      } %>
+    </td>
+  </tr>
+</table>
+<table class="show">
+  <tr>
+    <th colspan="3" class="titleTop">個人管理権限設定<%= required('<br />※指定された個人に管理権限が設定されます。') %></th>
+  </tr>
+  <tr>
+    <td class="userChange">
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: affiliated_group_id, child_groups: user_child_group,
+        hidden_item_name: "item[admins_json]", values: @item.admins_json,
+        ui_mode: ui_mode_users_default
+      } %>
+    </td>
+  </tr>
+</table>
+<table class="show">
+  <tr>
+    <th colspan="3" class="titleTop">グループ閲覧権限設定<%= required('<br />※所属する全ての人に閲覧権限が設定されます。　　※設定が無ければ無条件に閲覧可能になります。') %></th>
+  </tr>
+  <tr>
+    <td class="userChange">
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: parent_group_id, child_groups: group_child_groups,
+        hidden_item_name: "item[reader_groups_json]", values: @item.reader_groups_json,
+        ui_mode: ui_mode_groups_default
+      } %>
+    </td>
+  </tr>
+</table>
+<table class="show">
+  <tr>
+    <th colspan="3" class="titleTop">個人閲覧権限設定<%= required('<br />※指定された個人に閲覧権限が設定されます。　　※設定が無ければ無条件に閲覧可能になります。') %></th>
+  </tr>
+  <tr>
+    <td class="userChange">
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: affiliated_group_id, child_groups: user_child_group,
+        hidden_item_name: "item[readers_json]", values: @item.readers_json,
+        ui_mode: ui_mode_users_default
+      } %>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+//<![CDATA[
+  var my_submit = function() {
+    $('itemForm').submit();
+  }
+//]]>
+</script>

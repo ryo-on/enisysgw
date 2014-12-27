@@ -1,0 +1,148 @@
+<div class="piece AdminSetting AdminUsers">
+  <%= render :partial => 'header' %>
+  <div class="pieceBody">
+    <div class="pieceBodyHeader">
+      <div class="titleLine">
+        <span class="title"><%= t("rumi.system.user.user_profile.upload_title_name")%></span>
+      </div>
+    </div>
+    <div class="pieceBodyBody">
+      <table class="index">
+        <tbody>
+          <tr>
+            <th><%= System::UsersProfileImage.human_attribute_name(:user_name) %></th>
+          </tr>
+          <tr>
+            <td><%= @item.name -%></td>
+          </tr>
+        </tbody>
+      </table>
+      <p><%=raw t("rumi.system.user.user_profile.upload_message") %></p>
+      <%= form_for :profile_image, :url => {:action => :image_create}, :html => {:method => :post, :multipart => true, :id => 'itemForm'} do |f| -%>
+        <%= f.hidden_field  :user_id %>
+        <%= f.hidden_field   :user_code %>
+       <p>
+          <label for="item_upload"><%= t("rumi.system.user.user_profile.upload_item") %></label>
+          <%= f.file_field :upload -%>
+        </p>
+        <p>
+          <label for="item_note"><%= t("rumi.system.user.user_profile.upload_note") %></label>
+          <%= text_field_tag('profile_image[note]', '', :size=>'60') -%>
+        </p>
+        <p>
+          <%= submit_tag 'アップロード' -%>
+          <%= div_notice -%>
+        </p>
+      <% end -%>
+      <hr />
+      <table class="index">
+        <colgroup class="action"></colgroup>
+        <colgroup class="path"></colgroup>
+        <colgroup class="orig_filename"></colgroup>
+        <colgroup class="note"></colgroup>
+        <colgroup class="content_type"></colgroup>
+        <colgroup class="_size"></colgroup>
+        <tbody>
+          <tr>
+            <th class="action"></th>
+            <th class="path"><%= System::UsersProfileImage.human_attribute_name(:path) %></th>
+            <th class="orig_filename"><%= System::UsersProfileImage.human_attribute_name(:orig_filename) %></th>
+            <th class="note"><%= System::UsersProfileImage.human_attribute_name(:note) %></th>
+            <th class="content_type"><%= System::UsersProfileImage.human_attribute_name(:content_type) %></th>
+            <th class="_size"><%= t("rumi.system.user.user_profile.upload_size") %></th>
+          </tr>
+          <% if @is_profile_image -%>
+            <tr>
+              <td class="action">
+                <%= link_to '削除', "/system/users/#{@item.code}/image_destroy", :confirm=>"削除してよろしいですか？" -%>
+              </td>
+              <td class="path">
+                <%= "#{@item.user_profile_image.path}" -%>
+              </td>
+              <td class="orig_filename">
+                <%= "#{@item.user_profile_image.orig_filename}" -%>
+              </td>
+              <td class="note">
+                <%= "#{@item.user_profile_image.note}" -%>
+              </td>
+              <td class="content_type">
+                <%= "#{@item.user_profile_image.content_type}" -%>
+              </td>
+              <td class="_size">
+                <%= "#{@item.user_profile_image._size}" -%>
+              </td>
+            </tr>
+          <% end -%>
+        </tbody>
+      </table>
+      <hr />
+      <table class="show">
+      <tbody>
+        <% if @model.column_used?('name') %>
+        <tr>
+          <th><%= @model.get_column_name('name') -%></th>
+          <td><%= @item.name -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('name_en') %>
+        <tr>
+          <th><%= @model.get_column_name('name_en') -%></th>
+          <td><%= @item.name_en -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('email') %>
+        <tr>
+          <th><%= @model.get_column_name('email') -%></th>
+          <td><%= @item.email -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('official_position') %>
+        <tr>
+          <th><%= @model.get_column_name('official_position') -%></th>
+          <td><%= @item.official_position -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('assigned_job') %>
+        <tr>
+          <th><%= @model.get_column_name('assigned_job') -%></th>
+          <td><%= @item.assigned_job -%></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column1') && @model.get_column_name('add_column1').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column1') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column1 -%><% end %></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column2') && @model.get_column_name('add_column2').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column2') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column2 -%><% end %></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column3') && @model.get_column_name('add_column3').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column3') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column3 -%><% end %></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column4') && @model.get_column_name('add_column4').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column4') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column4 -%><% end %></td>
+        </tr>
+        <% end %>
+        <% if @model.column_used?('add_column5') && @model.get_column_name('add_column5').present? %>
+        <tr>
+          <th><%= @model.get_column_name('add_column5') -%></th>
+          <td><% if @is_profile %><%= @item.user_profile.add_column5 -%><% end %></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+      <div class="btReturn">
+        <%= link_to('プロフィールへ戻る', "/system/users/#{@item.code}/show_profile") -%>
+      </div>
+    </div>
+  </div>
+</div>

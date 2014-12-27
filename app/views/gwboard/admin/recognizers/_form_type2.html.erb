@@ -1,0 +1,11 @@
+<% scat04 = [["承認なし","0"],["承認あり","1"]] %>
+<table class="show" style="margin-top: 10px;">
+  <tr>
+    <th>記事の承認</th>
+    <td><%= f.radio_buttons :category4_id, scat04, :class => 'state'  ,:onclick => 'sel_class1()' %></td>
+  </tr>
+</table>
+
+<div id="item_recog_select1" style="display:none;" >
+  <%= render partial: "gwboard/admin/recognizers/select_group", locals: { f: f } %>
+</div>

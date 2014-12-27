@@ -1,0 +1,15 @@
+<% values = params[:item] && params[:item][:public_groups_json] ? params[:item][:public_groups_json] : nz(@public_groups_json) %>
+
+<table id="public_groups_table" class="show">
+  <tr>
+    <th>公開所属</th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: @selected_parent_group_id_to_public,
+        child_groups: build_select_parent_groups(@selectable_child_groups),
+        hidden_item_name: "item[public_groups_json]", values: values,
+        ui_mode: ui_mode_groups_default, fix_json_value: "2"
+      } %>
+    </td>
+  </tr>
+</table>

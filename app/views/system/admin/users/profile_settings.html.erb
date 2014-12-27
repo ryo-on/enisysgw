@@ -1,0 +1,13 @@
+<div class="piece AdminSetting AdminUsers">
+  <%= render :partial => 'header' %>
+  <div class="pieceBody">
+    <%= render :partial => '/system/admin/users/header_menu' %>
+
+    <%= div_notice -%>
+    <%= form_for :item, :url => {:action => :edit_profile_settings}, :html => {:method => :put} do |f| %>
+      <%= f.error_messages %>
+      <%= render :partial => 'form_profile_setting', :locals => {:f => f} %>
+      <%= submit_for(f, {:caption => '確定する'}) %>
+    <% end %>
+  </div>
+</div>

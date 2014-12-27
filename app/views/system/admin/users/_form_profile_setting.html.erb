@@ -1,0 +1,30 @@
+<% fix_item = ['name','name_en','email','official_position','assigned_job'] %>
+<table class="show">
+  <tbody>
+    <tr>
+      <th><%= t("rumi.config_settings.base.user_profile_setting.title_item") %></th>
+      <th><%= t("rumi.config_settings.base.user_profile_setting.title_used") %></th>
+    </tr>
+
+    <% @items.each_with_index do |item, i| %>
+    <tr class="<%= cycle '', 'cycle' %>">
+      <td>
+        <% if fix_item.include?(item.key_name) %>
+          <%= item.name %>
+        <% else %>
+          <%= f.text_field "name_#{item.id}", :value => item.name, :size => 50, :onkeydown => "return BlockEnter(event);" %>
+        <% end %>
+      </td>
+      <td>
+        <% if item.key_name == 'name' %>
+          <%= f.check_box "used_#{item.id}", {:disabled => true, :checked => true} %>
+        <% else %>
+          <%= f.check_box "used_#{item.id}", {:checked => item.used == 1, :onkeydown => "return BlockEnter(event);"} %>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= raw(render(:partial => 'form_script')) %>

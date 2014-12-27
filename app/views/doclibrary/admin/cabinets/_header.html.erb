@@ -1,0 +1,18 @@
+<div class="contentMenu">
+  <span class="btNew"><%=link_to('ファイルを作成する', new_doclibrary_cabinet_path) if @is_sysadm %></span>
+</div>
+<div class="tabBox">
+<table class="tabtable">
+<tbody>
+<tr>
+<td class="spaceLeft"></td>
+<td class="tab<%= ' current' unless params[:state] == 'HIDE' %>">
+  <%=link_to "管理可能#{t('activerecord.models.doclibrary/category')}",
+      doclibrary_cabinets_path %>
+</td>
+<td class="spaceRight"></td>
+
+</tr>
+</tbody>
+</table>
+</div>

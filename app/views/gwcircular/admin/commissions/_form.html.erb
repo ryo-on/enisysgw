@@ -1,0 +1,37 @@
+<% parent_groups = Gwcircular::CustomGroup.extract_owner_id_without_disable(Site.user.id) %>
+<% first_group_id = Gwcircular::CustomGroup.first_group_id %>
+<% parent_prompt = parent_groups.blank? ? t("rumi.gwcircular.custom_group.message.blank") : false %>
+
+<% affiliated_group_id = Core.user_group.id %>
+<% user_child_group = build_select_users(System::UsersGroup.affiliated_users_to_select_option(affiliated_group_id)) %>
+
+<table class="show">
+  <tr>
+    <th colspan="3" class="titleTop">配信先設定（宛先リスト）<%= required('　事前に登録している宛先リストから選択します。') %></th>
+  </tr>
+  <tr>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_groups: parent_groups, parent_group_selected: first_group_id,
+        child_groups: Gwcircular::CustomGroup.get_user_select(first_group_id),
+        hidden_item_name: "item[reader_groups_json]", values: @item.reader_groups_json,
+        parent_prompt: parent_prompt, ui_mode: ui_mode_users_custom_group
+      } %>
+    </td>
+  </tr>
+</table>
+
+<table class="show">
+  <tr>
+    <th colspan="3" class="titleTop">配信先設定<%= required('　指定された個人に回覧板が配信されます。') %></th>
+  </tr>
+  <tr>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: affiliated_group_id, child_groups: user_child_group,
+        hidden_item_name: "item[readers_json]", values: @item.readers_json,
+        ui_mode: ui_mode_users_default
+      } %>
+    </td>
+  </tr>
+</table>

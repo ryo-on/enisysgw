@@ -1,0 +1,18 @@
+<%= form_for @user, url: url_for(action: :update) do |f| %>
+  <%= f.error_messages %>
+
+  <%= required(t("rumi.config_settings.user_passwords.action.edit.message.note")).html_safe %>
+  <table class="show">
+    <% [:old_password, :new_password, :new_password_confirmation].each do |attr_name| %>
+      <tr>
+        <th><%= System::User.human_attribute_name(attr_name) %></th>
+        <td><%= f.password_field attr_name, class: "string name", style: "width: 200px;" %></td>
+      </tr>
+    <% end %>
+  </table>
+
+  <div class="submitters">
+    <%= f.submit t("rumi.rumi_helper.submit.update") %>
+  </div>
+
+<% end %>

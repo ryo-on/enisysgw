@@ -1,0 +1,68 @@
+<div class="search">
+<%= form_tag doclibrary_docs_path({:title_id=>@title.id}), :method => :get do %>
+  <%= render :partial => 'hidden_form' %>
+  <h4 class="iconSideKey"><%= t('rumi.doclibrary.keyword')  %></h4>
+  <%= text_field_tag 'kwd', params[:kwd], :size => '16' %>
+  <h4 class="iconSideKey"><%= t('rumi.doclibrary.creator')  %></h4>
+  <%= text_field_tag 'creator', params[:creator], :size => '16' %>
+  <h4 class="iconSideKey"><%= t('rumi.doclibrary.created_at')  %></h4>
+  <%= calendar_date_select_tag :term_start, params[:term_start],
+      :image => "/_common/themes/gw/files/icon/ic_act_calendar.png",
+      :size => '7', :time => false %>
+  <span style="margin-left:5px;"><%= t('rumi.doclibrary.search_start')  %></span><br>
+  <%= calendar_date_select_tag :term_finish, params[:term_finish],
+      :image => "/_common/themes/gw/files/icon/ic_act_calendar.png",
+      :size => '7', :time => false %>
+  <span style="margin-left:5px;"><%= t('rumi.doclibrary.search_end')  %></span><br>
+  <div class="submitters">
+    <%= submit_tag '検索', :name => :search, :class => 'btSarch', :onclick => "return my_search_submit();" %>
+    <%= submit_tag 'リセット', :name => :reset, :class => 'btSarch' %>
+  </div>
+<% end %>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var my_search_submit = function() {
+  var item_startdate_text = document.getElementById('term_start').value;
+  var item_enddate_text = document.getElementById('term_finish').value;
+  var regex = /^\d{4}[\-\/]\d{1,2}[\-\/]\d{1,2}$/;
+
+  // 作成日の日付チェック
+  if (item_startdate_text != "" && !item_startdate_text.match(regex)) {
+    alert("作成日（期間開始）を正しく入力してください。");
+    return false;
+  }
+  if (item_enddate_text != "" && !item_enddate_text.match(regex)) {
+    alert("作成日（期間終了）を正しく入力してください。");
+    return false;
+  }
+  // 作成日の存在チェック
+  if (item_startdate_text != "") {
+    var match_st = item_startdate_text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (!match_st) return false;
+    var s_year = match_st[1];
+    var s_month = match_st[2];
+    var s_day = match_st[3];
+    var s_date = new Date(s_year,s_month - 1,s_day,0,0,0,0);
+    if ( s_year != s_date.getFullYear() || s_month != s_date.getMonth() + 1 || s_day != s_date.getDate()) {
+        alert('作成日（期間開始）に存在しない日付が設定されています。');
+        return false;
+    }
+  }
+  if (item_enddate_text != "") {
+    var match_ed = item_enddate_text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (!match_ed) return false;
+    var e_year = match_ed[1];
+    var e_month = match_ed[2];
+    var e_day = match_ed[3];
+    var e_date = new Date(e_year,e_month - 1,e_day,0,0,0,0);
+    if ( e_year != e_date.getFullYear() || e_month != e_date.getMonth() + 1 || e_day != e_date.getDate()) {
+        alert('作成日（期間終了）に存在しない日付が設定されています。');
+        return false;
+    }
+  }
+  return true;
+}
+//]]>
+</script>

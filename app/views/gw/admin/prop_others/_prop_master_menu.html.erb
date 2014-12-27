@@ -1,0 +1,68 @@
+<div class="btBox">
+  <div class="btEtc btHead currentHead">施設</div>
+  <div class="btDayLink btIndex">
+    <%=link_to '日表示', {:controller=> :schedule_props, :action => :show, :id => Time.now.strftime("%Y%m%d"), :s_genre =>"other"} -%>
+  </div>
+  <div class="btWeekLink btIndex">
+    <%=link_to '週表示', {:controller=> :schedule_props, :action => :show_week, :s_data => Time.now.strftime("%Y%m%d"), :s_genre =>"other"} -%>
+  </div>
+  <%# 月表示は表示しないこととする %>
+  <%# if params[:controller] == "gw/admin/prop_others" && ["show", "upload"].include?(params[:action]) -%>
+  <!-- <div class="btMonthLink btIndex">-->
+    <%#=link_to '月表示', {:controller=> :schedule_props, :action => :show_month, :prop_id => @item.id, :s_data => Time.now.strftime("%Y%m%d"), :s_genre =>"other"} -%>
+  <!--</div>-->
+  <%# end -%>
+</div>
+
+<%# リンク部分の統一名称部分 %>
+<% 
+  @name="施設"
+%>
+
+<div class="menu">
+  <% if @is_gw_admin || @schedule_prop_admin || @prop_other_admin %>
+    <a href="/gw/prop_others">
+      <span class="<%= "current_menu" if params[:controller] == "gw/admin/prop_others" -%>">
+        <%= @name %>マスタ
+      </span>
+    </a>
+  <% end %>
+  <% if @is_gw_admin || @schedule_prop_admin %>
+  <a href="/gw/prop_other_limits">
+    <span class="<%= "current_menu" if params[:controller] == "gw/admin/prop_other_limits" -%>">
+      <%= @name %>マスタ件数制限
+    </span>
+  </a>
+  <a href="/gw/prop_types">
+    <span class="<%= "current_menu" if params[:controller] == "gw/admin/prop_types" -%>">
+      <%= @name %>種別マスタ
+    </span>
+  </a>
+  <a href="/gw/prop_admin_settings">
+    <span class="<%= "current_menu" if params[:controller] == "gw/admin/prop_admin_settings" -%>">
+      <%= @name %>予約可能期間･時間設定
+    </span>
+  </a>
+  <a href="/gw/prop_others/import">
+    <span class="<%= "current_menu" if params[:controller] == "gw/admin/prop_others" && (params[:action] == 'import') -%>">
+      <%= @name %>マスタインポート
+    </span>
+  </a>
+  <a href="/gw/prop_others/export">
+    <span class="<%= "current_menu" if params[:controller] == "gw/admin/prop_others" && (params[:action] == 'export') -%>">
+      <%= @name %>マスタエクスポート
+    </span>
+  </a>
+  <a href="/gw/prop_group_settings">
+    <span class="<%= "current_menu" if params[:controller] == "gw/admin/prop_group_settings" -%>">
+      <%= @name %>グループ設定
+    </span>
+  </a>
+  <a href="/gw/prop_groups">
+    <span class="<%= "current_menu" if params[:controller] == "gw/admin/prop_groups" -%>">
+      <%= @name %>グループマスタ
+    </span>
+  </a>
+  <% end %>
+
+</div>

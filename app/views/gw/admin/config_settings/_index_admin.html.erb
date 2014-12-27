@@ -1,0 +1,133 @@
+<%# システム管理者用 %>
+
+<% if params[:c2].to_i==1 %>
+<div class="titleLine">
+  <p class="title"><%= t("rumi.config_settings.top_page.name") %></p>
+</div>
+<ul>
+<li>
+  <span class="function"><%= link_to t("rumi.config_settings.top_page.message.name"), "/gw/admin_messages" %></span>
+  <span class="explanation"><%= t("rumi.config_settings.top_page.message.message") %></span>
+</li>
+<li>
+  <span class="function"><%= link_to t("rumi.config_settings.top_page.link_piece.name"), "/gw/edit_link_pieces?pid=0" %></span>
+  <span class="explanation"><%= t("rumi.config_settings.top_page.link_piece.message") %></span>
+</li>
+</ul>
+<% end %>
+
+<% if params[:c2].to_i==3 %>
+<div class="titleLine">
+  <p class="title">スケジュール設定</p>
+</div>
+<ul>
+<li>
+  <span class="function"><a href="/gw/holidays?category=1"><%= t("rumi.config_settings.scheduler.holiday.name") %></a></span>
+  <span class="explanation">祝祭日の設定を行います。</span>
+</li>
+<li>
+  <span class="function"><a href="/system/custom_groups">カスタムグループ設定</a></span>
+  <span class="explanation">全庁幹部・所属幹部等、共通で利用するカスタムグループを設定します。</span>
+</li>
+<li>
+  <span class="function"><a href="/system/schedule_roles">スケジュール権限設定</a></span>
+  <span class="explanation">指定ユーザーに対するスケジュールの登録・編集・引用作成・削除権限の設定を行います。</span>
+</li>
+<!--
+<li>
+  <span class="function"><a href="/gw/pref_executive_admins"><%#= t("rumi.config_settings.scheduler.pref_executive.name") %></a></span>
+  <span class="explanation"><%#= t("rumi.config_settings.scheduler.pref_executive.message") %></span>
+</li>
+<li>
+  <span class="function"><a href="/gw/pref_director_admins"><%#= t("rumi.config_settings.scheduler.pref_director.name") %></a></span>
+  <span class="explanation"><%#= t("rumi.config_settings.scheduler.pref_director.message") %></span>
+</li>
+-->
+</ul>
+<% end %>
+
+<% if params[:c2].to_i==5 %>
+<div class="titleLine">
+  <p class="title">基本設定</p>
+</div>
+<ul>
+<li>
+  <span class="function"><%= link_to t("rumi.config_settings.base.user_and_group.name"), "/system/users" %></span>
+  <span class="explanation"><%= t("rumi.config_settings.base.user_and_group.message") %></span>
+</li>
+<li>
+  <span class="function"><%= link_to '権限設定' , "/system/roles" %></span>
+  <span class="explanation">各機能の管理者権限設定を行います。</span>
+</li>
+<!--
+<li>
+  <span class="function"><%#= link_to '年度設定' , "/gw/year_fiscal_jps" %></span>
+  <span class="explanation">年度の設定を行います。</span>
+</li>
+<li>
+  <span class="function"><%#= link_to '年号設定' , "/gw/year_mark_jps" %></span>
+  <span class="explanation">年号の設定を行います。</span>
+</li>
+-->
+</ul>
+<% end %>
+
+<% if params[:c2].to_i==6 %>
+  <% if @role_board==true %>
+    <div class="titleLine">
+      <p class="title">掲示板等設定</p>
+    </div>
+    <ul>
+    <% if @role_bbs == true %>
+      <li>
+        <span class="function"><%= link_to '掲示板設定' , "/gwbbs/makers/" %></span>
+        <span class="explanation">掲示板の設定を行います。</span>
+      </li>
+    <% end %>
+    <% if @role_doclibrary == true %>
+      <li>
+        <span class="function"><%= link_to t("rumi.config_settings.bbs_etc.doclibrary.name"), "/doclibrary/cabinets/" %></span>
+        <span class="explanation"><%= t("rumi.config_settings.bbs_etc.doclibrary.message") %></span>
+      </li>
+    <% end %>
+    <% if @role_gwcircular == true %>
+      <li>
+        <span class="function"><%= link_to '回覧板設定' , "/gwcircular/basics/1/" %></span>
+        <span class="explanation">回覧板の設定を行います。</span>
+      </li>
+    <% end %>
+    </ul>
+  <% end %>
+<% end %>
+
+<% if params[:c2].to_i==7 %>
+<div class="titleLine">
+  <p class="title">削除設定</p>
+</div>
+<ul>
+<li>
+  <span class="function"><%= link_to 'スケジュール削除設定' , "/gw/schedule_settings/admin_deletes" %></span>
+  <span class="explanation">過去スケジュールの自動削除設定を行います。</span>
+</li>
+<li>
+  <span class="function"><%= link_to t("rumi.config_settings.auto_delete.bbs.name"), "/gwbbs/itemdeletes" %></span>
+  <span class="explanation">掲示板にある期限切れ記事の自動削除設定を行います。掲示板を選択しての削除も可能です。</span>
+</li>
+<li>
+  <span class="function"><%= link_to '回覧板削除設定' , "/gwcircular/itemdeletes/0/edit" %></span>
+  <span class="explanation">回覧板にある期限切れ記事の自動削除設定を行います。</span>
+</li>
+</ul>
+<% end %>
+
+<% if params[:c2].to_i==9 %>
+<div class="titleLine">
+  <p class="title">アクセス解析</p>
+</div>
+<ul>
+<li>
+  <span class="function"><%= link_to 'アクセス解析' , "/gw/access_logs" %></span>
+  <span class="explanation">指定期間の機能別アクセス量を表示します。</span>
+</li>
+</ul>
+<% end %>

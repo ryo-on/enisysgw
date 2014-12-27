@@ -1,0 +1,6 @@
+00 3 * * * cd /var/share/rumigw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e production 'Gw::Script::Schedule.delete'
+10 3 * * * cd /var/share/rumigw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e production 'Gwbbs::Script::Task.delete'
+20 3 * * * cd /var/share/rumigw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e production 'Gwcircular::Script::Task.delete'
+30 3 * * * cd /var/share/rumigw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e production 'System::Script::Session.delete_expired_sessions'
+40 3 * * * cd /var/share/rumigw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e production 'Gwbbs::Script::Task.preparation_delete'
+50 3 * * * cd /var/share/rumigw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e production 'Doclibrary::Script::Task.preparation_delete'

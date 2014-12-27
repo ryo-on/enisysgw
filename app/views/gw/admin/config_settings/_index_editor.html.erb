@@ -1,0 +1,77 @@
+<%# 特定機能の管理者・編集者 %>
+
+<% if params[:c2].to_i==5 %>
+<% if @base_editor == true %>
+<div class="titleLine">
+  <p class="title">基本設定</p>
+</div>
+<ul>
+  <% if @role_users == true %>
+  <li>
+    <span class="function"><%= link_to t("rumi.config_settings.base.user_and_group.name"), "/system/users" %></span>
+    <span class="explanation"><%= t("rumi.config_settings.base.user_and_group.message") %></span>
+  </li>
+  <% end %>
+</ul>
+<% end %>
+<% end %>
+
+<% if params[:c2].to_i==3 %>
+<% if @schedule_role == true %>
+<div class="titleLine">
+  <p class="title">スケジュール設定</p>
+</div>
+<ul>
+<li>
+  <span class="function"><a href="/gw/holidays?category=1"><%= t("rumi.config_settings.scheduler.holiday.name") %></a></span>
+  <span class="explanation">祝祭日の設定を行います。</span>
+</li>
+<li>
+  <span class="function"><a href="/system/custom_groups?c1=<%= params[:c1] %>">カスタムグループ設定</a></span>
+  <span class="explanation">全庁幹部・所属幹部等、共通で利用するカスタムグループを設定します。</span>
+</li>
+<li>
+  <span class="function"><a href="/system/schedule_roles">スケジュール権限設定</a></span>
+  <span class="explanation">指定ユーザーに対するスケジュールの登録・編集・引用作成・削除権限の設定を行います。</span>
+</li>
+<!--
+<li>
+  <span class="function"><a href="/gw/pref_executive_admins"><%#= t("rumi.config_settings.scheduler.pref_executive.name") %></a></span>
+  <span class="explanation"><%#= t("rumi.config_settings.scheduler.pref_executive.message") %></span>
+</li>
+<li>
+  <span class="function"><a href="/gw/pref_director_admins"><%#= t("rumi.config_settings.scheduler.pref_director.name") %></a></span>
+  <span class="explanation"><%#= t("rumi.config_settings.scheduler.pref_director.message") %></span>
+</li>
+-->
+</ul>
+<% end %>
+<% end %>
+
+<% if params[:c2].to_i==6 %>
+<% if @role_board2 == true %>
+<div class="titleLine">
+  <p class="title">掲示板等設定</p>
+</div>
+<ul>
+  <% if @role_bbs == true %>
+    <li>
+      <span class="function"><%= link_to '掲示板設定' , "/gwbbs/makers/" %></span>
+      <span class="explanation">掲示板の設定を行います。</span>
+    </li>
+  <% end %>
+  <% if @role_doclibrary == true %>
+    <li>
+      <span class="function"><%= link_to t("rumi.config_settings.bbs_etc.doclibrary.name"), "/doclibrary/cabinets/" %></span>
+      <span class="explanation"><%= t("rumi.config_settings.bbs_etc.doclibrary.message") %></span>
+    </li>
+  <% end %>
+  <% if @role_gwcircular == true %>
+    <li>
+      <span class="function"><%= link_to '回覧板設定' , "/gwcircular/basics/1/" %></span>
+      <span class="explanation">回覧板の設定を行います。</span>
+    </li>
+  <% end %>
+</ul>
+<% end %>
+<% end %>

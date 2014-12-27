@@ -1,0 +1,87 @@
+<%
+str_limit = ""
+str_current_cat  = ''
+str_current_grp  = ''
+str_current_date = ''
+str_current_cat  = ' current' if params[:state] == 'CATEGORY'
+str_current_grp  = ' current' if params[:state] == 'GROUP'
+str_current_date = ' current' if params[:state] == 'DATE'
+%>
+<div class="sideMenu" <%=raw @title.sidelist_style %>>
+<%=raw @title.other_system_link unless @title.other_system_link.blank? %>
+<% unless @title.left_index_use == '0' %>
+<%= render :partial => 'search' %>
+<%= link_to @title.left_banner.html_safe, @title.docs_path if @title.left_banner.present? %>
+<% unless @title.form_name == 'form002' %>
+<div class="btBox">
+<div class="btIndex<%= str_current_cat %>">
+  <%= link_to t('rumi.doclibrary.category_order.folder'),
+      "#{doclibrary_docs_path({:title_id=>@title.id,:state=>"CATEGORY"})}#{str_limit}" %>
+</div>
+<div class="btIndex<%= str_current_grp %>">
+  <%= link_to t('rumi.doclibrary.category_order.section'),
+      "#{doclibrary_docs_path({:title_id=>@title.id,:state=>"GROUP"})}#{str_limit}" %>
+</div>
+<% if @title.importance == 0 %><%#区分を使いまわししているので注意　ファイル管理では日付順を表示する区分になります%>
+<div class="btIndex<%= str_current_date %>">
+  <%= link_to t('rumi.doclibrary.category_order.date'),
+      "#{@title.docs_path}&state=DATE#{str_limit}" %>
+</div>
+<% end %>
+</div>
+<% end %>
+
+<%= form_tag '/doclibrary/docs', :method => :get, :id => 'folder_tree_form' do |f| -%>
+  <%= hidden_field_tag(:title_id, params[:title_id]) unless params[:title_id].blank? %>
+  <%= hidden_field_tag(:cat, params[:cat]) unless params[:cat].blank? %>
+  <%= hidden_field_tag(:state, params[:state]) unless params[:state].blank? %>
+  <%= hidden_field_tag(:kwd, params[:kwd]) unless params[:kwd].blank? %>
+  <%= hidden_field_tag(:creator, params[:creator]) unless params[:creator].blank? %>
+  <%= hidden_field_tag(:term_start, params[:term_start]) unless params[:term_start].blank? %>
+  <%= hidden_field_tag(:term_finish, params[:term_finish]) unless params[:term_finish].blank? %>
+  <div id="sideList">
+  <% case params[:state] %>
+  <% when 'GROUP' %>
+    <ul class="section">
+    <% for grp_item in @grp_items %>
+      <%
+        s_children = ''
+        s_children = "#{@group_doc_counts[grp_item.code].total_cnt.to_i}" unless @group_doc_counts[grp_item.code].blank? unless grp_item.code.blank? unless @group_doc_counts.blank?
+        group_name = ''
+        group_name = "#{grp_item.name}(#{s_children})" unless s_children.blank?
+        str_current = ''
+        str_current = 'class="current"'  if grp_item.code.to_s == params[:gcd].to_s
+      %>
+      <% unless group_name.blank? %>
+      <li <%= str_current %>><%= link_to group_name, "#{@title.docs_path}&state=GROUP&gcd=#{grp_item.code}" %></li>
+      <% end %>
+    <% end %>
+    </ul>
+  <% when 'DRAFT', 'RECOGNIZE', 'PUBLISH' %>
+    <ul><li>
+      <ul class="level1">
+        <li class="root folder close">
+          <div class="someFolder">&nbsp;</div>
+          <%= link_to @title.category1_name, "#{@title.docs_path}&state=#{params[:state]}",
+              :class => "folder_name" %>
+        </li>
+      </ul>
+    </li></ul>
+  <% else %>
+    <ul><li>
+      <ul class="level1"><li>
+      <% if flash[:folder_drag_message].present? %>
+        <div class="notice">
+          <%= flash[:folder_drag_message] %>
+         </div>
+      <% end %>
+    </li></ul>
+    </li></ul>
+    <ul id="folder_trees">
+      <%= render :partial => 'folder_trees', :locals => {:obj => @items} %>
+    </ul>
+  <% end %>
+  </div>
+<% end %>
+<% end %><%# left_index_use %>
+</div>

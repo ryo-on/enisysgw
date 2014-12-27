@@ -1,0 +1,41 @@
+<%=render :partial => 'explain' %>
+<table class="index">
+<tr class="headIndex">
+<th style="width:55px;">状態</th>
+<%# if @title.importance.to_s == '1' %>
+<th style="width:10px;" class="item"></th>
+<%# end %>
+<th class="docTitle" style="width:270px;">
+  <%= t('activerecord.attributes.gwcircular/doc.title') %>
+</th>
+<th style="width:210px;">
+  <%= t('activerecord.attributes.gwcircular/doc.creator') %>
+</th>
+<th style="width:110px;">回覧期限日
+  <%= link_to t("rumi.circular.sort_asc"), gwcircular_menus_path(take_params("expiry_date","asc")) %>
+  <%= link_to t("rumi.circular.sort_desc"), gwcircular_menus_path(take_params("expiry_date","desc")) %>
+</th>
+<th style="width:110px;">作成日
+  <%= link_to t("rumi.circular.sort_asc"), gwcircular_menus_path(take_params("created_at","asc")) %>
+  <%= link_to t("rumi.circular.sort_desc"), gwcircular_menus_path(take_params("created_at","desc")) %>
+</th>
+<th style="width:110px;">最終更新日</th>
+</tr>
+<% for item in @items %>
+  <tr class="<%= cycle 'article', 'article cycle' %>">
+  <td><%= raw(status_name(item)) %></td>
+  <%# if @title.importance.to_s == '1' %>
+    <td class="bbsImportant" style="text-align: center;">
+      <% if item.importance.present? && item.importance == 0 %>
+        <span>重要</span>
+      <% end %>
+    </td>
+  <%# end %>
+  <td class="docTitle"><%= link_to item.title, show_path(item) %></td>
+  <td><%= "#{item.createrdivision} #{item.creater}" %></td>
+  <td class="update"><%= item.expiry_date.strftime('%Y-%m-%d %H:%M') %></td>
+  <td class="update"><%= item.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+  <td class="update"><%= item.display_editdate  %></td>
+  </tr>
+<% end %>
+</table>

@@ -1,0 +1,46 @@
+<%= render :partial => 'header' %>
+
+<div class="selectFormBox">
+  <%
+  case params[:state]
+  when 'CATEGORY'
+    concat render :partial => 'doclibrary/admin/user_forms/form001/change_group'
+  when 'DATE', 'GROUP'
+    concat render :partial => 'doclibrary/admin/user_forms/form001/change_group'
+    concat render :partial => 'doclibrary/admin/user_forms/form001/change_category'
+  end
+  %>
+  <% if @is_category_index_form && @has_some_folder_admin %>
+    <span class="fileFolderOption">
+      <%= t('rumi.doclibrary.file_folder_option.label') %>
+    </span>
+    <% drag_option = (params[:drag_option].blank?)? 0 : params[:drag_option].to_i %>
+    <%= radio_button 'file_folder_option', 'option', '0', ((drag_option == 0)? {:checked => true} : {}) %>
+    <%= label 'file_folder_option_label', '0',
+        t('rumi.doclibrary.file_folder_option.move') %>
+    <%= radio_button 'file_folder_option', 'option', '1', ((drag_option == 1)? {:checked => true} : {}) %>
+    <%= label 'file_folder_option_label', '1',
+        t('rumi.doclibrary.file_folder_option.copy') %>
+  <% end %>
+</div>
+
+<!--ファイル一覧-->
+<% if flash[:file_drag_message].present? %>
+  <div class="notice">
+    <%= flash[:file_drag_message] %>
+   </div>
+<% end %>
+<%= render :partial => 'doclibrary/admin/user_forms/form001/index_docs' if @items.present? %>
+
+<!--フォルダ一覧-->
+<% 
+case params[:state]
+when 'CATEGORY'
+  concat render :partial => 'doclibrary/admin/user_forms/form001/index_folders' if @folders.present?
+when 'DRAFT'
+  concat render :partial => 'doclibrary/admin/user_forms/form001/index_folders' if @folders.present? && @is_admin
+end
+%>
+
+<!--添付ファイル一覧-->
+<%= render :partial => 'doclibrary/admin/user_forms/form001/index_files' if @files.present? %>

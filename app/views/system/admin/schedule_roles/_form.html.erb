@@ -1,0 +1,81 @@
+<%
+user_id = Site.user.id
+group_id = Site.user_group.id
+  unless @item.target_uid.blank?
+    user_id = @item.target_uid
+    user_group = System::UsersGroup.find_by_user_id(@item.target_uid)
+    group_id = user_group.group_id
+  end
+%>
+
+<% parent_group_id = Core.user_group.parent_id %>
+<% group_child_groups = build_select_parent_groups(System::Group.child_groups_to_select_option(parent_group_id)) %>
+<% group_values = params[:item] && params[:item][:group_json] ? params[:item][:group_json] : nz(@group_json) %>
+<% affiliated_group_id = Core.user_group.id %>
+<% user_child_group = build_select_users(System::UsersGroup.affiliated_users_to_select_option(affiliated_group_id)) %>
+<% user_values = params[:item] && params[:item][:user_json] ? params[:item][:user_json] : nz(@user_json) %>
+<% selected_group_id = group_id %>
+<% groups = System::Group.without_root.without_disable.extract_readable_group_in_system_users %>
+
+<% selected_user_id = user_id %>
+<% users = System::UsersGroup.affiliated_users_to_select_option(
+     selected_group_id, System::UsersGroup::TO_SELECT_OPTION_SETTINGS[:system_role]) %>
+
+<%= required_head %>
+<table class="show">
+  <tr>
+    <th>対象ユーザー所属<%= required('※') %></th>
+    <td>
+      <%= select_tag("item[gid_raw]",
+        options_for_select(build_select_parent_groups(), selected_group_id),
+        onchange: "rumi.ui.singleSelectGroupOnChange(this.value, 'item_uid_raw', true);", class: "single-selector") %>
+    </td>
+  </tr>
+  <tr>
+    <th>対象ユーザー<%= required('※') %></th>
+    <td>
+      <%= select_tag("item[uid_raw]", options_for_select(build_select_users(users), selected_user_id), class: "single-selector") %>
+    </td>
+  </tr>
+  <tr>
+    <th class="blueIndex">権限付与所属
+      <%= raw(required('<br />所属する全ての人に権限付与されます。')) %></th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: parent_group_id, child_groups: group_child_groups,
+        hidden_item_name: "item[group_json]", values: group_values,
+        ui_mode: ui_mode_groups_default
+      } %>
+    </td>
+    </td>
+  </tr>
+  <tr>
+    <th class="blueIndex">権限付与者
+      <%= raw(required('<br />指定された個人に権限付与されます。<br /><br /> ※対象ユーザーは設定不要')) %>
+    </th>
+    <td>
+      <%= render partial: "shared/select_group", locals: {
+        parent_group_selected: affiliated_group_id, child_groups: user_child_group,
+        hidden_item_name: "item[user_json]", values: user_values,
+        ui_mode: ui_mode_users_default
+      } %>
+    </td>
+  </tr>
+</table>
+<div id="pp"></div>
+<script type="text/javascript">
+//<![CDATA[
+var my_submit = function() {
+
+  var fg = $('item_group_json');
+  var fu = $('item_user_json');
+  // valueが無い、もしくはJSONが空の場合はalertを出す
+    if ((!fg.value || JSON.parse(fg.value).length == 0) && (!fu.value || JSON.parse(fu.value).length == 0)) {
+    alert('権限付与所属もしくは権限付与者が選択されていません。');
+    return false;
+  }
+
+  $('itemForm').submit(); // 送信
+}
+//]]>
+</script>

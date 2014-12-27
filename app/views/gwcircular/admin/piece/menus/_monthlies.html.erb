@@ -1,0 +1,7 @@
+<h3 class="iconSideMonth">月別<span class="<%= 'current' if params[:category] == 'DATE'%>"><%=link_to('月別', "#{gwcircular_menus_path}?category=DATE&cond=#{params[:cond]}")%></span></h3>
+<ul>
+<% for monthly in @monthlies %>
+  <%monthly_name = monthly.month + "(#{monthly.cnt})"%>
+  <li>・<%=link_to(monthly_name, gwcircular_menus_path + "?category=DATE&yyyy=#{monthly.yy}&mm=#{monthly.mm}&cond=#{params[:cond]}")%></li>
+<% end %>
+</ul>

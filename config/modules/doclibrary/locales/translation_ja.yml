@@ -1,0 +1,44 @@
+ja:
+  activerecord:
+    models:
+      doclibrary/category: ファイル管理
+      doclibrary/categories: ファイル管理
+      doclibrary/folder: フォルダ
+      doclibrary/folders: フォルダ
+      doclibrary/group_folder: 部署
+      doclibrary/group_folders: 部署
+      doclibrary/doc: ファイル
+      doclibrary/docs: ファイル
+    attributes:
+      doclibrary/control:
+        title: ファイル管理名
+        adms_json: 管理者設定
+        sureaders_json: 閲覧者設定
+        category1_name: フォルダルート名
+        sort_no: 並び順
+        upload_graphic_file_size_capacity: 画像の総容量制限
+        upload_document_file_size_capacity: 添付の総容量制限
+        upload_graphic_file_size_max: 画像ファイルのサイズ制限
+        upload_document_file_size_max: 添付ファイルのサイズ制限
+      doclibrary/category:
+        state: 状態
+        wareki: 和暦
+        nen: 年
+        gatsu: 月
+        sono: その
+      doclibrary/folder:
+        state: 状態
+        sort_no: 並び順
+        name: 名称
+      doclibrary/group_folder:
+        state: 状態
+        sort_no: 並び順
+        name: 名称
+      doclibrary/doc:
+        state: 状態
+        title: タイトル
+        section_code: 所属フォルダ
+        section: 所属名
+        category1_id: フォルダ
+        category1: フォルダ名
+        category2_id: ""

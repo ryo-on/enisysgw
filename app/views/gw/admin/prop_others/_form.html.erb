@@ -1,0 +1,105 @@
+<%
+u = Site.user
+g = u.groups[0]
+text_style = 'width:30em;'
+%>
+
+<% admin_values = params[:item] && params[:item][:admin_json] ? params[:item][:admin_json] : nz(@admin_json) %>
+<% editor_values = params[:item] && params[:item][:editors_json] ? params[:item][:editors_json] : nz(@editors_json) %>
+<% reader_values = params[:item] && params[:item][:readers_json] ? params[:item][:readers_json] : nz(@readers_json) %>
+
+<%= raw(Gw.required_head) %>
+
+<table class="show">
+<tr>
+  <th>予約</th>
+  <td><%= radio f, 'reserved_state', Gw.yaml_to_array_for_select('t1f0_kyoka_fuka') %></td>
+</tr>
+<tr>
+  <th>並び順</th>
+  <td><%= f.text_field("sort_no", :style => text_style) %> ※数値の小さい順に表示されます。</td>
+</tr>
+<tr>
+  <th>名称 <%= raw(required) %></th>
+  <td><%= f.text_field("name", :style => text_style) %></td>
+</tr>
+<tr>
+  <th>種別 <%= raw(required) %></th>
+  <td><%= f.select(:type_id, options_from_collection_for_select(@prop_types, :id, :name, @item.type_id)) %></td>
+</tr>
+<tr>
+  <th>備考</th>
+  <td><%= form_text_area(f, "comment") %></td>
+</tr>
+<% if false %>
+<tr>
+  <th>公開</th>
+  <td><%= radio f, 'state', Gw.yaml_to_array_for_select('gw_prop_other_states'), :onclick=>'state_radio_onclick();' %></td>
+</tr>
+<tr>
+  <th>他所属からの予約</th>
+  <td><%= radio f, 'edit_state', Gw.yaml_to_array_for_select('t1f0_kyoka_fuka') %></td>
+</tr>
+<% end %>
+<tr>
+  <th>施設管理所属 <%= raw(required) %></th>
+  <td>
+    <%= render partial: "shared/select_group", locals: {
+      parent_group_selected: @parent_group_id, child_groups: build_select_parent_groups(@group_child_groups),
+      hidden_item_name: "item[admin_json]", values: admin_values,
+      ui_mode: ui_mode_groups_default
+    } %>
+  </td>
+</tr>
+<tr>
+  <th>予約可能所属 <%= raw(required) %></th>
+  <td>
+    <%= render partial: "shared/select_group", locals: {
+      parent_group_selected: @parent_group_id, child_groups: build_select_parent_groups(@group_child_groups),
+      hidden_item_name: "item[editors_json]", values: editor_values,
+      ui_mode: ui_mode_groups_include_no_limit
+    } %>
+  </td>
+</tr>
+<tr>
+  <th>照会可能所属</th>
+  <td>
+    <%= render partial: "shared/select_group", locals: {
+      parent_group_selected: @parent_group_id, child_groups: build_select_parent_groups(@group_child_groups),
+      hidden_item_name: "item[readers_json]", values: reader_values,
+      ui_mode: ui_mode_groups_include_no_limit
+    } %>
+  </td>
+</tr>
+</table>
+
+<%= hidden_field_tag("item[sub][extra_flag]", @cls) %>
+<%= hidden_field_tag("item[sub][gid]", g.id) %>
+<%= hidden_field_tag("item[sub][uid]", u.id) %>
+<div id="pp"></div>
+
+<script language = "JavaScript" type="text/javascript">
+<!--
+// 登録ボタン
+var my_submit = function() {
+  $('itemForm').submit();
+}
+
+var state_radio_onclick = function () {
+  idx = radio_selected('item[state]');
+  if (idx == 0) {
+    $('item_edit_state_0').checked = true;
+    $('item_edit_state_0').disabled = true;
+    $('item_edit_state_1').disabled = true;
+  } else if (idx == 1) {
+    $('item_edit_state_0').disabled = false;
+    $('item_edit_state_1').disabled = false;
+  }
+}
+var my_load = function() {
+  state_radio_onclick();
+}
+window.onload = my_load;
+-->
+
+</script>

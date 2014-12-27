@@ -1,0 +1,33 @@
+<div class="piece prop index">
+  <div class="pieceHeader">
+    <%= render :partial => 'piece_header' -%>
+  </div>
+  <div class="pieceBody">
+    <div class="pieceBodyHeader">
+    <%= render(:partial => '/gw/admin/prop_others/prop_master_menu') %>
+    <%= render(:partial => '/gw/admin/prop_others/titleline') %>
+
+    </div>
+    <div class="pieceBodyBody">
+      <% if @groupitems.blank? -%>
+        <%= Gw.div_notice('表示する項目はありません。') -%>
+      <% else -%>
+        <%= div_notice -%>
+        <table class="index">
+          <tr>
+            <th>名称</th>
+            <th>関連施設</th>
+            <th></th>
+          </tr>
+          <% @groupitems.each do | item| -%>
+            <tr class="<%= cycle '', 'cycle' -%>">
+              <td><%= item.name -%></td>
+              <td><%= raw(Gw.join [item.setsubi], '<br />') -%></td>
+              <td><%= link_to('編集', :action => :edit, :id => item.id) -%></td>
+            </tr>
+          <% end %>
+        </table>
+      <% end -%>
+    </div>
+  </div>
+</div>

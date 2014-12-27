@@ -1,0 +1,45 @@
+<%= required_head %>
+<br />
+<div><%=raw t("rumi.config_settings.base.user_and_group.user.message.new") %></div>
+<table class="show">
+  <tr>
+    <% case params[:action] %>
+    <% when 'edit', 'update' %>
+      <th><%= System::UsersGroup.human_attribute_name(:user_id) %></th>
+      <td><%= safe{@item.user.name} %><%= f.hidden_field :user_id, :value => @item.user_id %></td>
+    <% else %>
+      <th><%= System::UsersGroup.human_attribute_name(:user_id) %><%= Gw.required %></th>
+      <td>
+        <%= f.select(:user_id, options_for_select(build_select_users(@users), @item.user_id), {
+          include_blank: true }, { class: "single-selector"}) %>
+      </td>
+    <% end %>
+  </tr>
+  <tr>
+    <th><%= System::UsersGroup.human_attribute_name(:group_id) %><%= Gw.required %></th>
+    <td>
+      <%= f.select(:group_id, 
+        options_for_select(build_select_parent_groups(@groups),
+        selected: @item.group_id, disabled: @disabled_group_ids), { include_blank: true }, {
+          onchange: %Q!rumi.setDisabledForIncludeList(#{@any_group_ids}, this.value, "input[id^='item_job_order']");!,
+          class: "single-selector"
+        }) %>
+    </td>
+  </tr>
+  <tr>
+    <th><%= System::UsersGroup.human_attribute_name(:job_order) %><%= Gw.required %></th>
+    <td><%= f.radio_buttons :job_order, Gw.yaml_to_array_for_select('system_ugs_job_orders'), :class => 'job_order' %></td>
+  </tr>
+  <tr>
+    <th><%= System::UsersGroup.human_attribute_name(:start_at) %><%= Gw.required %></th>
+    <td><%= f.calendar_date_select :start_at, :time => false %></td>
+  </tr>
+  <tr>
+    <th><%= System::UsersGroup.human_attribute_name(:end_at) %></th>
+    <td><%= f.calendar_date_select :end_at, :time => false %></td>
+  </tr>
+</table>
+
+<%= javascript_tag %Q!rumi.setDisabledForIncludeList(#{@any_group_ids}, '#{@item.group_id.to_s}', "input[id^='item_job_order']");! %>
+
+<%= raw(gw_js_include_full) %>

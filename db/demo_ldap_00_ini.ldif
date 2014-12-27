@@ -1,0 +1,29 @@
+dn: dc=city,dc=enisysmail,dc=co,dc=jp
+objectclass: dcObject
+objectclass: organization
+o: VIRTUAL CORPORATION
+dc: inter
+
+
+dn: cn=Manager,dc=city,dc=enisysmail,dc=co,dc=jp
+objectclass: organizationalRole
+cn: Manager
+
+
+dn: ou=Groups,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: Groups
+objectClass: top
+objectClass: organizationalunit
+
+
+dn: ou=People,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: People
+objectClass: top
+objectClass: organizationalunit
+
+
+dn: ou=Special Users,dc=city,dc=enisysmail,dc=co,dc=jp
+ou: Special Users
+objectClass: top
+objectClass: organizationalUnit
+description: Special Administrative Accounts

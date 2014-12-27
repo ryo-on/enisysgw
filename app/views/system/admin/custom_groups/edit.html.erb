@@ -1,0 +1,18 @@
+<div class="piece AdminMessage">
+<div class="pieceHeader">
+<h2 class="pieceTitle">カスタムグループ</h2>
+</div><!--pieceHeader-->
+<div class="pieceBody">
+<% if @is_gw_admin %>
+  <% url =  "/system/custom_groups/#{@item.id}?c1=1" %>
+<% else %>
+  <% url =  "/system/custom_groups/#{@item.id}" %>
+<% end %>
+<%= form_for :item, :url => url, :html => {:method => :put, :id => 'itemForm'} do |f| %>
+<%= f.error_messages %>
+<%= render :partial => 'form', :locals => {:f => f} %>
+<%= raw(submit_for_update f, :js_submitter => 'my_submit()',:caption => '確定する')  %>
+<% end %>
+
+</div><!--pieceBody-->
+</div><!--piece-->

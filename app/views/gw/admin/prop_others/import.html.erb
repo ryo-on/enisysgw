@@ -1,0 +1,29 @@
+<div class="piece prop index">
+  <div class="pieceHeader">
+    <h2>施設マスタインポート</h2>
+  </div>
+  <div class="pieceBody">
+    <div class="pieceBodyHeader">
+      <%= render(:partial => '/gw/admin/prop_others/prop_master_menu') %>
+      <%= render(:partial => '/gw/admin/prop_others/titleline') %>
+      <%= div_notice -%>
+    </div>
+    <div class="pieceBodyBody">
+      <h4>インポート</h4>
+      CSVファイルのインポートにより、施設マスタを登録できます。<br />
+      <%= form_tag "#{gw_prop_others_path}/import_file" , {:method=>:post , :multipart => true} do %>
+      <%#= hidden_field_tag('item[file]','up') %>
+      <table class="show">
+      <tr>
+        <th>対象ファイル</th>
+        <td><%= file_field_tag('item[file]' , :size=>80 , :accept=>'text/csv,text/plain') %></td>
+      </tr>
+      </table>
+      <div class="submitters"><%= submit_tag 'インポート' %></div>
+      <% end %>
+      <br />
+    </div>
+
+  </div>
+
+</div>

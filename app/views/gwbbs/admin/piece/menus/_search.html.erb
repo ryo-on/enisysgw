@@ -1,0 +1,29 @@
+<div class="search">
+<%= form_tag "#{@title.docs_path}", :method => :get do %>
+  <%# 検索対象を絞り込み範囲内に制限する パラメータの持ち回り %>
+  <%= hidden_field_tag 'title_id'   ,params[:title_id]  -%>
+  <%= hidden_field_tag 'state'      ,params[:state]     -%>
+  <%= hidden_field_tag 'limit'      ,params[:limit]     -%><%# 行数　 param -%>
+  <%= hidden_field_tag 'grp'        ,params[:grp]       -%><%# 所属別 param -%>
+  <%= hidden_field_tag 'cat1'       ,params[:cat1]      -%><%# 分類別 param -%>
+  <%= hidden_field_tag 'yyyy'       ,params[:yyyy]      -%><%# 月別　 param -%>
+  <%= hidden_field_tag 'mm'         ,params[:mm]        -%><%# 月別　 param -%>
+  <%#= hidden_field_tag(:title_id, "#{params[:title_id]}") %>
+  <%#= hidden_field_tag(:state, "#{params[:state]}") %>
+  <h4 class="iconSideKey">キーワード</h4>
+  <%= text_field_tag 'kwd', params[:kwd], :size => '16' %>
+  <%# 作成者、公開日を検索項目として追加 %>
+  <h4 class="iconSideKey">作成者</h4>
+  <%= text_field_tag 'creater', params[:creater], :size => '16' %>
+  <h4 class="iconSideKey">公開日</h4>
+  <%= calendar_date_select_tag :startdate, params[:startdate], :class => 'dateTime', :time=> false, :size => '7', :image => "/_common/themes/gw/files/icon/ic_act_calendar.png"%></td>
+  <span style="margin-left:5px;"><%= t('rumi.gwbbs.search_start')  %></span><br>
+  <%= calendar_date_select_tag :enddate, params[:enddate], :class => 'dateTime', :time=> false, :size => '7', :image => "/_common/themes/gw/files/icon/ic_act_calendar.png" %></td>
+  <span style="margin-left:5px;"><%= t('rumi.gwbbs.search_end')  %></span><br>
+  <%= raw(render(:partial => 'gwbbs/admin/docs/form_script')) %>
+  <div class="submitters">
+    <%= submit_tag '検索', :name => :search, :class => 'btSarch', :onclick => "return my_search_submit();" %>
+    <%= submit_tag 'リセット', :name => :reset, :class => 'btSarch' %>
+  </div><!--submitters-->
+<% end %><!--form_tag-->
+</div><!--search-->

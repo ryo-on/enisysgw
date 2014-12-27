@@ -1,0 +1,146 @@
+<%
+  if @item.blank?
+    mce_base_url = ''
+  else
+    mce_base_url = '/_common/modules/gwbbs/' + sprintf("%06d", @item.title_id) + '/' + @item.name + "/" unless @item.name.blank?
+  end
+%>
+
+<% admin_groups = build_select_parent_groups(nil, RumiHelper::PARENT_GROUP_SETTINGS[:default], :code) %>
+<% enable_groups = build_select_user_groups(Core.user.enable_user_groups, :code) %>
+
+<%= raw(tool_tiny_mce(mce_base_url, {:leftbar_mode=>true})) %>
+<%= raw(gw_js_include_full) %>
+
+<% unless @title.one_line_use == 0 %>
+<table class="bbsComment">
+  <tr>
+    <th>1行コメント</th>
+    <td><%= f.select :one_line_note, @item.one_line_states , :class => 'select one_line_note'%></td>
+  </tr>
+</table>
+<% end %>
+<span class="required" style="margin-bottom:0px; margin-left:10px;"><%= required('※') %><%= I18n.t('rumi.bbs.expiry_date_message') %></span>
+<table class="show showExtra">
+  <tr>
+    <th>公開開始日時<%= required('※') %></th>
+    <td>
+      <%
+        case params[:action]
+        when 'new'
+          dd = Gw.date8_to_date(params[:s_date], :default=>'')
+          now = Time.now
+          hour = now.hour # 時間
+          if now.min > 55 && hour <= 22 # 時間繰り上がり用
+            hour = hour + 1
+          end
+          if now.min > 55
+            min = 0
+          else
+            divmod = now.min.divmod(5)
+            if divmod[1] > 0 # 分（5分刻み用）
+              min = (divmod[0] + 1) * 5
+            else
+              min = now.min
+            end
+          end
+          _wrk_st = dd.present? ? Gw.date_to_time(dd) : Time.local(now.year, now.month, now.day, hour, min, 0)
+          d_load_st = Gw.datetime_str(_wrk_st)
+        else
+          dd = Gw.date8_to_date(params[:able_date], :default=>'')
+          d_load_org = params[:able_date].nil? ? nil : dd == '' ? nil : Gw.datetime_str(dd)
+          d_load_st = Gw.datetime_str(d_load_org.blank? ? @item.able_date : d_load_org)
+        end
+      %>
+      <%= f.calendar_date_select :able_date, :value => d_load_st, :time => true, :style => 'width:140px;', :onkeydown => "return BlockEnter(event);" %>
+    </td>
+    <th>公開終了日時</th>
+    <td>
+      <%
+        dd = Gw.date8_to_date(params[:expiry_date], :default=>'')
+        d_load_org = params[:expiry_date].nil? ? nil : dd == '' ? nil : Gw.datetime_str(dd)
+        d_load_ed = Gw.datetime_str(d_load_org.nil? ? @item.expiry_date : d_load_org)
+        d_load_ed = "" if (@item.inpfld_001 == "1")
+      %>
+      <%= f.calendar_date_select :expiry_date, :value => d_load_ed, :time => true, :style => 'width:140px;', :onkeydown => "return BlockEnter(event);" %>
+    </td>
+  </tr>
+  <tr>
+    <th>記事管理課<%= required('※') %></th>
+    <td colspan="3">
+      <%= f.select(:section_code, @is_admin ? admin_groups : enable_groups, :include_blank => '記事の管理課を選択してください') %>
+    </td>
+  </tr>
+  <tr>
+    <th>表示する名称<%= required('※') %></th>
+    <td><%= f.radio_buttons :name_type, @item.name_types_select, :class => 'name_type', :onclick=>'chageNameSectionDisabled(this.value);' %></td>
+    <th>表示する所属<%= required('※') %></th>
+    <td><%= f.select(:name_editor_section_id, enable_groups, :include_blank => '表示する所属を選択してください') %></td>
+  </tr>
+
+<% if @title.category == 1 %>
+  <tr>
+    <th>
+      <%= @title.category1_name unless @title.category1_name.blank? %><%= required('※') %>
+    </th>
+    <td colspan="3">
+      <%= f.select(:category1_id, @categories1.collect{|i|
+        [i.name, i.id]}, :include_blank => '分類を選択してください') %>
+    </td>
+  </tr>
+<% end %>
+<% if @title.importance == 1 %>
+  <tr>
+    <th>ステータス</th>
+    <td colspan="3"><%= f.radio_buttons :importance, @item.importance_states_select, :class => 'state'  %></td>
+  </tr>
+<% end %>
+  <%= f.hidden_field  :inpfld_001 %>
+<%= raw(render(:partial => 'form_script')) %>
+</table>
+
+
+<script type="text/javascript">
+//<![CDATA[
+  function chageDisp(obj,changeObjId) {
+    var display = document.getElementById(changeObjId).style.display;
+    if (display == '') {
+      obj.innerHTML = '開く▼';
+    } else if (display == 'none') {
+      obj.innerHTML = '閉じる▲';
+    }
+    Element.toggle($(changeObjId));
+  }
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+  var supressBeforeUnload = false;
+
+  window.onbeforeunload = function( event ) {
+    if (!supressBeforeUnload) {
+      event = event || window.event;
+      event.returnValue = "保存していない場合、編集中の内容は失われます";
+      return "保存していない場合、編集中の内容は失われます";
+    }
+  }
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+  function chageNameSectionDisabled(check) {
+    if (check == 1 || check == 2) {
+      document.getElementById('item_name_editor_section_id').disabled = "";
+    } else {
+      document.getElementById('item_name_editor_section_id').disabled = "disabled";
+    }
+  }
+
+  var my_load = function() {
+    chageNameSectionDisabled(<%= @item.name_type %>);
+  }
+window.onload = my_load;
+//]]>
+</script>

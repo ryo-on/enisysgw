@@ -1,0 +1,61 @@
+<% if action_name == 'edit' || action_name == 'update' %>
+  <%= f.text_field :edit_start, :type => 'hidden', :value => params[:edit_start] %>
+<% end %>
+
+<% admin_groups = build_select_parent_groups(nil, RumiHelper::PARENT_GROUP_SETTINGS[:default], :code) %>
+<% enable_groups = build_select_user_groups(Core.user.enable_user_groups, :code) %>
+<%= required_head %>
+<table class="show">
+  <tr>
+    <th>記事管理課<br />（所属フォルダ）<%= required('※') %></th>
+    <td>
+      <%= f.select(:section_code, @is_admin ? admin_groups : enable_groups, :include_blank => '記事の管理課を選択してください') %>
+    </td>
+  </tr>
+</table>
+<table class="show">
+  <tr>
+    <th><%= t('activerecord.attributes.doclibrary/doc.category1_id') %><%= required('※') %></th>
+    <td>
+      <%= required("#{t('activerecord.attributes.doclibrary/doc.category1_id')}が登録されていません") if @category_levels == []%>
+      <%= f.select(:category1_id, @category_levels,
+          :include_blank => "#{t('activerecord.attributes.doclibrary/doc.category1_id')}を選択してください",
+          :disabled => @without_admin_folders) unless @category_levels == [] %>
+    </td>
+  </tr>
+</table>
+<table class="show">
+  <tr>
+    <th><%= t('activerecord.attributes.doclibrary/doc.title') %><%= required('※') %></th></tr><tr>
+    <td><%= f.text_area :title, :cols=>"82", :rows=>"2" %></td>
+  </tr>
+</table>
+
+<table class="show">
+  <tr>
+    <th>説明</th></tr><tr>
+    <td class="mceEditor">
+      <%= f.text_area :body, :class => 'mceEditor', :style => 'width:100%;height:200px;' %>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+//<![CDATA[
+  function chageDisp(obj,changeObjId) {
+    var display = document.getElementById(changeObjId).style.display;
+    if (display == '') {
+      obj.innerHTML = '開く▼';
+    } else if (display == 'none') {
+      obj.innerHTML = '閉じる▲';
+    }
+    Element.toggle($(changeObjId));
+  }
+//]]>
+</script>
+<%if attach_use_old%>
+  <%=gwboard_image_form(f, @item, 'item_body')%>
+  <%=gwboard_attach_form(f, @item)%>
+<%else%>
+  <%=gwboard_attachments_form(f, @item)%>
+<%end%>

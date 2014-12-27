@@ -1,0 +1,16 @@
+<%= form_tag '', :method => :get, :class => 'changeCategory' do %>
+  <%= hidden_field_tag(:title_id, params[:title_id]) unless params[:title_id].blank? %>
+  <%= hidden_field_tag(:state, params[:state]) unless params[:state].blank? %>
+  <%= hidden_field_tag(:gcd, params[:gcd]) unless params[:gcd].blank? %>
+  <span><%= t('rumi.doclibrary.folder_selector') %></span>
+  <% if params[:cat].blank? %>
+    <%= select_tag :cat, "<option value=''>全て</option>#{options_from_collection_for_select(@select_categories, :first, :last, '')}".html_safe, :onchange => 'submit();' %>
+  <% else %>
+    <%= select_tag :cat, "<option value=''>全て</option>#{options_from_collection_for_select(@select_categories, :first, :last, params[:cat].to_i)}".html_safe, :onchange => 'submit();' %>
+  <% end %>
+  <%= hidden_field_tag(:kwd, params[:kwd]) unless params[:kwd].blank? %>
+  <%= hidden_field_tag(:creator, params[:creator]) unless params[:creator].blank? %>
+  <%= hidden_field_tag(:term_start, params[:term_start]) unless params[:term_start].blank? %>
+  <%= hidden_field_tag(:term_finish, params[:term_finish]) unless params[:term_finish].blank? %>
+  <%= hidden_field_tag(:limit, params[:limit]) unless params[:limit].blank? %>
+<!-- end .search --><% end %>

@@ -1,0 +1,45 @@
+<div class="tabBox">
+<table class="tabtable">
+  <tbody>
+  <tr>
+  <% if params[:action] == "csvget" %>
+  <td class="spaceLeft"></td>
+  <td class="tabLong current AdminSettingBodyWhite">
+  <%= t("rumi.config_settings.base.user_and_group.csv.feature.output.name") %></td>
+  <% else %>
+  <td class="spaceLeft"></td>
+  <td class="tabLong"><%= link_to t("rumi.config_settings.base.user_and_group.csv.feature.output.name"), csvget_system_users_path %></td>
+  <% end %>
+
+  <% if params[:action] == "csvup" %>
+  <td class="spaceCenter"></td>
+  <td class="tabLong current AdminSettingBodyWhite">
+  <%= t("rumi.config_settings.base.user_and_group.csv.feature.input.name") %></td>
+  <% else %>
+  <td class="spaceCenter"></td>
+  <td class="tabLong"><%= link_to t("rumi.config_settings.base.user_and_group.csv.feature.input.name"), csvup_system_users_path %></td>
+  <% end %>
+
+  <% if params[:action] == "csv" %>
+  <td class="spaceCenter"></td>
+  <td class="tabLong current AdminSettingBodyWhite">
+  <%= t("rumi.config_settings.base.user_and_group.csv.feature.index.name") %></td>
+  <% else %>
+  <td class="spaceCenter"></td>
+  <td class="tabLong"><%= link_to t("rumi.config_settings.base.user_and_group.csv.feature.index.name"), csv_system_users_path %></td>
+  <% end %>
+
+  <% if params[:action] == "csvset" %>
+  <td class="spaceCenter"></td>
+  <td class="tabLong current AdminSettingBodyWhite">
+  <%= t("rumi.config_settings.base.user_and_group.csv.feature.save.name") %></td>
+  <% else %>
+  <td class="spaceCenter"></td>
+  <td class="tabLong"><%= link_to t("rumi.config_settings.base.user_and_group.csv.feature.save.name"), csvset_system_users_path %></td>
+  <% end %>
+  <td class="spaceRight"></td>
+  </tr>
+  </tbody>
+</table>
+</div>
+<br>

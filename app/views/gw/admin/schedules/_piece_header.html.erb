@@ -1,0 +1,48 @@
+<%
+if @key=='ssos'
+elsif @key=='mobiles'
+else
+  @role_schedule = System::Model::Role.get(1, Core.user.id ,'schedule_role', 'admin')
+  @is_gw_admin = Gw.is_admin_admin?
+  @schedule_admin = @is_gw_admin || @role_schedule
+  setting_url = @schedule_admin ? "/gw/schedules/setting" : "/gw/schedules/setting_ind"
+  class_tag = @schedule_admin ? "btSetAdd" : "btSet"
+end
+
+if params[:s_genre].present?
+  s_genre = "?s_genre=#{params[:s_genre]}"
+else
+  s_genre = ""
+end
+
+if @schedule_settings.present?
+  if nz(@schedule_settings[:view_schedule_title_display], 0).to_i == 0
+    class_str = "schedule-display-setting-all"
+  else
+    class_str = "schedule-display-setting-notall"
+  end
+end
+
+shedule_params = request.fullpath
+%>
+<% if @key == 'ssos' -%>
+<% elsif @key=='mobiles' -%>
+<h2 class="pieceTitle">連絡メモ</h2>
+<% else -%>
+<h2 class="pieceTitle"><%= nz(@piece_head_title, 'スケジュール') -%></h2>
+<div class="btsHeaderLeft">
+  <% if s_genre == "?s_genre=other" -%>
+    <span class="btPropsNew"><%= link_to '新規作成', new_gw_schedule_path + s_genre -%></span>
+  <% else -%>
+    <span class="btNew"><%= link_to '新規作成', new_gw_schedule_path + s_genre -%></span>
+  <% end -%>
+</div>
+<div class="btsHeaderRight">
+  <%  mode ||= '' %>
+  <% if ['week', 'month'].include?(mode) %>
+    <span class="<%= class_str -%>"><%= link_to '一部表示',
+        :action =>"schedule_display", :s_params => shedule_params %></span>
+  <% end %>
+<span class="<%= class_tag -%>"><%= link_to '設定する', setting_url -%></span>
+</div>
+<% end -%>

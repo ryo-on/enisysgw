@@ -1,0 +1,8 @@
+<% values = params[:item] && params[:item][:schedule_roles_json] ? params[:item][:schedule_roles_json] : nz(@roles_json) %> 
+
+<%= render partial: "shared/select_group", locals: {
+  child_group_selected: @selected_parent_group_id_to_group,
+  child_groups: build_select_parent_groups,
+  hidden_item_name: "item[schedule_roles_json]", values: values,
+  ui_mode: ui_mode_groups_custom_group, fix_json_value: "2"
+} %>

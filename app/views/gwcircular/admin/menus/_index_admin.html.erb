@@ -1,0 +1,47 @@
+<%=render :partial => 'explain' %>
+<table class="index">
+<tr class="headIndex">
+<th style="width:60px;">状態</th>
+<%# if @title.importance.to_s == '1' %>
+<th style="width:10px;" class="item"></th>
+<%# end %>
+<th class="docTitle" style="width:20%;">
+  <%= t('activerecord.attributes.gwcircular/doc.title') %>
+</th>
+<th style="width:12%;">
+  <%= t('activerecord.attributes.gwcircular/doc.creator') %>
+</th>
+<th style="width:55px;">回覧状況</th>
+<th style="width:12%;">回覧期限日
+  <%= link_to t("rumi.circular.sort_asc"), gwcircular_menus_path(take_params("expiry_date","asc")) %>
+  <%= link_to t("rumi.circular.sort_desc"), gwcircular_menus_path(take_params("expiry_date","desc")) %>
+</th>
+<th style="width:12%;">作成日
+  <%= link_to t("rumi.circular.sort_asc"), gwcircular_menus_path(take_params("created_at","asc")) %>
+  <%= link_to t("rumi.circular.sort_desc"), gwcircular_menus_path(take_params("created_at","desc")) %>
+</th>
+<th style="width:12%;">最終更新日</th>
+<th style ="width: 70px;">CSVﾌｧｲﾙ</th>
+<th style ="width: 70px;">添付ﾌｧｲﾙ</th>
+</tr>
+<% for item in @items %>
+  <tr class="<%= cycle 'article', 'article cycle' %>">
+  <td><%= raw(status_name(item)) %></td>
+  <%# if @title.importance.to_s == '1' %>
+    <td class="bbsImportant" style="text-align: center;">
+      <% if item.importance.present? && item.importance == 0 %>
+        <span>重要</span>
+      <% end %>
+    </td>
+  <%# end %>
+  <td class="docTitle"><%= link_to item.title, "#{show_path(item)}?cond=admin" %></td>
+  <td class="update"><%= item.target_user_name %></td>
+  <td><%= item.commission_info %></td>
+  <td class="update"><%= item.expiry_date.strftime('%Y-%m-%d %H:%M') %></td>
+  <td class="update"><%= item.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+  <td class="update"><%= item.latest_updated_at.strftime('%Y-%m-%d %H:%M') %></td>
+  <td align="center"><%= link_to '出力', csv_exports_path(item, "admin") %></td>
+  <td align="center"><%= link_to '出力', file_exports_path(item, "admin") %></td>
+  </tr>
+<% end %>
+</table>

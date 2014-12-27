@@ -1,0 +1,58 @@
+<div class="piece AdminSetting AdminUsersGroups">
+<%= render :partial => 'header' %>
+  <div class="pieceBody">
+    <%= render :partial => '/system/admin/users/header_menu' %>
+    <%= render :partial => 'switching' %>
+    <%= render :partial => '/system/admin/groups/navi' %>
+    <%= div_notice %>
+    <div class="editingBox">
+      <span class="btEdit">
+      <%= action_menu :edit %>
+      </span>
+      <span class="btDestroy">
+      <%= action_menu :destroy %>
+      </span>
+    </div>
+
+    <div><%= t("rumi.config_settings.base.user_and_group.users_group.message.edit") %></div>
+    <div><%= t("rumi.config_settings.base.user_and_group.users_group.message.destroy") %></div>
+
+    <% user = @item.user %>
+    <table class="show">
+      <tbody>
+        <tr>
+          <th><%= System::UsersGroup.human_attribute_name(:user_id) %></th>
+          <td><%= safe{user.name} %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroup.human_attribute_name(:group_id) %></th>
+          <td><%= @item.show_group_name %></td>
+        </tr>
+        <tr>
+          <th><%= System::User.human_attribute_name(:official_position) %></th>
+          <td><%= safe{user.official_position} %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroup.human_attribute_name(:job_order) %></th>
+          <td><%= System::UsersGroup.job_order_show(@item.job_order) %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroup.human_attribute_name(:start_at) %></th>
+          <td><%= safe{Gw.date_str(@item.start_at)} %></td>
+        </tr>
+        <tr>
+          <th><%= System::UsersGroup.human_attribute_name(:end_at) %></th>
+          <td><%= safe{Gw.date_str(@item.end_at)} %></td>
+        </tr>
+        <tr>
+          <th><%= System::User.human_attribute_name(:state) %></th>
+          <td><%= safe{System::UsersGroup.state_show(user.state) } %></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="btReturn">
+      <%=link_to '戻る', system_users_groups_path(@parent) %>
+    </div>
+  </div>
+</div>

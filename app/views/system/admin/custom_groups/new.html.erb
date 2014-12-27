@@ -1,0 +1,17 @@
+<div class="piece AdminMessage">
+  <div class="pieceHeader">
+    <h2 class="pieceTitle">カスタムグループ</h2>
+  </div><!--pieceHeader-->
+  <div class="pieceBody">
+<% if @is_gw_admin %>
+  <% url =  "/system/custom_groups?c1=1" %>
+<% else %>
+  <% url =  "/system/custom_groups" %>
+<% end %>
+    <%= form_for :item, :url => url, :html => {:method => :create, :id => 'itemForm'} do |f| %>
+    <%= f.error_messages %>
+    <%= render :partial => 'form', :locals => {:f => f} %>
+    <%= raw(submit_for_create f, :js_submitter => 'my_submit()', :caption => '登録する') %>
+    <% end %>
+  </div><!--pieceBody-->
+</div><!--piece-->

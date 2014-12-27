@@ -1,0 +1,80 @@
+<%
+  s_cond_btn = ''
+  s_cond_btn = '?cond=admin' if params[:cond] == 'admin'
+
+  forword_id = "?" + @item.id.to_s
+  this_path = gwcircular_menus_path
+%>
+<!--<div class="bbsDocList circular">
+<%#= render :partial => 'piece_header' %>
+<%#= render :partial => 'piece_banner' %>
+
+<div class="pieceBody">
+-->
+<%= render :partial => 'header' %>
+<div class="editingBox">
+<span class="btEdit"><%= link_to '編集', "#{this_path}/#{@item.id}/edit#{s_cond_btn}" %></span>
+<span class="btDestroy"><%= link_to '削除', "#{this_path}/#{@item.id}#{s_cond_btn}", :confirm => '削除をすると元に戻せません。削除しますか', :method => :delete %></span>
+
+  <span class="btForword"><a href="/gwcircular/new?forword_id=<%= @item.id %>">転送する</a></span>
+  <span class="btCopy"><a href="/gwcircular/new?copy_id=<%= @item.id %>">複製する</a></span>
+</div>
+  
+<div class="docsInnerBox">
+
+<table class="bbsExpirydate">
+  <tr>
+    <td>　回覧期限日時 : </td>
+    <td class="space"></td>
+    <td><%=@item.expiry_date.strftime('%Y-%m-%d %H:%M') unless @item.expiry_date.blank?%></td>
+  </tr>
+</table>
+
+<div class="bbsCreatorInf">
+<table>
+<tr>
+<td>作成 : &nbsp;</td>
+<td><%= @item.createrdivision %></td>
+<td class="space"></td>
+<td><%= @item.creater %></td>
+<td class="space"></td>
+<td><%= @item.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+</tr>
+</table>
+</div>
+
+<div class="bbsUserform">
+<table class="bbsUserformBody">
+<tr><td class="docTitle"><span><%= hbr(@item.title) %></span></td></tr>
+<tr><td class="spaceBottom"></td></tr>
+<tr><td><%= raw(@item.body) %></td></tr>
+</table>
+</div>
+
+</div><!--docsInnerBox-->
+
+<div style="padding: 0px 10px;">
+  <% if attach_use_old %>
+    <%= render :partial => '/gwboard/admin/docs/upload_index' %>
+  <% else %>
+    <%= render :partial => '/gwboard/admin/docs/library_index' %>
+  <% end %>
+</div>
+
+<table class="show">
+<tr><th><%= Gwcircular::Doc.human_attribute_name(:spec_config) %></th>
+<td><%= @item.spec_config_name_status %></td></tr>
+</table>
+
+<%=render :partial => 'commissions' %>
+
+<!--戻るボタン-->
+<div class="btReturn">
+  <%=link_to '回覧板一覧へ戻る', "#{this_path}#{cond_param(params[:cond])}" %>
+</div>
+<div id="FreezePane" class="FreezePaneOff">
+   <div id="InnerFreezePane" class="InnerFreezePane"> </div>
+</div>
+<!--</div><!--pieceBody-->
+<!--</div><!--bbsDocList circular-->
+

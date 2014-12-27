@@ -1,0 +1,60 @@
+<%= render :partial => 'folder_name' %>
+<%= required_head %>
+
+<%= form_for :item, :url => "/doclibrary/folders?title_id=#{params[:title_id]}&state=#{params[:state]}&cat=#{params[:cat]}&grp=#{params[:grp]}&gcd=#{params[:gcd]}", :html => {:method=>:post, :multipart => true, :id => 'itemForm'} do |f| %>
+
+  <%= f.error_messages %>
+
+  <%= render :partial => 'form', :locals => {:f => f} %>
+
+  <div class="submitters">
+    <input id="item_submit" name="commit" onclick="return my_submit('create');" type="button" value="登録する" />
+  </div>
+
+<% end %>
+
+<div class="btReturn">
+  <%= link_to 'ファイル一覧へ', "#{doclibrary_docs_path({:title_id=>@title.id})}&state=#{params[:state]}&grp=#{params[:grp]}&gcd=#{params[:gcd]}" %>
+</div>
+<script type="text/javascript">
+//<![CDATA[
+var my_submit = function(state) {
+  switch (state) {
+  case "create":
+    var res = confirm('<%= I18n.t('rumi.doclibrary.submit.f_create_confirm') %>');
+    if(res == true ){
+      FreezeScreen('<%= I18n.t('rumi.doclibrary.submit.f_create') %>');
+    } else {
+      return false;
+    }
+    break;
+  case "edit":
+    var res = confirm('<%= I18n.t('rumi.doclibrary.submit.f_edit_confirm') %>');
+    if(res == true ){
+      FreezeScreen('<%= I18n.t('rumi.doclibrary.submit.f_edit') %>');
+    } else {
+      return false;
+    }
+    break;
+  default:
+    FreezeScreen('<%= I18n.t('rumi.freezescreen.default') %>');
+    break;
+  }
+  $('itemForm').submit();
+}
+function FreezeScreen(msg) {
+  scroll(0,0);
+  var outerPane = document.getElementById('FreezePane');
+  var innerPane = document.getElementById('InnerFreezePane');
+  if (outerPane) {
+    outerPane.className = 'FreezePaneOn';
+    var h = Math.max.apply( null, [document.body.clientHeight ,
+                                   document.body.scrollHeight,
+                                   document.documentElement.scrollHeight,
+                                   document.documentElement.clientHeight] )  + 'px';
+    outerPane.style.height = h;
+  }
+  if (innerPane) innerPane.innerHTML = msg;
+}
+//]]>
+</script>

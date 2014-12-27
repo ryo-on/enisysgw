@@ -1,0 +1,30 @@
+<div class="piece AdminMessage">
+<%= render :partial => 'header' %>
+
+<div class="pieceBody">
+<div class="editingBox">
+  <span class="btNew"><%= link_to '新規作成', "/system/schedule_roles/new" %></span>
+</div>
+<%= div_notice -%>
+<table class="index">
+  <tbody>
+    <tr>
+      <th style="width: 60px;"></th>
+      <th>対象ユーザー名</th>
+      <th style="text-align: center;">権限付与所属</th>
+      <th style="text-align: center;">権限付与者</th>
+    </tr>
+    <% for item in @items %>
+    <tr class="<%= cycle '', 'cycle' %>">
+      <td style="text-align: center;"><%= link_to "詳細", :action => :show, :id => item.id %></td>
+      <td><%= item.target %></td>
+      <td style="text-align: center;"><%= truncate_group_names(item.groups) %></td>
+      <td style="text-align: center;"><%= truncate_group_names(item.users) %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+
+</div>
+</div>

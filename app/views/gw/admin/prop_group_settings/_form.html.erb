@@ -1,0 +1,70 @@
+<table class="show">
+  <tr>
+    <th>施設グループ名</th>
+    <td><%= @item.name %></td>
+  </tr>
+</table>
+
+<%
+_params = params.dup
+
+admin = Gw.is_admin_admin?
+_defalut_props = Gw::PropGroupSetting.getajax _params
+defalut_props = _defalut_props.collect{|x| [x[2], x[1]]}
+%>
+<%= hidden_field_tag('init[prop_id]', params[:prop_id]) %>
+<%= hidden_field_tag('init[prop_group_settings_json]',
+  (params[:item] && params[:item][:prop_group_settings_json] ? params[:item][:prop_group_settings_json] : nz(@prop_group_settings_json) )) %>
+<table class="show" id="prop_items_table">
+  <tr>
+    <th><span>関連施設</span></th>
+    <td>
+      <table border="0">
+        <tr>
+          <td>
+            <%= select_tag("item[prop_group_settings][prop_type_id]", options_from_collection_for_select(@prop_types, :id, :name, 100), :onchange=>'update_prop_cand();') %>
+            <br />
+            <%= select_tag("item[prop_group_settings][prop_id]", Gw.options_for_select(defalut_props, nil, :title=>'other'), :size=>10, :style => 'width:280px;', :ondblclick => 'add_prop()', :multiple => true) %>
+          </td>
+          <td>
+            <%= button_to_function '追加 →', 'add_prop()' %>
+            <br /><br />
+            <%= button_to_function '← 削除', 'del_prop()' %>
+          </td>
+          <td>
+            <%= select_tag("item[prop_group_settings_add_buf]", '', :size=>10, :style => 'width:280px;', :ondblclick => 'del_prop()', :multiple => true) %>
+            <%= hidden_field_tag 'item[prop_group_settings_json]', '' -%>
+          </td>
+        </tr>
+      </table>
+      <%= raw(Gw.div_notice '', :id=>'notice_ajax_prop') -%>
+    </td>
+  </tr>
+</table>
+
+
+<%= raw(render(:partial => 'form_script')) %>
+
+
+<script type="text/javascript">
+//<![CDATA[
+var my_submit = function() {
+  // prop
+  var fr = $('item_prop_group_settings_add_buf');
+  var ary = [];
+  for (var i = 0; i < fr.options.length; i++)
+    ary.push([fr[i].title, fr[i].value, fr[i].innerHTML]);
+  var to = $('item_prop_group_settings_json');
+  to.value = Object.toJSON(ary);
+  fr.selectedIndex = -1; // fr の送信を抑止
+
+  $('itemForm').submit(); // 送信
+
+}
+var my_load = function() {
+
+  my_load_core('prop');
+}
+window.onload = my_load;
+//]]>
+</script>

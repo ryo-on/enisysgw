@@ -1,0 +1,124 @@
+ja: 
+  activerecord: 
+    attributes:
+      system/group: 
+        state: "状態"
+        created_at: "作成日時"
+        updated_at: "更新日時"
+        parent_id: "上位グループ"
+        level_no: "階層レベル"
+        sort_no: "並び順"
+        code: "グループID"
+        name: "グループ名"
+        name_en: "グループ名（英）"
+        email: "メールアドレス"
+        ldap: "LDAP同期"
+        ldap_version: "LDAP同期バージョン"
+        start_at: "適用開始日"
+        end_at: "適用終了日"
+        category: 組織・任意
+      system/users_group:
+        created_at: "作成日時"
+        updated_at: "更新日時"
+        user_id: "ユーザー"
+        group_id: "所属グループ"
+        job_order: "本務・兼務"
+        start_at: "配属開始日"
+        end_at: "配属終了日"
+      system/user:
+        id: "コード"
+        password: "パスワード"
+        code: "ユーザーID"
+        name: "名前"
+        name_en: "名前（英）"
+        kana: "フリガナ"
+        email: :activerecord.attributes.system/group.email
+        mobile_password: "携帯用パスワード"
+        remember_token: "トークン"
+        remember_token_expires_at: "トークン有効期限"
+        state: :activerecord.attributes.system/group.state
+        ldap: :activerecord.attributes.system/group.ldap
+        sort_no: :activerecord.attributes.system/group.sort_no
+        official_position: 役職
+        assigned_job: 担当
+        old_password: 変更前パスワード
+        new_password: 変更後パスワード
+        new_password_confirmation: 確認用パスワード
+      system/user/user_groups:
+        group_id: "グループ"
+        start_at: "配属開始日"
+        end_at: "配属終了日"
+      system/users_groups_csvdata:
+        state: :activerecord.attributes.system/group.state
+        data_type: 種別
+        group: グループ
+        user: ユーザー
+        level_no: :activerecord.attributes.system/group.level_no
+        parent_of_parent_code: 所属グループの親グループID
+        parent_code: 所属グループID
+        parent_id: ""
+        code: ID
+        category: :activerecord.attributes.system/group.category
+        ldap: :activerecord.attributes.system/group.ldap
+        job_order: :activerecord.attributes.system/users_group.job_order
+        name: :activerecord.attributes.system/user.name
+        name_en: :activerecord.attributes.system/user.name_en
+        password: :activerecord.attributes.system/user.password
+        email: :activerecord.attributes.system/user.email
+        sort_no: :activerecord.attributes.system/user.sort_no
+        official_position: :activerecord.attributes.system/user.official_position
+        assigned_job: :activerecord.attributes.system/user.assigned_job
+        start_at: 開始日
+        end_at: 終了日
+        add_column1: 追加項目1
+        add_column2: 追加項目2
+        add_column3: 追加項目3
+        add_column4: 追加項目4
+        add_column5: 追加項目5
+      system/role:
+        table_name: 機能名
+        role_name_id: 機能名
+        priv_name: 対象権限
+        priv_user_id: 対象権限
+        idx: 優先順位
+        class_id: 種別
+        priv: 許可
+        uid: ユーザー/グループ
+        editable_groups_json: 管理グループ
+      system/role_name_priv:
+        role_id: 機能名
+        priv_id: 権限名
+      system/role_developer:
+        table_name: 機能名
+        role_name_id: 機能名
+        priv_name: 対象権限
+        priv_user_id: 対象権限
+        idx: 優先順位
+        class_id: 種別
+        priv: 許可
+        uid: ユーザー/グループ
+      system/role_name:
+        display_name: 機能名
+        table_name: 機能コード
+        sort_no: 表示順
+      system/priv_name:
+        state: ステータス
+        display_name: 権限対象名
+        priv_name: 権限コード
+        sort_no: 表示順
+      system/custom_group:
+        state: "状態"
+        name: "名称"
+        name_en: "名称（英語）"
+        sort_no: "並び順"
+      system/schedule_role:
+        target_uid: "対象ユーザー"
+        auth_group: "権限付与所属"
+        auth_user: "権限付与者"
+      system/users_profile_image:
+        user_code: ユーザーコード
+        user_name: ユーザー名
+        note: 備考
+        path: 画像
+        orig_filename: ファイル名
+        content_type: ファイル種別
