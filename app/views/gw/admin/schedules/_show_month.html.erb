@@ -106,7 +106,35 @@ end
             <%
               end
             elsif @sp_mode == :prop
-              if @is_gw_admin || @schedule_prop_admin || (@edit && @prop.reserved_state != 0 && @prop.delete_state != 1)
+              d_load_st = @prop.d_load_st if @prop.d_load_st
+              d_load_ed = @prop.d_load_ed if @prop.d_load_ed
+              d_load = true
+              d_load = false if (d_load_st.present? && d_load_st > week_add_day) || (d_load_ed.present? && d_load_ed < week_add_day)
+              groups = Site.user.groups
+              gids = Array.new
+              groups.each do |sg|
+                gids << sg.id
+                gids << sg.parent_id
+              end
+              gids << 0
+              gids.uniq!
+              search_gids = Gw.join([gids], ',')
+              prop_id = Gw::Model::Schedule.get_prop_ids(params)[0]
+              _this_prop_admin = Gw::PropOtherRole.select("id, prop_id")
+                                                  .where("prop_id in (#{prop_id})")
+                                                  .where("gid in (#{search_gids})")
+                                                  .where("auth='admin'")
+              _this_prop_editor = Gw::PropOtherRole.select("id, prop_id")
+                                                   .where("prop_id in (#{prop_id})")
+                                                   .where("gid in (#{search_gids})")
+                                                   .where("auth='edit'")
+              this_prop_admin = _this_prop_admin.map{|x| x.prop_id}
+              this_prop_editor = _this_prop_editor.map{|x| x.prop_id}
+              if @is_gw_admin || @schedule_prop_admin ||
+                 (this_prop_admin.present? && this_prop_editor.present?) ||
+                 (@edit && @prop.reserved_state != 0 &&
+                  @prop.delete_state != 1 && d_load &&
+                  @prop.available?(week_add_day))
             %>
               <%= show_schedule_edit_icon(week_add_day, :prop_id=>params[:prop_id], :s_genre=>params[:s_genre]) -%>
             <%

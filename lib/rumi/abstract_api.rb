@@ -15,8 +15,7 @@ class Rumi::AbstractApi
   #  APIへのリクエスト結果
   def request_api(uri, action_url, queries)
     # APIへアクセスする。
-    query = queries.map{ |k, v| "#{CGI::escape(k.to_s)}=#{CGI::escape(v)}" }.join("&")
-    action_url = [action_url, query].join("?")
+    action_url = [action_url, create_query(queries)].join("?")
 
     http = Net::HTTP.new(uri.host, uri.port)
     if uri.port == 443
@@ -46,6 +45,11 @@ class Rumi::AbstractApi
     else
       return res.body.force_encoding("UTF-8")
     end
+  end
+
+  # URLクエリパラメータ生成メソッド
+  def create_query(queries)
+    queries.map{|k, v| "#{CGI::escape(k.to_s)}=#{CGI::escape(v)}" }.join("&")
   end
 
 end

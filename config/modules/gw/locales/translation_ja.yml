@@ -13,6 +13,7 @@ ja:
       gw/schedule:
         st_at: 開始日時
         ed_at: 終了日時
+        d_load_at: 利用期間
         title: 件名（用務名等）
         repeat_st_date_at: 開始日
         repeat_ed_date_at: 終了日
@@ -36,10 +37,14 @@ ja:
         guide_place: 会議等案内表示（場所）
         guide_place_id: 会議等案内表示（場所）
         owner_udisplayname: 利用責任者
+        limit_month: 予約可能期日
       gw/prop_other:
         name: 名称
         sort_no: 表示順
         type_id: 種別
+        d_load_st: 利用開始日
+        d_load_ed: 利用終了日
+        limit_month: 予約可能期日
       gw/prop_other_limit:
         limit: 制限数
       gw/prop_type:
@@ -50,8 +55,8 @@ ja:
         sort_no: 並び順
       gw/prop_admin_setting:
         name: 設定名称
-        span: 予約可能期間
-        span_hour: 予約可能時間
+        span: 連続予約可能期間
+        span_hour: 連続予約可能時間
         admin_add_buf: 予約可能所属
       gw/holiday:
         st_at: 年月日

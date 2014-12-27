@@ -75,8 +75,11 @@ module Gwboard::Model::AttachFile
       ext = str[i+ 1,l] unless i == nil
       ext = ext.downcase
       case ext
-      when "bmp", "csv", "doc", "exe", "gif", "jpg", "jtd", "lzh", "pdf", "png", "ppt", "txt", "vbs", "xls", "zip",
-           "odb", "odf", "odg", "odp", "ods", "odt", "otp", "ott", "ots", "odg", "otg" then
+      when "bmp", "csv", "doc", "docx", "docm", "dot", "dotx", "dotm",
+          "exe", "gif", "jpg", "jtd", "lzh", "pdf", "png", "txt",
+          "ppt", "pptx", "pptm", "pot", "potx", "potm", "ppa", "ppam", "pps", "ppsx", "ppsm",
+          "xls", "xlsx", "xlsm", "xlt", "xltx", "xltm", "xla", "xlam",
+          "odb", "odf", "odg", "odp", "ods", "odt", "otp", "ott", "ots", "odg", "otg", "vbs", "zip" then
         ext = 'icon' + ext.capitalize
       end
     end

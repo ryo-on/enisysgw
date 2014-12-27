@@ -43,12 +43,6 @@ ul {
 a {
   text-decoration: none;
 }
-a:link {
-  color: #fff;
-}
-a:visited {
-  color: #fff;
-}
 a:hover {
   text-decoration: underline;
 }

@@ -1,6 +1,5 @@
 <%
 reserved_state = Gw.yaml_to_array_for_select("t1f0_kyoka_fuka")
-parent_groups = Gw::PropOther.get_parent_groups
 @prop_master = @genre
 
 @hedder2lnk = 2
@@ -42,9 +41,9 @@ params[:s_genre] = @genre
         <td><%= reserved_state[item.reserved_state][0] -%></td>
         <td><%= safe{item.prop_type.name} -%></td>
         <td><%= item.name -%></td>
-        <td><%= truncate_group_names(item.admin(:show, parent_groups)) %></td>
-        <td><%= truncate_group_names(item.editor(:show, parent_groups))%></td>
-        <td><%= truncate_group_names(item.reader(:show, parent_groups)) %></td>
+        <td><%= truncate_group_names(item.admin(:show)) %></td>
+        <td><%= truncate_group_names(item.editor(:show))%></td>
+        <td><%= truncate_group_names(item.reader(:show)) %></td>
       </tr>
       <% end %>
     </table>

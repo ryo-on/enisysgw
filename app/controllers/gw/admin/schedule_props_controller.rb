@@ -145,6 +145,41 @@ class Gw::Admin::SchedulePropsController < Gw::Admin::SchedulesController
 
     end
 
+    schedule_ids = @schedules.map(&:id)
+    rails_env = Rails.env
+    core_table_prefix = "#{rails_env}_jgw_core."
+    gw_table_prefix = "#{rails_env}_jgw_gw."
+    sql_result = []
+    if schedule_ids.present?
+      joined_schedule_ids = schedule_ids.join(',')
+      user_id = Site.user.id
+      sql =<<SQL
+SELECT
+  schedule_users.schedule_id,
+  GROUP_CONCAT(DISTINCT system_users.name separator ', '),
+  GROUP_CONCAT(DISTINCT prop_others.name separator ', ')
+FROM
+  #{gw_table_prefix}gw_schedule_users AS schedule_users
+INNER JOIN
+  #{core_table_prefix}system_users AS system_users ON schedule_users.uid = system_users.id
+INNER JOIN
+  #{gw_table_prefix}gw_schedules AS schedules ON schedules.id = schedule_users.schedule_id
+INNER JOIN
+  #{gw_table_prefix}gw_schedule_props AS schedule_props ON schedule_props.schedule_id = schedules.id
+INNER JOIN
+  #{gw_table_prefix}gw_prop_others AS prop_others ON prop_others.id = schedule_props.prop_id
+WHERE
+  schedule_users.schedule_id IN (#{joined_schedule_ids})
+GROUP BY
+  schedule_users.schedule_id
+SQL
+      sql_result = Gw::Reminder.connection.execute(sql)
+    end
+    @schedule_data = {}
+    sql_result.each {|schedule_id, user_names, prop_names|
+      @schedule_data[schedule_id] = {user_names: user_names, prop_names: prop_names}
+    }
+
     @holidays = Gw::Holiday.find_by_range_cache(@calendar_first_day, @calendar_end_day)
   end
 

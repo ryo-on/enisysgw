@@ -14,7 +14,7 @@ class Doclibrary::Folder < Gwboard::CommonDb
 
   validates_presence_of :state, :name
 
-  before_destroy :delete_acl_records
+  before_destroy :delete_child_docs, :delete_children, :delete_acl_records
 
   after_save :save_acl_records
 
@@ -43,6 +43,14 @@ class Doclibrary::Folder < Gwboard::CommonDb
     without_admin_ids =
         get_child_without_admin_ids(root_folder, without_admin_ids, false)
     return without_admin_ids
+  end
+
+  def delete_child_docs
+    self.child_docs.destroy_all
+  end
+
+  def delete_children
+    self.children.destroy_all
   end
 
   def delete_acl_records

@@ -51,6 +51,13 @@ class Sys::Lib::Ldap
       require 'nkf'
       dn = NKF.nkf('-s -W', dn)
     end
+
+    # ActiveDirectory
+    if Enisys::Config.application['sys.ldap_server_type'] == 'ActiveDirectory'
+      return nil if pass.blank?
+      dn = "#{dn.match(/^uid=(.*?),/)[1]}@#{self.base}"
+    end
+
     return connection.bind(dn, pass)
   rescue LDAP::ResultError
     return nil

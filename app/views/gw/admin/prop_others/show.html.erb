@@ -1,6 +1,4 @@
 <%
-parent_groups = Gw::PropOther.get_parent_groups
-
 images = @item.images
 images_t = ''
 images_s = ''
@@ -58,6 +56,22 @@ reserved_state = Gw.yaml_to_array_for_select("gw_prop_other_reserved_states")
             <td><%= br(@item.comment) -%></td>
           </tr>
           <tr>
+            <th>利用開始日</th>
+            <td><%= @item.d_load_st.strftime('%Y-%m-%d') if @item.d_load_st.present? -%></td>
+          </tr>
+          <tr>
+            <th>利用終了日</th>
+            <td><%= @item.d_load_ed.strftime('%Y-%m-%d') if @item.d_load_ed.present? -%></td>
+          </tr>
+          <tr>
+            <th>予約可能期日</th>
+            <% if @item.limit_month %>
+              <td><%= @item.limit_month -%>ヶ月先まで予約可能</td>
+            <% else %>
+              <td></td>
+            <% end %>
+          </tr>
+          <tr>
             <th>作成日</th>
             <td><%= @item.created_at.strftime('%Y-%m-%d %H:%M') if @item.created_at.present? -%></td>
           </tr>
@@ -71,15 +85,15 @@ reserved_state = Gw.yaml_to_array_for_select("gw_prop_other_reserved_states")
           </tr>
           <tr>
             <th>施設管理所属</th>
-            <td><%= raw(Gw.join [@item.admin(:show, parent_groups)], '<br />') -%></td>
+            <td><%= raw(Gw.join [@item.admin(:show)], '<br />') -%></td>
           </tr>
           <tr>
             <th>予約可能所属</th>
-            <td><%= raw(Gw.join [@item.editor(:show, parent_groups)], '<br />') -%></td>
+            <td><%= raw(Gw.join [@item.editor(:show)], '<br />') -%></td>
           </tr>
           <tr>
             <th>照会可能所属</th>
-            <td><%= raw(Gw.join [@item.reader(:show, parent_groups)], '<br />') -%></td>
+            <td><%= raw(Gw.join [@item.reader(:show)], '<br />') -%></td>
           </tr>
         </table>
       </div>

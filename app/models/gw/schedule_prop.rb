@@ -194,9 +194,9 @@ class Gw::ScheduleProp < Gw::Database
         cond_props_within_terms = "SELECT distinct prop_id FROM gw_schedules"
         cond_props_within_terms.concat " left join gw_schedule_props on gw_schedules.id =  gw_schedule_props.schedule_id"
         cond_props_within_terms.concat " where"
-        cond_props_within_terms.concat " gw_schedules.delete_state = 0 and "
-        cond_props_within_terms.concat " gw_schedules.id <> #{params[:schedule_id]} and " unless params[:schedule_id].blank?
-        cond_props_within_terms.concat " gw_schedules.ed_at > '#{Gw.datetime_str(st_at)}'"
+        cond_props_within_terms.concat " gw_schedules.delete_state = 0"
+        cond_props_within_terms.concat " and gw_schedules.id <> #{params[:schedule_id]}" unless params[:schedule_id].blank?
+        cond_props_within_terms.concat " and gw_schedules.ed_at > '#{Gw.datetime_str(st_at)}'"
         cond_props_within_terms.concat " and gw_schedules.st_at < '#{Gw.datetime_str(ed_at)}'"
         cond_props_within_terms.concat " order by prop_id"
         cond = "piwt.prop_id is null"
@@ -240,10 +240,16 @@ class Gw::ScheduleProp < Gw::Database
           if admin
             true
           else
-            Gw::PropOtherRole.is_edit?(x.id)
+            (Gw::PropOtherRole.is_admin?(x.id) &&
+             Gw::PropOtherRole.is_edit?(x.id)) ||
+             (Gw::PropOtherRole.is_edit?(x.id) &&
+              ((x.d_load_st.blank? ||
+                x.d_load_st <= Time.parse(params[:st_at])) &&
+               (x.d_load_ed.blank? ||
+                x.d_load_ed >= Time.parse(params[:ed_at]))) &&
+              x.available?(params[:ed_at]))
           end
-          }.collect{|x| ["other", x.id, "(" + System::Group.find(x.gid).name.to_s + ")" + x.name.to_s, x.gname]}
-
+          }.collect{|x| ["other", x.id, x.name.to_s, x.gname]}
         item = {:errors=>'該当する候補がありません'} if item.blank?
       end
       return item

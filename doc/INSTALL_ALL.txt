@@ -1,4 +1,4 @@
-## Enisys 1.1.0 インストールマニュアル                   2014.08.22
+## Enisys 1.2.0 インストールマニュアル                   2014.12.15
 
 **********************************************************************
  1 想定環境
@@ -90,13 +90,13 @@ Enisys GW/Mail の実行に必要なパッケージをインストールしま�
 Enisys GWソースコードを設置します。
 
   # mkdir /var/share
-  # tar xvzf enisysgw-1.1.0.tar.gz -C /var/share
+  # tar xvzf enisysgw-1.2.0.tar.gz -C /var/share
   # chown -R apache:apache /var/share/enisysgw
 
 Enisys Mailソースコードを設置します。
 
   # mkdir /var/share
-  # tar xvzf enisysmail-1.1.0.tar.gz -C /var/share
+  # tar xvzf enisysmail-1.2.0.tar.gz -C /var/share
   # chown -R apache:apache /var/share/enisysmail
 
 **********************************************************************
@@ -116,7 +116,7 @@ Apacheの設定ファイルを編集します。
 
 Apacheの設定ファイルを追加します。
 
-  # cp /var/share/enisysgw/config/samples/enisys.conf
+  # cp /var/share/enisysgw/config/samples/enisys.conf /etc/httpd/conf.d
 
 設定ファイルにエラーがないことを確認し、Apacheを起動します。
 
@@ -376,49 +376,56 @@ rails runner -e development 'Scriptname' → rails runner -e production 'Scriptn
 
   # crontab -e
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  00 3 * * * cd /var/share/enisysgw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e development 'Gw::Script::Schedule.delete'
+  00 3 * * * cd /var/share/enisysgw; /usr/local/bin/ruby script/rails runner -e development 'Gw::Script::Schedule.delete'
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 期限切れで削除期間が過ぎた掲示板を削除します。
 
   # crontab -e
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  10 3 * * * cd /var/share/enisysgw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e development 'Gwbbs::Script::Task.delete'
+  10 3 * * * cd /var/share/enisysgw; /usr/local/bin/ruby script/rails runner -e development 'Gwbbs::Script::Task.delete'
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 期限切れで削除期間が過ぎた回覧板を削除します。
 
   # crontab -e
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  20 3 * * * cd /var/share/enisysgw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e development 'Gwcircular::Script::Task.delete'
+  20 3 * * * cd /var/share/enisysgw; /usr/local/bin/ruby script/rails runner -e development 'Gwcircular::Script::Task.delete'
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 不要となったセッションのデータを削除します。
 
   # crontab -e
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  30 3 * * * cd /var/share/enisysgw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e development 'System::Script::Session.delete_expired_sessions'
+  30 3 * * * cd /var/share/enisysgw; /usr/local/bin/ruby script/rails runner -e development 'System::Script::Session.delete_expired_sessions'
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 不要となった掲示板のデータを削除します。
 
   # crontab -e
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  40 3 * * * cd /var/share/enisysgw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e development 'Gwbbs::Script::Task.preparation_delete'
+  40 3 * * * cd /var/share/enisysgw; /usr/local/bin/ruby script/rails runner -e development 'Gwbbs::Script::Task.preparation_delete'
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 不要となったファイル管理のデータを削除します。
 
   # crontab -e
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  50 3 * * * cd /var/share/enisysgw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e development 'Doclibrary::Script::Task.preparation_delete'
+  50 3 * * * cd /var/share/enisysgw; /usr/local/bin/ruby script/rails runner -e development 'Doclibrary::Script::Task.preparation_delete'
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+既読となった新着情報を削除します。
+
+  # crontab -e
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  00 4 * * * cd /var/share/enisysgw; /usr/local/bin/ruby script/rails runner -e development 'Gw::Script::Reminder.clear'
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 幹部・部課長の在席表示を全てoffにします。
 
   # crontab -e
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  0 0 * * * cd /var/share/enisysgw; /usr/local/rvm/bin/ruby-1.9.3-p448 script/rails runner -e development 'Gw::Script::PrefExective.state_all_off'
+  0 0 * * * cd /var/share/enisysgw; /usr/local/bin/ruby script/rails runner -e development 'Gw::Script::PrefExective.state_all_off'
   - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 **********************************************************************

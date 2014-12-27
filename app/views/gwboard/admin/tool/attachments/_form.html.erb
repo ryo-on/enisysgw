@@ -2,7 +2,11 @@
   #本来は一ヶ所で判別するのが良いが、変更の過渡期なのでわけてある。
   files_uri = gwboard_attachments_path(item.id) + "?system=#{item.system_name}&title_id=#{item.title_id}"
 %>
-<table class="bbsFile">
+<% if request.path_info.include?("gwbbs/docs/forward") || params[:request_path].present? %>
+  <table class="bbsFile" style="width: 100%;">
+<% else %>
+  <table class="bbsFile">
+<% end %>
   <tr>
     <th>添付ファイル</th>
     <td>

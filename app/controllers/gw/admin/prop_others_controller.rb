@@ -213,9 +213,9 @@ class Gw::Admin::PropOthersController < Gw::Admin::PropGenreCommonController
     return authentication_error(403) unless @is_admin || @schedule_prop_admin || @prop_other_admin
     #raise '管理者権限がありません。' if !@is_admin
 
-    @admin_json = @item.admin(:select, parent_groups).to_json
-    @editors_json = @item.editor(:select, parent_groups).to_json
-    @readers_json = @item.reader(:select, parent_groups).to_json
+    @admin_json = @item.admin(:select).to_json
+    @editors_json = @item.editor(:select).to_json
+    @readers_json = @item.reader(:select).to_json
   end
 
   class DummyItem

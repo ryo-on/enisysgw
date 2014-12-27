@@ -24,7 +24,8 @@ module Gw::SchedulesHelper
     return class_str
   end
 
-  def create_schedule_tooltip( schedule, is_ie = Gw.ie?(request) )
+  def create_schedule_tooltip(schedule, is_ie, options = {})
+    is_ie = Gw.ie?(request) unless is_ie
     title_category = Gw.yaml_to_array_for_select('gw_schedules_title_categories').to_a.rassoc(schedule.title_category_id.to_i) # 件名カテゴリ
     is_public = Gw.yaml_to_array_for_select('gw_schedules_public_states').to_a.rassoc(schedule.is_public.to_i) # 公開範囲
     if title_category.present?
@@ -32,15 +33,15 @@ module Gw::SchedulesHelper
     else
       title = "件名：#{schedule.title}"
     end
-    
+
     place = schedule.place.blank? ? "" :"場所： #{schedule.place}"
     memo = schedule.memo.blank? ? "" : is_ie ? "メモ： #{schedule.memo}" : "メモ： #{Gw.br(schedule.memo)}"
     inquire_to = schedule.inquire_to.blank? ? "" : "連絡先： #{schedule.inquire_to}"
     public = is_public.blank? ? nil : "公開範囲： #{is_public[0]}"
-    
-    user_names = schedule.get_usernames
+
+    user_names = options.present? && options[:user_names] ? options[:user_names] : schedule.get_usernames
     user_names = user_names.present? ? "参加者： #{user_names}" : ""
-    prop_names = schedule.get_propnames
+    prop_names = options.present? && options[:prop_names] ? options[:prop_names] : schedule.get_propnames
     prop_names = prop_names.present? ? "施設： #{prop_names}" : ""
 
     tooltip_a = [title,
@@ -63,7 +64,7 @@ module Gw::SchedulesHelper
     return tooltip
   end
 
-  def show_week_one(schedule, week_add_day, schedule_id, user_id = nil)
+  def show_week_one(schedule, week_add_day, schedule_id, user_id, options = {})
     if @schedule_settings[:view_schedule_title_display].to_i == 1
       class_str = "schedule-show-ellipsis"
       schedule_show_time = schedule.show_time_ellipsis(week_add_day)
@@ -73,7 +74,7 @@ module Gw::SchedulesHelper
     end
 
     if schedule.is_public_auth?(@is_gw_admin)
-      if user_id.to_s == Site.user.id.to_s && schedule.remind_unseen?(schedule)
+      if user_id.to_s == Site.user.id.to_s && schedule.remind_unseen?(schedule) && !request.env['PATH_INFO'].include?("schedule_props")
         new = "<span class='new'>new</span>"
       else
         new = nil
@@ -85,7 +86,7 @@ module Gw::SchedulesHelper
         place = nil
       end
 html = <<HTML
-<div title="#{create_schedule_tooltip(schedule, @ie)}" class="ind #{class_str}" id="#{schedule_id}">
+<div title="#{create_schedule_tooltip(schedule, @ie, options)}" class="ind #{class_str}" id="#{schedule_id}">
   <a class="#{schedule.get_category_class}" href="/gw/schedules/#{schedule.id}/show_one">
     #{new}
     <span>#{schedule_show_time}</span>
@@ -97,14 +98,14 @@ HTML
     else
       t = schedule.show_time(week_add_day)
       if @ie
-        title = "#{t} [非公開予定]"
+        title = "#{t} [予定有り]"
       else
-        title = "<span>#{t} [非公開予定]</span>"
+        title = "<span>#{t} [予定有り]</span>"
       end
 html = <<HTML
 <div title="#{title}" id="#{schedule_id}" class="ind #{class_str}">
   <a class="category0"><span>#{schedule_show_time}</span>
-  <span class="title">[非公開予定]</span></a>
+  <span class="title">[予定有り]</span></a>
 </div>
 HTML
     end

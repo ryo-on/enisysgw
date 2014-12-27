@@ -17,11 +17,12 @@
 <td class="manager">管理所属</td>
 <td class="update">更新日時</td>
 </tr>
+<% notification_counts = Gwbbs::Control.notification_counts(Core.user.id) %>
 <% for item in @items %>
  <tr class="<%= cycle 'article', 'article cycle' %>">
  <td class="bbstitle"><%=link_to h(item.title), gwbbs_docs_path({:title_id=>item.id}) %>
-   <% unreed_count = item.notification_each_db(Core.user.id) %>
-   <% unless unreed_count.zero? %>
+   <% unreed_count = notification_counts[item.id] %>
+   <% unless unreed_count.nil? %>
    （<%= unreed_count %>）
    <% end %>
  </td>

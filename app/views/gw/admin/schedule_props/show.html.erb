@@ -67,9 +67,35 @@ show_day_header = render(:partial => '/gw/admin/schedules/show_day_header')
           parent_groups = Gw::PropOther.get_parent_groups
           admin_first_id = prop.get_admin_first_id(parent_groups)
           group  = System::GroupHistory.find_by_id(admin_first_id)
-          caption_main_s = "#{prop.name}(#{group.name if !group.blank?})"
-
-          if @is_gw_admin || @schedule_prop_admin || (@prop_edit_ids.index(prop.id) && prop.reserved_state == 1 && prop.delete_state == 0) # 権限があるかどうか確認
+          caption_main_s = "#{prop.name}"
+          d_load_st = prop.d_load_st if prop.d_load_st
+          d_load_ed = prop.d_load_ed if prop.d_load_ed
+          d_load = true
+          d_load = false if (d_load_st.present? && d_load_st > @st_date) || (d_load_ed.present? && d_load_ed < @st_date)
+          groups = Site.user.groups
+          gids = Array.new
+          groups.each do |sg|
+            gids << sg.id
+            gids << sg.parent_id
+          end
+          gids << 0
+          gids.uniq!
+          search_gids = Gw.join([gids], ',')
+          _this_prop_admin = Gw::PropOtherRole.select("id, prop_id")
+                                              .where("prop_id in (#{prop.id})")
+                                              .where("gid in (#{search_gids})")
+                                              .where("auth='admin'")
+          _this_prop_editor = Gw::PropOtherRole.select("id, prop_id")
+                                               .where("prop_id in (#{prop.id})")
+                                               .where("gid in (#{search_gids})")
+                                               .where("auth='edit'")
+          this_prop_admin = _this_prop_admin.map{|x| x.prop_id}
+          this_prop_editor = _this_prop_editor.map{|x| x.prop_id}
+          if @is_gw_admin || @schedule_prop_admin ||
+             (this_prop_admin.present? && this_prop_editor.present?) ||
+             (@prop_edit_ids.index(prop.id) && prop.reserved_state == 1 &&
+              prop.delete_state == 0 && d_load &&
+              prop.available?(@st_date)) # 権限があるかどうか確認
             is_prop_edit = true
           else
             is_prop_edit = false
@@ -81,7 +107,6 @@ show_day_header = render(:partial => '/gw/admin/schedules/show_day_header')
           <% if @header_each == 0 && p_id == 0 || @header_each != 0 && p_id % @header_each == 0 %>
           <%= show_day_header -%>
           <% end %><%# header End %>
-
           <tr class="<%= schedule_data[:trc] -%>">
             <th rowspan="<%= schedule_data[:row] -%>" class="scheduleUser">
               <% cnt = 0 %>

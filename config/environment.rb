@@ -4,6 +4,12 @@ require File.expand_path('../application', __FILE__)
 # Initialize the rails application
 EnisysGw::Application.initialize!
 
+# create enisys version
+major = Enisys::Config.application["version.major"]
+minor = Enisys::Config.application["version.minor"]
+patch_revel = Enisys::Config.application["version.patch_revel"]
+$ENISYS_VERSION = %Q{V#{major}.#{minor}.#{patch_revel}}
+
 #require 'pp'
 #module Kernel
   private

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140218145312) do
+ActiveRecord::Schema.define(:version => 20140718085409) do
 
   create_table "digitallibrary_adms", :force => true do |t|
     t.integer  "unid"
@@ -904,6 +904,8 @@ ActiveRecord::Schema.define(:version => 20140218145312) do
     t.datetime "updated_at",          :null => false
     t.datetime "expiration_datetime"
   end
+
+  add_index "gw_reminders", ["user_id"], :name => "index_gw_reminders_on_user_id"
 
   create_table "gw_rss_caches", :force => true do |t|
     t.text     "uri"
@@ -1857,6 +1859,8 @@ ActiveRecord::Schema.define(:version => 20140218145312) do
   end
 
   add_index "gwcircular_docs", ["parent_id"], :name => "parent_id"
+  add_index "gwcircular_docs", ["title_id", "doc_type", "target_user_code", "state", "able_date", "createrdivision_id"], :name => "index_for_createrdivision_search", :length => {"title_id"=>nil, "doc_type"=>nil, "target_user_code"=>nil, "state"=>20, "able_date"=>nil, "createrdivision_id"=>nil}
+  add_index "gwcircular_docs", ["title_id", "doc_type", "target_user_code", "state", "created_at", "able_date"], :name => "index_for_monthly_search", :length => {"title_id"=>nil, "doc_type"=>nil, "target_user_code"=>nil, "state"=>20, "created_at"=>nil, "able_date"=>nil}
 
   create_table "gwcircular_files", :force => true do |t|
     t.integer  "unid"

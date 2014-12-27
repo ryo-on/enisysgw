@@ -349,6 +349,22 @@ class Gwbbs::Control < Gw::Database
       return Gw::Reminder.extract_bbs(user_id, nil, nil).count
     end
 
+    # === 掲示板毎の通知件数取得メソッド
+    #  ログインユーザーが閲覧権限を持つ掲示板において公開された未読の記事件数を掲示板毎に取得する
+    # ==== 引数
+    #  * user_id: ユーザーID
+    # ==== 戻り値
+    #  掲示板毎の通知件数(Hashオブジェクト)
+    #  タイトルIDがkey、通知件数がvalue。
+    def notification_counts(user_id)
+      result = {}
+      Gw::Reminder.extract_bbs(user_id, nil, nil).
+          select("title_id, count(item_id) AS item_count").
+          group(:title_id).each do |target|
+        result[target.title_id] = target.item_count
+      end
+      return result
+    end
   end
 
 end

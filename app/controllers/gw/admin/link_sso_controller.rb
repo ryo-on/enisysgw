@@ -186,7 +186,7 @@ EOL
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta http-equiv="Expires" content="-1">
-<title>Login</title>
+<title>メール</title>
 EOL
 
     if token

@@ -46,8 +46,30 @@
 <div id="content">
 <div id="contentContainer">
 <div id="contentBody">
-<%= render_component :controller => 'gw/admin/piece/reminder', :action => 'index',
-  :params => { :sort_key => params[:sort_key], :order => params[:order] } %>
+
+<div class="piece gadget reminder">
+<div class="pieceHeader">
+  <h3><%= t("rumi.reminder.name") %></h3>
+</div>
+<div class="borderbox">
+  <div class="pieceBody">
+    <span style="color: #080;">
+      <%= "#{t("rumi.reminder.name")}#{t("rumi.message.getting")}" %>
+    </span>
+  </div>
+</div>
+</div>
+<% url = url_for(controller: 'gw/admin/piece/reminder',
+                 action:     :index,
+                 sort_key:   params[:sort_key],
+                 order:      params[:order],
+                 user_id:    Site.user.id,
+                 code:       Site.user.code,
+                 name:       Site.user.name,
+                 group_code: Site.user_group.code,
+                 group_name: Site.user_group.name,
+                 password:   Site.user.password) %>
+<%= javascript_tag "rumi.unread.reminderRequest('#{url}');" %>
 </div>
 </div>
 </div>

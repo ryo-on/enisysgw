@@ -11,6 +11,7 @@ module Enisys
         "sys.session_expiration"                 => 24,
         "sys.session_expiration_for_mobile"      => 1,
         "sys.force_site"                         => "",
+        "sys.ldap_server_type"                   => "OpenLDAP",
         "webmail.root_url" => nil
     }}
   end
@@ -18,6 +19,23 @@ module Enisys
   def self.config
     $enisys_config ||= {}
     Enisys::Config
+  end
+
+  def self.server_name
+    unless class_variable_defined?(:@@server_name)
+      file = File.join(Rails.root, 'config', 'servers.yml')
+      begin
+        raise unless File.exist?(file)
+        servers = YAML.load_file(file)
+        ip = Socket.getifaddrs.select {|ifaddr|
+          ifaddr.name == servers[:device] && ifaddr.addr.ipv4?
+        }.first.addr.ip_address
+        @@server_name = servers[:servers][ip]
+      rescue
+        @@server_name = nil
+      end
+    end
+    @@server_name
   end
 
   class Enisys::Config

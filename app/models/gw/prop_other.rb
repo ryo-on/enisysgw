@@ -78,37 +78,23 @@ class Gw::PropOther < Gw::Database
     return parent_groups
   end
 
-  def admin(pattern = :show, parent_groups = Gw::PropOther.get_parent_groups)
+  def admin(pattern = :show)
     admin = Array.new
-    groups = System::GroupHistory.new.find(:all, :conditions => ["id in (?)", self.admin_gids], :order=>"level_no,  sort_no , code, start_at DESC, end_at IS Null ,end_at DESC")
-    parent_groups.each do |parent_group|
-      groups.each do |group|
-        g = System::GroupHistory.find_by_id(group.id)
-        name = g.name
-        if !g.blank?
-          if g.id == parent_group.id
-            admin << [name] if pattern == :show
-            admin << ["", g.id, name] if pattern == :select
-          elsif g.parent_id == parent_group.id
-            if g.state == "disabled"
-              admin << ["<span class=\"required\">#{name}</span>"] if pattern == :show
-            else
-              admin << [name] if pattern == :show
-              admin << ["", g.id, name] if pattern == :select
-            end
-          end
-        else
-          admin << ["<span class=\"required\">削除所属 gid=#{group.id}</span>"] if pattern == :show
-        end
-      end
+    groups = System::Group.
+      where(id: self.admin_gids).
+      order("level_no,  sort_no , code, start_at DESC, end_at IS Null ,end_at DESC")
+    groups.each do |group|
+      name = group.name
+      admin << [name] if pattern == :show
+      admin << ["", group.id, name] if pattern == :select
     end
     return admin.uniq
   end
-  
+
   def admin_first_id_cache_key
     return "admin_first_id_#{self.id}"
   end
-  
+
   def get_admin_first_id(parent_groups = Gw::PropOther.get_parent_groups)
     if self.gid.present?
       return self.gid
@@ -121,7 +107,7 @@ class Gw::PropOther < Gw::Database
     groups = Array.new
     gids = self.admin_gids
     if gids.length > 1
-      groups = System::GroupHistory.find(:all, :conditions => ["id in (?)", gids], 
+      groups = System::GroupHistory.find(:all, :conditions => ["id in (?)", gids],
         :order=>"level_no,  sort_no , code, start_at DESC, end_at IS Null ,end_at DESC")
     elsif gids.length == 1
       return gids[0]
@@ -143,66 +129,38 @@ class Gw::PropOther < Gw::Database
     end
   end
 
-  def editor(pattern = :show, parent_groups = Gw::PropOther.get_parent_groups)
+  def editor(pattern = :show)
     editor = Array.new
     gids = self.editor_gids
     if !gids.index(0).nil?
       editor << ["制限なし"] if pattern == :show
       editor << ["", 0, '制限なし'] if pattern == :select
     end
-    groups = System::GroupHistory.new.find(:all, :conditions => ["id in (?)", self.editor_gids], :order=>"level_no,  sort_no , code, start_at DESC, end_at IS Null ,end_at DESC")
-    parent_groups.each do |parent_group|
-      groups.each do |group|
-        g = System::GroupHistory.find_by_id(group.id)
-        name = g.name
-        if !g.blank?
-          if g.id == parent_group.id
-            editor << [name] if pattern == :show
-            editor << ["", g.id, name] if pattern == :select
-          elsif g.parent_id == parent_group.id
-            if g.state == "disabled"
-              editor << ["<span class=\"required\">#{name}</span>"] if pattern == :show
-            else
-              editor << [name] if pattern == :show
-              editor << ["", g.id, name] if pattern == :select
-            end
-          end
-        else
-          editor << ["<span class=\"required\">削除所属 gid=#{group.id}</span>"] if pattern == :show
-        end
-      end
+    groups = System::Group.
+      where(id: gids).
+      order("level_no,  sort_no , code, start_at DESC, end_at IS Null ,end_at DESC")
+    groups.each do |group|
+      name = group.name
+      editor << [name] if pattern == :show
+      editor << ["", group.id, name] if pattern == :select
     end
     return editor.uniq
   end
 
-  def reader(pattern = :show, parent_groups = Gw::PropOther.get_parent_groups)
+  def reader(pattern = :show)
     reader = Array.new
     gids = self.reader_gids
     if !gids.index(0).nil?
       reader << ["制限なし"] if pattern == :show
       reader << ["", 0, '制限なし'] if pattern == :select
     end
-    groups = System::GroupHistory.new.find(:all, :conditions => ["id in (?)", gids], :order=>"level_no,sort_no , code, start_at DESC, end_at IS Null ,end_at DESC")
-    parent_groups.each do |parent_group|
-      groups.each do |group|
-        g = System::GroupHistory.find_by_id(group.id)
-        name = g.name
-        if !g.blank?
-          if g.id == parent_group.id
-            reader << [name] if pattern == :show
-            reader << ["", g.id, name] if pattern == :select
-          elsif g.parent_id == parent_group.id
-            if g.state == "disabled" # 無効
-              reader << ["<span class=\"required\">#{name}</span>"] if pattern == :show
-            else
-              reader << [name] if pattern == :show
-              reader << ["", g.id, name] if pattern == :select
-            end
-          end
-        else
-          reader << ["<span class=\"required\">削除所属 gid=#{group.id}</span>"] if pattern == :show
-        end
-      end
+    groups = System::Group.
+      where(id: gids).
+      order("level_no,  sort_no , code, start_at DESC, end_at IS Null ,end_at DESC")
+    groups.each do |group|
+      name = group.name
+      reader << [name] if pattern == :show
+      reader << ["", group.id, name] if pattern == :select
     end
     return reader.uniq
   end
@@ -291,6 +249,42 @@ class Gw::PropOther < Gw::Database
       self.errors.add :sort_no, "は不正な値です。11桁の整数で登録してください。"
     end
 
+    if params[:item][:d_load_st].present?
+      if params[:item][:d_load_st] =~ /\d{4}-\d{2}-\d{2}/
+        load_st = params[:item][:d_load_st].split("-")
+        begin
+          d_load_st = Time.new(load_st[0],load_st[1],load_st[2]).beginning_of_day.strftime("%Y-%m-%d %H:%M:%S")
+        rescue
+          self.errors.add :d_load_st, "は正しい日付を入力してください。"
+        end
+      else
+        self.errors.add :d_load_st, "は日付を入力してください。"
+      end
+    end
+
+    if params[:item][:d_load_ed].present?
+      if params[:item][:d_load_ed] =~ /\d{4}-\d{2}-\d{2}/
+        load_ed = params[:item][:d_load_ed].split("-")
+        begin
+          d_load_ed = Time.new(load_ed[0],load_ed[1],load_ed[2]).end_of_day.strftime("%Y-%m-%d %H:%M:%S")
+        rescue
+          self.errors.add :d_load_ed, "は正しい日付を入力してください。"
+        end
+      else
+        self.errors.add :d_load_ed, "は日付を入力してください。"
+      end
+    end
+
+    if (limit_month = params[:item][:limit_month]).present?
+      unless limit_month =~ /^[0-9]*$/
+        self.errors.add :limit_month, "は整数で入力してください。"
+      end
+    end
+
+    if params[:item][:d_load_st] =~ /\d{4}-\d{2}-\d{2}/ && params[:item][:d_load_ed] =~ /\d{4}-\d{2}-\d{2}/ && self.errors.size == 0
+      self.errors.add :d_load_st, "は予約可能終了日より前の日を入力してください。" if d_load_st > d_load_ed
+    end
+
     if params[:item][:name].blank?
       self.errors.add :name, "を登録してください。"
     end
@@ -333,6 +327,14 @@ class Gw::PropOther < Gw::Database
     self.comment   = params[:item][:comment]
     self.extra_flag   = params[:item][:extra_flag]
     self.extra_data   = params[:item][:extra_data]
+    if self.errors.size == 0
+      self.d_load_st   = d_load_st
+      self.d_load_ed   = d_load_ed
+    else
+      self.d_load_st   = params[:item][:d_load_st]
+      self.d_load_ed   = params[:item][:d_load_ed]
+    end
+    self.limit_month = params[:item][:limit_month]
 
     if mode == :create
       self.creator_uid = uid
@@ -534,5 +536,24 @@ class Gw::PropOther < Gw::Database
       class_s = "other"
     end
     return class_s
+  end
+
+  def available?(value)
+    if self.limit_month
+      case value
+      when String
+        date = Date.parse(value)
+      when Date
+        date = value
+      else
+        return false
+      end
+      today = Date.today
+      d = today >> (self.limit_month + 1)
+      limit = Date.new(d.year, d.month, 1)
+      date < limit
+    else
+      true
+    end
   end
 end

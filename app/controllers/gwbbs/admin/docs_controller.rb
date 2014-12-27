@@ -212,13 +212,13 @@ class Gwbbs::Admin::DocsController < Gw::Controller::Admin::Base
       #本文_回覧記事本文
       @gwbbs_text_body << @item.body
     else
-      @gwbbs_text_body = "-------- Original Message --------\n"
+      @gwbbs_text_body = "-------- Original Message --------\r\n"
       #本文_タイトル
-      @gwbbs_text_body << "タイトル: " + @item.title + "\n"
+      @gwbbs_text_body << "タイトル: " + @item.title + "\r\n"
       #本文_作成日時
-      @gwbbs_text_body << "作成日時: " + @item.created_at.strftime('%Y-%m-%d %H:%M') + "\n"
+      @gwbbs_text_body << "作成日時: " + @item.created_at.strftime('%Y-%m-%d %H:%M') + "\r\n"
       #本文_作成者
-      @gwbbs_text_body << "作成者: " + @item.name_creater_section + " " + @item.creater + "\n"
+      @gwbbs_text_body << "作成者: " + @item.name_creater_section + " " + @item.creater + "\r\n"
       #本文_回覧記事本文
       @gwbbs_text_body << @item.body
     end
@@ -276,8 +276,8 @@ class Gwbbs::Admin::DocsController < Gw::Controller::Admin::Base
       :category4_id => 0,
       :able_date => Time.now.strftime("%Y-%m-%d"),
       :expiry_date => "#{default_published.months.since.strftime("%Y-%m-%d")} 23:59:59",
-      #表示する名称 初期表示：ユーザ名と所属名
-      :name_type => 2,
+      #表示する名称 初期表示：所属名のみ
+      :name_type => 1,
       #表示する所属 初期表示：自所属
       :name_editor_section_id => Core.user_group.code,
       :name_editor_section => Core.user_group.name

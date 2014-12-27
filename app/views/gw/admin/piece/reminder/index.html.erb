@@ -10,11 +10,11 @@
 <div class="pieceBody">
 
 <%= form_tag('', {:id => "listForm", :name => "listForm",:method => "post", :multipart => true}) do %>
-<%= hidden_field_tag(:uid, Site.user.id) %>
-<%= hidden_field_tag(:ucode, Site.user.code) %>
-<%= hidden_field_tag(:uname, Site.user.name) %>
-<%= hidden_field_tag(:gcode, Site.user_group.code) %>
-<%= hidden_field_tag(:gname, Site.user_group.name) %>
+<%= hidden_field_tag(:uid, @user_id) %>
+<%= hidden_field_tag(:ucode, @code) %>
+<%= hidden_field_tag(:uname, @name) %>
+<%= hidden_field_tag(:gcode, @group_code) %>
+<%= hidden_field_tag(:gname, @group_name) %>
 <% @reminders.each do |category, reminder| %>
   <% total_count = reminder[:total_count] %>
   <div class="reminder-category-title">
@@ -82,6 +82,15 @@
 <% if @reminders.blank? %>
   <span style="color: #080;"><%= t("rumi.message.empty.list") %></span>
 <% end %>
+
+<%
+if @reminders[:mail].blank?
+  mail_count = 0
+else
+  mail_count = @reminders[:mail][:total_count]
+end
+%>
+<%= javascript_tag "rumi.unread.showMailCount(#{mail_count});" %>
 
 <% end %>
 </div>

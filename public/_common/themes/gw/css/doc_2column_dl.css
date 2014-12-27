@@ -190,7 +190,7 @@ table.docformTitle {
 }
 #contentBody .sideMenu #sideList ul li.open div.someFolder {
   display: inline-block;
-  width: 15px;
+  width: 16px;
   background-image: url(/_common/themes/gw/files/doclibrary/folder_open.gif);
   padding-left: 0px;
 }

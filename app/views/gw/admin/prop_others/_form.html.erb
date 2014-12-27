@@ -31,6 +31,22 @@ text_style = 'width:30em;'
   <th>備考</th>
   <td><%= form_text_area(f, "comment") %></td>
 </tr>
+<%
+  d_load_st = @item.d_load_st.strftime('%Y-%m-%d') if @item.d_load_st
+  d_load_ed = @item.d_load_ed.strftime('%Y-%m-%d') if @item.d_load_ed
+%>
+<tr>
+  <th>利用開始日</th>
+  <td><%= f.calendar_date_select :d_load_st, :value => d_load_st, :time => false, :style => 'width:140px;' %></td>
+</tr>
+<tr>
+  <th>利用終了日</th>
+  <td><%= f.calendar_date_select :d_load_ed, :value => d_load_ed, :time => false, :style => 'width:140px;' %></td>
+</tr>
+<tr>
+  <th>予約可能期日</th>
+  <td><%= f.text_field(:limit_month, style: 'width:3em;') %>ヶ月先まで予約可能</td>
+</tr>
 <% if false %>
 <tr>
   <th>公開</th>

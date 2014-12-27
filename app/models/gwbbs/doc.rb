@@ -584,19 +584,10 @@ class Gwbbs::Doc < Gwboard::CommonDb
     end
 
     # 所属からユーザー通知するユーザーを抽出
-    send_group_ids.each do |group_id|
-      group = System::Group.find(group_id)
-      group.users.each { |user| user_ids << user.id }
-    end
+    user_ids = build_remind_user_ids(send_group_ids)
 
     # ユーザーに通知
-    # 複数所属も考えられるので、重複がないようにする
-    user_ids = user_ids.flatten.compact.uniq
-    user_ids.each do |user_id|
-      target_user = System::User.find(user_id)
-      # 無効のユーザーの場合は通知しない
-      build_remind(user_id) unless target_user.disabled?
-    end
+    build_remind(user_ids)
 
     # 更新者は通知を既読にする
     seen_remind(Core.user.id)
@@ -626,34 +617,53 @@ class Gwbbs::Doc < Gwboard::CommonDb
     end
 
     # 所属からユーザー通知するユーザーを抽出
-    send_group_ids.each do |group_id|
-      group = System::Group.find(group_id)
-      group.users.each { |user| user_ids << user.id }
-    end
+    user_ids = build_remind_user_ids(send_group_ids)
 
     # ユーザーに通知
-    # 複数所属も考えられるので、重複がないようにする
-    user_ids = user_ids.flatten.compact.uniq
-    user_ids.each do |user_id|
-      target_user = System::User.find(user_id)
-      # 無効のユーザーの場合は通知しない
-      build_remind(user_id, "update") unless target_user.disabled?
-    end
+    build_remind(user_ids, "update")
 
     # 更新者は通知を既読にする
     seen_remind(Core.user.id)
   end
 
+  # === 新着情報を作成するユーザIDの一覧を取得するメソッド
+  #  グループに対して作成する
+  # ==== 引数
+  #  * group_ids: 対象となるグループIDの配列
+  # ==== 戻り値
+  #  ユーザIDの配列
+  def build_remind_user_ids(group_ids)
+    user_ids = System::User.includes(:groups).
+      where("system_users.state" => "enabled").
+      where(["system_groups.id IN (?)", group_ids]).map(&:id)
+    return user_ids.flatten.compact.uniq
+  end
+
   # === 新着情報を作成するメソッド
   #  ユーザーに対して作成する
   # ==== 引数
-  #  * user_id: ユーザーID
+  #  * user_ids: ユーザーIDの配列
   # ==== 戻り値
   #  なし
-  def build_remind(user_id, action = "open")
-    Gw::Reminder.create!(category: "bbs", user_id: user_id, title_id: title_id, item_id: id,
-      title: title, datetime: able_date, expiration_datetime: expiry_date, action: "#{action}",
-      url: "/gwbbs/docs/#{id}/?title_id=#{title_id}")
+  def build_remind(user_ids, action = "open")
+    timestamp = connection.quote(Time.now.utc)
+    values = user_ids.collect { |user_id|
+      attrs = [
+        "'bbs'", user_id, title_id, id, "'#{title}'",
+        connection.quote(able_date),
+        "'/gwbbs/docs/#{id}/?title_id=#{title_id}'",
+        "'#{action}'", timestamp, timestamp,
+        connection.quote(expiry_date),
+      ]
+      "(#{attrs.join(',')})"
+    }
+    sql =<<SQL
+INSERT INTO #{Gw::Reminder.table_name}
+  (category, user_id, title_id, item_id, title, datetime, url,
+   action, created_at, updated_at, expiration_datetime)
+  VALUES #{values.join(",")}
+SQL
+    Gw::Reminder.connection.execute(sql)
   end
 
   # === 新着情報を既読にするメソッド

@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Doclibrary::Admin::Piece::MenusHelper
 
   def doclibrary_folder_trees(items)
@@ -32,7 +33,6 @@ module Doclibrary::Admin::Piece::MenusHelper
       open_folders = params[:open_folders].split(',').map{|id| id.to_i} 
     end
     params[:open_folders] = open_folders.join(',')
-    @user_group_parent_ids = Site.user.user_group_parent_ids
 
     items.each do |item|
      unless @iname == item.id
@@ -52,6 +52,13 @@ module Doclibrary::Admin::Piece::MenusHelper
     return html.html_safe
   end
 
+  def user_group_parent_ids
+    unless @user_group_parent_ids
+      @user_group_parent_ids = Site.user.user_group_parent_ids
+    end
+    return @user_group_parent_ids
+  end
+
   def group_sub_folders(item)
     return item.children.select{|x| x.state == 'public'}
   end
@@ -63,7 +70,7 @@ module Doclibrary::Admin::Piece::MenusHelper
         ((x.state == 'public') and (x.acl_flag == 0)) || ((x.state == 'public') and (x.acl_flag == 9))
       else
         ((x.state == 'public') and (x.acl_flag == 0)) ||
-        ((x.state == 'public') and (x.acl_flag == 1) and (@user_group_parent_ids.include?(x.acl_section_id))) ||
+        ((x.state == 'public') and (x.acl_flag == 1) and (user_group_parent_ids.include?(x.acl_section_id))) ||
         ((x.state == 'public') and (x.acl_flag == 2) and (x.acl_user_id == Site.user.id))
       end
     }.uniq
@@ -104,6 +111,7 @@ module Doclibrary::Admin::Piece::MenusHelper
       end
 
       ret << %Q(<li class="#{level_no}">)
+      ret << '<table><tbody><tr><td width=12 valign="top">'
       if sub_folders.count == 0
         ret << '<div class="noneFolder">&nbsp;</div>'
       else
@@ -120,10 +128,13 @@ module Doclibrary::Admin::Piece::MenusHelper
                         :remote => true,
                         :onclick => "rumi.folder_trees.changeToggle('#{ajax_url}');return false;"})
       end
+      ret << '</td><td width=18 valign="top">'
       ret << '<div class="someFolder">&nbsp;</div>'
+      ret << '</td><td>'
       ret << link_to(item.name,
                      "#{@title.item_home_path}docs?title_id=#{item.title_id}&cat=#{item.id}#{strparam}",
                      {:id => "dragfolder_#{item.id}", :class => "folder_name droppable#{draggable}"})
+      ret << '</td></tr></tbody></table>'
       ret << %Q(</li>)
     end
     return ret

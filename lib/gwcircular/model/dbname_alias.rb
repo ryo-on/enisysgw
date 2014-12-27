@@ -46,9 +46,9 @@ module Gwcircular::Model::DbnameAlias
       @is_bbsadm = true unless items.blank?
 
       unless @is_bbsadm
-        cond = "user_code = '#{Site.user.code}' and group_code in (#{group_codes})"
-        cond.concat " and title_id = #{title_id}" unless title_id == '_menu'
-        items = Gwcircular::Adm.find(:all, :conditions => cond)
+        items = Gwcircular::Adm.where(user_code: Site.user.code,
+	                              group_code: group_codes)
+	items = items.where(title_id: title_id) unless title_id == '_menu'
         @is_bbsadm = true unless items.blank?
       end
     end

@@ -14,7 +14,7 @@ end
   <div title="<%= create_schedule_tooltip(schedule, @ie) -%>" class="ind <%= class_str -%>" id="<%= schedule_id -%>">
     <a class="<%= schedule.get_category_class -%>" href="/gw/schedules/<%= schedule.id -%>/show_one">
       <%# if schedule.unseen?(Site.user.id) %>
-      <% if schedule.remind_unseen?(schedule) %>
+      <% if schedule.remind_unseen?(schedule) && !request.env['PATH_INFO'].include?("schedule_props") %>
       <span class="new">new</span>
       <% end %>
       <span><%= schedule_show_time -%></span>
@@ -25,8 +25,8 @@ end
     </a>
   </div>
 <% else %>
-  <div title="<%= @ie ? "#{schedule.show_time(week_add_day)} [非公開予定]" : "<span>#{schedule.show_time(week_add_day)} [非公開予定]</span>" -%>" id="<%= schedule_id -%>" class="ind <%= class_str -%>">
+  <div title="<%= @ie ? "#{schedule.show_time(week_add_day)} [予定有り]" : "<span>#{schedule.show_time(week_add_day)} [非予定有り</span>" -%>" id="<%= schedule_id -%>" class="ind <%= class_str -%>">
     <a class="category0"><span><%= schedule_show_time -%></span>
-    <span class="title">[非公開予定]</span></a>
+    <span class="title">[予定有り]</span></a>
   </div>
 <% end -%><%# public end %>

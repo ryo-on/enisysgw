@@ -21,12 +21,10 @@
 
   system_name = "gwcircular"
 %>
-<%= form_for :item, :url => {:action => :create}, :html => {:multipart => true} do |f| %>
+<%= form_for :item, :url => {action: :create}, :html => {multipart: true} do |f| %>
   <p>
   <label for="item">ファイル指定::</label>
-  <%= f.file_field :upload %>
-  <%= submit_tag 'ファイルを登録する',
-                 onclick: "return attach_obj.file_check(document.getElementById('item_upload').files);" %>
+  <%= f.file_field :upload, onchange: "return attach_obj.file_upload(this, 'div.notice');" %>
   </p>
 <% end -%>
 <div class="notice"><%= required(flash[:notice]) %></div>
@@ -37,6 +35,14 @@
 //<![CDATA[
   function mceInsertContent(value) {
     parent.tinyMCE.execInstanceCommand('<%= _form_id %>', 'mceInsertContent', true, value);
+  }
+
+  function mceInsertLink(value) {
+    if (parent.tinyMCE.isIE8) {
+      alert("この機能を Internet Explorer 8 で使用することはできません。");
+    } else {
+      parent.tinyMCE.execInstanceCommand('<%= _form_id %>', 'mceInsertContent', true, value);
+    }
   }
 //]]>
 </script>
@@ -109,7 +115,7 @@
         <% content = link_to "#{item.filename} (#{item.eng_unit})", item.file_uri(system_name), :class => item.icon_type %>
         <%= link_to t('rumi.attachment.label.insert_link'), '#',
             :id => "link_attach#{item.id}",
-            :onclick => "mceInsertContent('#{escape_javascript(content)}'); return false;" %>
+            :onclick => "mceInsertLink('#{escape_javascript(content)}'); return false;" %>
       </td>
       <td style="text-align: center;">
         <% if item.is_image %>

@@ -6,6 +6,10 @@ class Gw::Admin::Piece::ReminderController < ApplicationController
   
   # 新着情報欄表示action
   def index
+    [:user_id, :code, :name, :group_code, :group_name]
+      .each {|key| instance_variable_set("@#{key}", params[key]) }
+    password = params[:password]
+
     # 並び順
     sort_key = params[:sort_key] == "title" ? "title" : "datetime"
     order = params[:order] == "asc" ? "asc" : "desc"
@@ -17,7 +21,7 @@ class Gw::Admin::Piece::ReminderController < ApplicationController
     header_menus.flatten!
 
     # メール
-    mail_remind = Rumi::WebmailApi.remind(Site.user.code, Site.user.password, sort_key, order)
+    mail_remind = Rumi::WebmailApi.remind(@code, password, sort_key, order)
     mail_menu = (header_menus.select { |header_menu| mail_feature_url?(header_menu.link_options[:url]) }).first
     if mail_remind.present? && mail_menu.present?
       # 小見出しと付加するリンク
@@ -27,7 +31,7 @@ class Gw::Admin::Piece::ReminderController < ApplicationController
     end
 
     # 回覧板
-    circular_remind = Gwcircular::Control.remind(Site.user.id, sort_key, order)
+    circular_remind = Gwcircular::Control.remind(@user_id, sort_key, order)
     circular_menu = (header_menus.select { |header_menu| circular_feature_url?(header_menu.link_options[:url]) }).first
     if circular_remind.present? && circular_menu.present?
       circular_remind.store(:title, circular_menu.name)
@@ -36,7 +40,7 @@ class Gw::Admin::Piece::ReminderController < ApplicationController
     end
 
     # 掲示板
-    bbs_remind = Gwbbs::Control.remind(Site.user.id, sort_key, order)
+    bbs_remind = Gwbbs::Control.remind(@user_id, sort_key, order)
     bbs_menu = (header_menus.select { |header_menu| bbs_feature_url?(header_menu.link_options[:url]) }).first
     if bbs_remind.present? && bbs_menu.present?
       bbs_remind.store(:title, bbs_menu.name)
@@ -45,7 +49,7 @@ class Gw::Admin::Piece::ReminderController < ApplicationController
     end
 
     # スケジュール・施設予約
-    schedule_remind = Gw::Schedule.remind(Site.user.id, sort_key, order)
+    schedule_remind = Gw::Schedule.remind(@user_id, sort_key, order)
     schedule_menu = (header_menus.select { |header_menu| schedule_feature_url?(header_menu.link_options[:url]) }).first
     schedule_prop_menu = (header_menus.select { |header_menu| schedule_prop_feature_url?(header_menu.link_options[:url]) }).first
     if schedule_remind.present? && (schedule_menu.present? || schedule_prop_menu.present?)
@@ -70,7 +74,7 @@ class Gw::Admin::Piece::ReminderController < ApplicationController
     end
 
     # ファイル管理
-    doclibrary_remind = Doclibrary::Control.remind(Site.user.id, sort_key, order)
+    doclibrary_remind = Doclibrary::Control.remind(@user_id, sort_key, order)
     doclibrary_menu = (header_menus.select { |header_menu| doclibrary_feature_url?(header_menu.link_options[:url]) }).first
     if doclibrary_remind.present? && doclibrary_menu.present?
       doclibrary_remind.store(:title, doclibrary_menu.name)

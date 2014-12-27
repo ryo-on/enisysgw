@@ -24,12 +24,13 @@
     <%= hidden_field_tag :size, params[:size] %>
   <% end %>
 <% end %>
+<% notification_counts = Gwbbs::Control.notification_counts(Core.user.id) %>
 <% for item in @items %>
   <tr class="<%= cycle 'article', 'article cycle' %>">
     <td class="bbstitle">
       <%=link_to h(item.title),"#", {:onclick => "window.open('about:blank','gwbbs_form','resizable=yes,scrollbars=yes');$('item_form').title_id.value = #{item.id};$('item_form').submit();"}  %>
-      <% unreed_count = item.notification_each_db(Core.user.id) %>
-      <% unless unreed_count.zero? %>
+      <% unreed_count = notification_counts[item.id] %>
+      <% unless unreed_count.nil? %>
         （<%= unreed_count %>）
       <% end %>
     </td>

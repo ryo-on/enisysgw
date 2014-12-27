@@ -73,15 +73,16 @@
   overflow: hidden;
 }
 
-.logout .logout_b a,
-.logout a:visited {
+.logout .logout_b a {
   float: right;
   display: block;
   overflow: hidden;
-  width: 100px;
+  width: 75px;
   height: 0px !important;
   height /**/: 55px;
-  padding-top: 30px;
+  padding-top: 26px;
+  margin-bottom: 4px;
+  margin-right: 25px;
   line-height: 15px;
   vertical-align: top;
   outline: 0;
@@ -895,6 +896,10 @@ span.att a {
   width: 85px;
   background-image: url(/_common/themes/gw/files/doclibrary/ic_act_folderedit.gif);
 }
+.editingBox .btDestroyFolder a {
+  width: 85px;
+  background-image: url(/_common/themes/gw/files/doclibrary/ic_act_folderdestroy.png);
+}
 .editingBox .btNewDoc a {
   width: 70px;
   background-image: url(/_common/themes/gw/files/doclibrary/ic_act_documentadd.gif);
@@ -1357,7 +1362,8 @@ span.explanation {
 #footerBody .copyright a {
   color: #fff;
 }
-#footerBody .copyright a.siteinfo {
+#footerBody .copyright a.siteinfo,
+#footerBody .copyright span.server {
   position: absolute;
   top: 12px;
   right: 20px;

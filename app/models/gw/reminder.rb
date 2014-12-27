@@ -144,8 +144,7 @@ class Gw::Reminder < Gw::Database
   scope :extract_readable_bbs, lambda { |user_id|
     user = System::User.find(user_id)
     # 各掲示板の閲覧権限が設定されているか確認
-    controls = Gwbbs::Control.all.to_a
-    controls.select! do |control|
+    controls = Gwbbs::Control.includes(:role).select do |control|
       group_ids = []
       user_ids = []
       control.role.each do |role|

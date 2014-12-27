@@ -1,10 +1,10 @@
 <%
-week_first_day = @calendar_first_day
-@format ||= schedule_settings["#{@view}_view_dayhead_format"]
-parent_groups = Gw::PropOther.get_parent_groups
-@header_each ||= @schedule_settings[:header_each] rescue 5
-header_each = nz(@header_each, 5).to_i
-show_week_header = render(:partial => '/gw/admin/schedules/show_week_header')
+  week_first_day = @calendar_first_day
+  @format ||= schedule_settings["#{@view}_view_dayhead_format"]
+  parent_groups = Gw::PropOther.get_parent_groups
+  @header_each ||= @schedule_settings[:header_each] rescue 5
+  header_each = nz(@header_each, 5).to_i
+  show_week_header = render(:partial => '/gw/admin/schedules/show_week_header')
 %>
 <div class="piece schedulePiece prop weekview">
   <div class="pieceHeader">
@@ -24,6 +24,7 @@ show_week_header = render(:partial => '/gw/admin/schedules/show_week_header')
           <% if @show_flg %>
 
 
+          <% cached_group = {} %>
           <% @props.each_with_index do |prop, prop_cnt| %>
 
           <% if header_each == 0 && prop_cnt == 0 || header_each != 0 && prop_cnt % header_each == 0 %>
@@ -33,9 +34,9 @@ show_week_header = render(:partial => '/gw/admin/schedules/show_week_header')
           <%
             genre_class_s =  prop.get_type_class
             admin_first_id = prop.get_admin_first_id(parent_groups)
-            group  = System::GroupHistory.find_by_id(admin_first_id)
+            cached_group[admin_first_id] = System::GroupHistory.find_by_id(admin_first_id) unless cached_group[admin_first_id]
+            group  = cached_group[admin_first_id]
             prop_name = "#{prop.name}"
-            prop_name += "(#{group.name})" if group.present?
           %>
 
           <tr class="scheduleTableBody lineNo1">
@@ -62,37 +63,58 @@ show_week_header = render(:partial => '/gw/admin/schedules/show_week_header')
             </th>
 
             <% 7.times do |i| %>
-            <%
-            week_add_day = week_first_day + i
-            class_str = create_month_class(week_add_day, @st_date, @holidays, params)
+              <% week_add_day = week_first_day + i
+                 class_str = create_month_class(week_add_day, @st_date, @holidays, params) %>
+              <td class="<%= class_str -%>">
+                <% @schedules.each_with_index do |schedule, j| %>
+                  <% schedule_id = "sche#{schedule.id}_#{i + j + prop_cnt}" %>
+                  <% if schedule.date_between(week_add_day) %>
+                    <% participant = false
+                      schedule.schedule_props.each do |schedule_prop|
+                        break if participant
+                        participant = schedule_prop.prop_id == prop.id
+                      end %>
+                    <% if participant %>
+                      <%= show_week_one(schedule, week_add_day, schedule_id, nil, @schedule_data[schedule.id]) %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+                <%
+                  d_load_st = prop.d_load_st if prop.d_load_st
+                  d_load_ed = prop.d_load_ed if prop.d_load_ed
+                  d_load = true
+                  d_load = false if (d_load_st.present? && d_load_st > week_add_day) || (d_load_ed.present? && d_load_ed < week_add_day)
 
-            %>
-            <td class="<%= class_str -%>">
-            <% @schedules.each_with_index do |schedule, j| %>
-            <%
-            schedule_id = "sche#{schedule.id}_#{i + j + prop_cnt}"
-            if schedule.date_between(week_add_day)
-              participant = false
-              schedule.schedule_props.each do |schedule_prop|
-                break if participant
-                participant = schedule_prop.prop_id == prop.id
-              end
-
-              if participant
-            %>
-
-            <%= show_week_one(schedule, week_add_day, schedule_id) %>
-
-            <%
-              end # participant
-            end # date_between
-            %>
-            <% end %><!-- schedule End -->
-
-            <% if @is_gw_admin || @schedule_prop_admin || (@prop_edit_ids.index(prop.id) && prop.reserved_state != 0 && prop.delete_state != 1) -%>
-            <%= show_schedule_edit_icon(week_add_day, :prop_id=>prop.id, :s_genre => "other") -%>
-            <% end -%>
-            </td>
+                  groups = Site.user.groups
+                  gids = Array.new
+                  groups.each do |sg|
+                    gids << sg.id
+                    gids << sg.parent_id
+                  end
+                  gids << 0
+                  gids.uniq!
+                  search_gids = Gw.join([gids], ',')
+                  _this_prop_admin = Gw::PropOtherRole.select("id, prop_id")
+                                                      .where("prop_id in (#{prop.id})")
+                                                      .where("gid in (#{search_gids})")
+                                                      .where("auth='admin'")
+                  _this_prop_editor = Gw::PropOtherRole.select("id, prop_id")
+                                                      .where("prop_id in (#{prop.id})")
+                                                      .where("gid in (#{search_gids})")
+                                                      .where("auth='edit'")
+                  this_prop_admin = _this_prop_admin.map{|x| x.prop_id}
+                  this_prop_editor = _this_prop_editor.map{|x| x.prop_id}
+                %>
+                <% if @is_gw_admin || @schedule_prop_admin ||
+                      (this_prop_admin.present? &&
+                       this_prop_editor.present?) ||
+                      (@prop_edit_ids.index(prop.id) &&
+                       prop.reserved_state != 0 &&
+                       prop.delete_state != 1 && d_load &&
+                       prop.available?(week_add_day)) -%>
+                  <%= show_schedule_edit_icon(week_add_day, :prop_id=>prop.id, :s_genre => "other") -%>
+                <% end -%>
+              </td>
 
             <% end %><!-- 7 End -->
           <% end %><!-- user End -->

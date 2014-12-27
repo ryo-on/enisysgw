@@ -332,6 +332,11 @@ var my_load = function() {
   form_kind_id_0_or_1(institution_flg);
   <% end -%>
   form_kind_id_switch();
+
+  if($('item_form_kind_id_0').checked == true){
+    $('item_is_public_2').checked = true;
+    Element.show($('public_groups_table'));
+  }
 }
 function FreezeScreen(msg) {
   scroll(0,0);

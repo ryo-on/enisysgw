@@ -71,4 +71,16 @@
   }
 //]]>
 </script>
+<script type="text/javascript">
+//<![CDATA[
+  var supressBeforeUnload = false;
 
+  window.onbeforeunload = function( event ) {
+    if (!supressBeforeUnload) {
+      event = event || window.event;
+      event.returnValue = "保存していない場合、編集中の内容は失われます";
+      return "保存していない場合、編集中の内容は失われます";
+    }
+  }
+//]]>
+</script>

@@ -7,7 +7,7 @@ class Gw::Admin::PropAdminSettingsController < Gw::Admin::PropGenreCommonControl
   def initialize_scaffold
     super
     @css = %w(/_common/themes/gw/css/prop_extra/schedule.css)
-    Page.title = "施設予約可能期間･時間設定"
+    Page.title = "連続予約可能期間･時間設定"
     @sp_mode = :prop
 
     #施設マスタ権限を持つユーザーかの情報

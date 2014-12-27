@@ -57,6 +57,7 @@ ja:
     page_gap: …
   rumi:
     message:
+      getting: "を取得中です。"
       empty:
         list: 表示する内容はありません。
       disable_with: 処理中
@@ -230,7 +231,7 @@ ja:
               new: :rumi.config_settings.base.user_and_group.users_group.message.note
           group:
             message:
-              destroy: 削除はユーザーが所属しているか、下位に有効な所属があるときは、できません。<br />また、削除は、終了日を設定し、状態を「無効」に変更するだけです。ID・名称の再利用はできませんので、注意してください。
+              destroy: 削除はユーザーが所属しているか、下位に有効な所属があるときは、できません。<br />また、削除は、終了日を設定し、状態を「無効」に変更するだけです。IDの再利用はできませんので、注意してください。
           add:
             name: 追加 →
           remove:

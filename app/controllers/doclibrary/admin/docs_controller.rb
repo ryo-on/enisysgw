@@ -65,27 +65,6 @@ class Doclibrary::Admin::DocsController < Gw::Controller::Admin::Base
   end
 
   def group_hash
-    # 閲覧可能フォルダのID取得
-    readable_folders = get_readable_folder
-    readable_folder_ids = readable_folders.map{|f| f.id}
-
-    item = doclib_db_alias(Doclibrary::Doc)
-    item = item.new
-    item.and :title_id , @title.id
-    item.and :state, 'public' unless params[:state].to_s == 'DRAFT'
-    item.and :state, 'draft' if params[:state].to_s == 'DRAFT'
-    item.and :category1_id, readable_folder_ids
-
-    items = item.find(:all, :select=>'section_code',:group => 'section_code')
-    sql = Condition.new
-    if items.blank?
-      sql.and :id, 0
-    else
-      for citem in items
-        sql.or :code, citem.section_code
-      end
-    end
-    @select_groups = Gwboard::Group.new.find(:all,:conditions=>sql.where, :select=>'code, name' , :order=>'sort_no, code')
     @groups = Gwboard::Group.level3_all_hash
   end
 
@@ -138,26 +117,6 @@ class Doclibrary::Admin::DocsController < Gw::Controller::Admin::Base
     item.and :state, 'public'
     item.and :title_id , params[:title_id]
     @categories = item.find(:all, :select => 'id, name').index_by(&:id)
-
-    item = doclib_db_alias(Doclibrary::Folder)
-    parent = item.find(:all, :conditions=>["parent_id IS NULL"], :order=>"level_no, sort_no, id")
-    @select_categories = []
-    make_group_trees(parent) unless params[:state] == "CATEGORY"
-  end
-
-  def make_group_trees(items)
-    items.each do |item|
-      str = "+"
-      str += "-" * (item.level_no - 1)
-      cnn = doclib_db_alias(Doclibrary::Folder)
-      folder = cnn.find(item.id)
-      if folder.present? && folder.readable_user? &&
-          (item.level_no >= 1 && item.state == 'public')
-        @select_categories << [item.id , str + item.name]
-      end
-      Doclibrary::Folder.remove_connection
-      make_group_trees(item.children) if item.children.count > 0
-    end if items.count > 0
   end
 
   def index
@@ -1262,7 +1221,7 @@ class Doclibrary::Admin::DocsController < Gw::Controller::Admin::Base
       Doclibrary::Folder.remove_connection
       parent_item = doclib_db_alias(Doclibrary::Folder)
       parent = parent_item.find_by_id(file.category1_id)
-      tree = parent.parent_tree.map{|value| "#{value.id.to_s}_#{value.name}"}
+      tree = "#{parent.id.to_s}_#{parent.name}"
       tree_path = File.join(tree)
       
       # フォルダ階層の末尾に「ファイルID_ファイル名」フォルダを追加

@@ -174,7 +174,7 @@ class Gw::ScheduleRepeat < Gw::Database
 
     err_num_st = item.errors.count
     case params[:init][:repeat_mode]
-#通常の場合の処理
+# 通常の場合の処理
     when "1"
       st_at, ed_at = par_item_base[:st_at], par_item_base[:ed_at]
 
@@ -193,11 +193,12 @@ class Gw::ScheduleRepeat < Gw::Database
         else
           item.errors.add :ed_at, 'は、開始日時より後の日時を入力してください。' if d_st_at >= d_ed_at
         end
-#予約可能時間（通常時）のチェック
+
+        #予約可能時間（通常時）のチェック
         if !_props.blank? && !@span_hour.blank?
           item.errors.add :st_at, "から終了日時までの間隔は、#{@span_hour}時間まで許可されています。開始日時、終了日時の見直しを行ってください。" if (d_ed_at.to_time - d_st_at.to_time) > @admin_set_t
         end
-#予約可能時間（通常時）のチェック終了
+        #予約可能時間（通常時）のチェック終了
 
         #item.errors.add :st_at, 'と終了時刻は一年以内でなければいけません' if  (d_ed_at.to_time - d_st_at.to_time) > 86400 * 365
 
@@ -241,13 +242,53 @@ class Gw::ScheduleRepeat < Gw::Database
 
       end
 
-        if item.errors.count == err_num_st
-          #item.errors.add :st_at, 'と終了日時は一年以内でなければいけません。' if (d_ed_at - d_st_at) > 86400 * 365
-          dates = (d_st_at.to_date..d_ed_at.to_date).to_a
-        end
-#通常の場合の処理終了
+      if item.errors.count == err_num_st
+        #item.errors.add :st_at, 'と終了日時は一年以内でなければいけません。' if (d_ed_at - d_st_at) > 86400 * 365
+        dates = (d_st_at.to_date..d_ed_at.to_date).to_a
+      end
 
-#繰り返しありの場合の処理
+      prop_ids = _props.map {|p| p[1] }
+      if prop_ids.present?
+        #施設マスタ権限を持つユーザーかの情報
+        schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
+        prop_admin = Gw.is_admin_admin? || schedule_prop_admin
+
+        prop_other = Gw::PropOther.where(id: prop_ids)
+        prop_no_auth_ids = ""
+        prop_ids.each do |prop|
+          unless Gw::PropOtherRole.is_admin?(prop) && Gw::PropOtherRole.is_edit?(prop)
+            prop_no_auth_ids += "," + prop.to_s if prop_no_auth_ids.present?
+            prop_no_auth_ids = prop.to_s if prop_no_auth_ids.blank?
+          end
+        end
+
+        unless prop_admin || prop_no_auth_ids.blank?
+          tmp = prop_other.where("d_load_st IS NULL OR d_load_st <= ?", st_at)
+                          .where("d_load_ed IS NULL OR d_load_ed >= ?", ed_at)
+          unavailable_props = prop_other.select {|p| !p.available?(ed_at) }
+        else
+          tmp = prop_other
+        end
+
+        if _props.count != tmp.count
+          sql = <<SQL
+(d_load_st IS NOT NULL AND d_load_st > ? OR
+ d_load_ed IS NOT NULL AND d_load_ed < ?)
+SQL
+          reservation_props = Gw::PropOther.select(:name)
+                                           .where(id: prop_ids)
+                                           .where(sql, st_at, ed_at)
+          reservation_prop_names = reservation_props.map(&:name).join(', ')
+          item.errors.add :d_load_at, "の範囲外の施設は予約できません。（該当する施設：#{reservation_prop_names}）"
+        end
+
+        if unavailable_props.present?
+          item.errors.add :limit_month, "より先の予約を行うことはできません。（該当する施設：#{unavailable_props.map(&:name).join(', ')}）"
+        end
+      end
+# 通常の場合の処理終了
+
+# 繰り返しありの場合の処理
     when "2"
 
       st_date, ed_date = par_item_repeat[:st_date_at], par_item_repeat[:ed_date_at]
@@ -334,7 +375,7 @@ class Gw::ScheduleRepeat < Gw::Database
           end
           #item.errors.add :repeat_st_date_at, "、終了日の間の期間、条件に当てはまる日は#{dates.length}日となります。繰り返し回数は2～55回のみ許されます。開始日、終了日、規則などを見直し、再度登録してください。" if dates.length < 2 || 55 < dates.leng
 
-#予約可能期間のチェック
+          #予約可能期間のチェック
           if users.present?
             if !_props.blank?
               @admin_set_span = Gw::PropAdminSetting.find(:all, :conditions => cond, :order => "id", :select => "min(span) as span")
@@ -345,11 +386,53 @@ class Gw::ScheduleRepeat < Gw::Database
                 item.errors.add :repeat_st_date_at, "、終了日の間の期間、条件に当てはまる日は#{dates.length}日となります。繰り返し回数は#{@repeat_max}回まで許されます。開始日、終了日、規則などを見直し、再度登録してください。" if dates.length < 2 || @repeat_max < dates.length
               end
             end
+          end  #予約可能期間のチェック終了
+        end
+      end
+
+      prop_ids = _props.map {|p| p[1] }
+      if prop_ids.present?
+        #施設マスタ権限を持つユーザーかの情報
+        schedule_prop_admin = Gw.is_other_admin?('schedule_prop_admin')
+        prop_admin = Gw.is_admin_admin? || schedule_prop_admin
+
+        prop_other = Gw::PropOther.where(id: prop_ids)
+        prop_no_auth_ids = ""
+        prop_ids.each do |prop|
+          unless Gw::PropOtherRole.is_admin?(prop) && Gw::PropOtherRole.is_edit?(prop)
+            prop_no_auth_ids += "," + prop.to_s if prop_no_auth_ids.present?
+            prop_no_auth_ids = prop.to_s if prop_no_auth_ids.blank?
           end
-#予約可能期間のチェック終了
+        end
+
+        st_at = "#{st_date} #{st_time}"
+        ed_at = "#{ed_date} #{ed_time}"
+        unless prop_admin || prop_no_auth_ids.blank?
+          tmp = prop_other.where("d_load_st IS NULL OR d_load_st <= ?", st_at)
+                          .where("d_load_ed IS NULL OR d_load_ed >= ?", ed_at)
+          unavailable_props = prop_other.select {|p| !p.available?(ed_at) }
+        else
+          tmp = prop_other
+        end
+
+        if _props.count != tmp.count
+          sql = <<SQL
+(d_load_st IS NOT NULL AND d_load_st > ? OR
+ d_load_ed IS NOT NULL AND d_load_ed < ?)
+SQL
+          reservation_props = Gw::PropOther.select(:name)
+                                           .where(id: prop_ids)
+                                           .where(sql, st_at, ed_at)
+          reservation_prop_names = reservation_props.map(&:name).join(', ')
+          item.errors.add :d_load_at, "の範囲外の施設は予約できません。（該当する施設：#{reservation_prop_names}）"
+        end
+
+        if unavailable_props.present?
+          item.errors.add :limit_month, "より先の予約を行うことはできません。（該当する施設：#{unavailable_props.map(&:name).join(', ')}）"
         end
       end
     end
+# 繰り返しありの場合の処理終了
 
     %w(title is_public).each{|x| item.errors.add x, 'を入力してください。' if par_item_base[x].blank?}
 

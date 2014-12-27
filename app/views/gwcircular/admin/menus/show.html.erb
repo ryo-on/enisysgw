@@ -17,11 +17,14 @@
 <span class="btDestroy"><%= link_to '削除', "#{this_path}/#{@item.id}#{s_cond_btn}", :confirm => '削除をすると元に戻せません。削除しますか', :method => :delete %></span>
 
 <span class="btForword"><a href="/gwcircular/new?forword_id=<%= @item.id %>">転送する</a></span>
-<span class="btMailForword">
-<%= link_to "転送（メール）", url_for(action: :mail_forward, :id => @item.id), :class => 'mail_forward', :title => "転送（メール）", :target => '_blank',
+<% url = Enisys::Config.application["webmail.root_url"] %>
+<% if Site.user.email.present? && url.present? %>
+  <span class="btMailForword">
+    <%= link_to "転送（メール）", url_for(action: :mail_forward, :id => @item.id), :class => 'mail_forward', :title => "転送（メール）", :target => '_blank',
         :onclick => "return mailforwardView('#{raw escape_javascript url_for(action: :mail_forward, :id => @item.id)}');"
-      %>
-</span>
+    %>
+  </span>
+<% end %>
 <span class="btGwbbsForword">
 <%= link_to "転送（掲示板）", url_for(action: :gwbbs_forward, :id => @item.id), :class => 'mail_forward', :title => "転送（掲示板）", :target => '_blank',
         :onclick => "return gwbbsforwardView('#{raw escape_javascript url_for(action: :gwbbs_forward, :id => @item.id)}');"

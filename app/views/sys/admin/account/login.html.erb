@@ -4,7 +4,7 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <meta http-equiv="content-style-type" content="text/css" />
 <link rel="shortcut icon" href="/images/favicon.ico" />
-<title><%= Core.title %></title>
+<title><%= Core.title %> - 縁sys</title>
 <link href="/_common/themes/admin/login.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
 <body id="page-login"  onLoad="document.forms[0].account.focus()">
@@ -15,14 +15,14 @@
 <%= hidden_field_tag :uri, h(@uri) %>
 
 <div class="box">
-  <p>v1.1</p>
+  <p><%= $ENISYS_VERSION %></p>
   <h1>Gw</h1>
   <div class="notice"><%= flash[:notice] %></div>
   <div class="fields">
-    <span class="head">ユーザID</span><%= text_field_tag 'account', '' %>
+    <span class="head">ユーザID</span><%= text_field_tag 'account', '', {:accesskey => 'u'} %>
     <br />
     <br style="line-height: 0.8;" />
-    <span class="head">パスワード</span><%= password_field_tag 'password', '' %>
+    <span class="head">パスワード</span><%= password_field_tag 'password', '', {:accesskey => 'p'} %>
     <br />
   </div>
 
@@ -33,7 +33,7 @@
     end
   %>
   <div class="submitters">
-    <input class="login" type="image" src="/_common/images/blank.gif" alt="ログイン" value="" name="commit" style="<%= submitter_style %>" />
+    <input class="login" type="image" src="/_common/images/blank.gif" alt="ログイン" accesskey="e" value="" name="commit" style="<%= submitter_style %>" />
     <%=raw footer %>
   </div>
 </div>

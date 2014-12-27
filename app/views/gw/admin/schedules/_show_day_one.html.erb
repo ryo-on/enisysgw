@@ -13,8 +13,8 @@
     </a>
   </div>
   <% else %>
-  <div title="<%= schedule.show_time(@st_date) -%> [非公開予定]" class="ind" id="<%= schedule_id -%>">
-    <%= schedule.show_time(@st_date) -%>[非公開予定]
+  <div title="<%= schedule.show_time(@st_date) -%> [予定有り]" class="ind" id="<%= schedule_id -%>">
+    <%= schedule.show_time(@st_date) -%>[予定有り]
   </div>
   <% end %>
 
@@ -58,8 +58,8 @@ end
     </a>
   </div>
   <% else %>
-  <div title="<%= @ie ? "#{schedule.show_time(@st_date)} [非公開予定]" : "<span>#{schedule.show_time(@st_date)} [非公開予定]</span>" -%>" class="ind" id="<%= schedule_id -%>">
-    <%= schedule.show_time(@st_date) -%>[非公開予定]
+  <div title="<%= @ie ? "#{schedule.show_time(@st_date)} [予定有り]" : "<span>#{schedule.show_time(@st_date)} [予定有り]</span>" -%>" class="ind" id="<%= schedule_id -%>">
+    <%= schedule.show_time(@st_date) -%>[予定有り]
   </div>
   <% end %>
 
@@ -92,7 +92,7 @@ end
     （<%= schedule.place -%>）
     <% end %>
     <% else %><%# if public %>
-    <%= schedule.show_time(@st_date) -%> [非公開予定]
+    <%= schedule.show_time(@st_date) -%> [予定有り]
     <% end %><%# if public %>
   </td>
 

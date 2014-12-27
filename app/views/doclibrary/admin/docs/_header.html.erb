@@ -13,6 +13,8 @@ str_state = "&state=#{params[:state]}" unless params[:state] == 'DRAFT' unless p
 
 folder_edit_path = ''
 folder_edit_path = "/doclibrary/folders/#{params[:cat]}/edit?title_id=#{@title.id}&state=CATEGORY&cat=#{params[:cat]}" unless params[:cat].to_s == '1' unless params[:cat].blank?
+folder_destroy_path = ''
+folder_destroy_path ="/doclibrary/folders/#{params[:cat]}/?title_id=#{@title.id}&state=CATEGORY&cat=#{params[:cat]}" unless params[:cat].to_s == '1' unless params[:cat].blank?
 %>
 <%#右上バナー%>
 <% if false %>
@@ -37,6 +39,9 @@ folder_edit_path = "/doclibrary/folders/#{params[:cat]}/edit?title_id=#{@title.i
       <%end %>
       <% if folder_edit_path.present? && @parent.parent.admin_user? %>
         <span class="btEditFolder"><%=link_to("フォルダ編集", "#{folder_edit_path}")%></span>
+      <% end %>
+      <% if folder_destroy_path.present? && @parent.parent.admin_user? %>
+        <span class="btDestroyFolder"><%=link_to('フォルダ削除', "#{folder_destroy_path}", :confirm => '配下のファイルやフォルダも削除されます。よろしいですか？', :method => :delete) %></span>
       <% end %>
     <% end%>
     <% if @title.form_name == 'form002' %>

@@ -9,7 +9,8 @@
   <%
   case params[:state]
   when 'DRAFT'
-    folder_path = "/doclibrary/folders/#{folder.id}/edit?title_id=#{@title.id}&state=CATEGORY&cat=#{folder.id}"
+    folder_path = "/doclibrary/docs?title_id=#{@title.id}&state=CATEGORY&cat=#{folder.id}"
+    #"/doclibrary/folders/#{folder.id}/edit?title_id=#{@title.id}&state=CATEGORY&cat=#{folder.id}"
   else
     folder_path = folder_doclib_category_qstring(folder)
   end

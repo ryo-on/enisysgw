@@ -1,3 +1,4 @@
+# encoding: utf-8
 class Core
   ## Core attributes.
   cattr_reader   :now
@@ -24,7 +25,8 @@ class Core
   def self.initialize(env = nil)
     @@now          = Time.now.to_s(:db)
     @@config       = Util::Config.load(:core)
-    @@title        = @@config['title'] || 'Gw'
+    #@@title        = @@config['title'] || "ログイン"
+    @@title        = "ログイン"
     @@map_key      = @@config['map_key']
     @@env          = env
     @@params       = parse_query_string(env)

@@ -8,8 +8,11 @@
     is_requied = true
   end
 %>
-<table class="bbsFile<%= class_mode %>">
-  
+<% if request.path_info.include?("gwcircular/forward") || params[:request_path].present? %>
+  <table class="bbsFile" style="width: 100%;">
+<% else %>
+  <table class="bbsFile<%= class_mode %>">
+<% end %>
   <tr>
     <% if is_requied %>
       <th>添付ファイル<%= raw(required('<br/>' + t("rumi.circular.file_notice"))) -%></th>

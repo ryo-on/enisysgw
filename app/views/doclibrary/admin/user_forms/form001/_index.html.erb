@@ -1,15 +1,6 @@
 <%= render :partial => 'header' %>
 
 <div class="selectFormBox">
-  <%
-  case params[:state]
-  when 'CATEGORY'
-    concat render :partial => 'doclibrary/admin/user_forms/form001/change_group'
-  when 'DATE', 'GROUP'
-    concat render :partial => 'doclibrary/admin/user_forms/form001/change_group'
-    concat render :partial => 'doclibrary/admin/user_forms/form001/change_category'
-  end
-  %>
   <% if @is_category_index_form && @has_some_folder_admin %>
     <span class="fileFolderOption">
       <%= t('rumi.doclibrary.file_folder_option.label') %>

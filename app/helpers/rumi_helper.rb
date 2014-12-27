@@ -182,6 +182,9 @@ module RumiHelper
   # ==== 戻り値
   #  通知件数表示のspan
   def span_notification_count(link_options, user_code, password)
+    if mail_feature_url?(link_options[:url])
+      return %Q(<span id="notificationMailCount" class="noRead">---</span>)
+    end
     count = notification_count(link_options, user_code, password)
     content = ""
     if count.zero?
@@ -211,10 +214,10 @@ module RumiHelper
     count = Gwcircular::Control.notification(user_id) if circular_feature_url?(url)
     # 掲示板
     count = Gwbbs::Control.notification(user_id) if bbs_feature_url?(url)
-    # スケジュール
-    count = Gw::Schedule.normal_notification(user_id) if schedule_feature_url?(url)
+    # スケジュール・施設予約
+    count = Gw::Schedule.normal_notification(user_id) + Gw::Schedule.prop_notification(user_id) if schedule_feature_url?(url)
     # 施設予約
-    count = Gw::Schedule.prop_notification(user_id) if schedule_prop_feature_url?(url)
+    #count = Gw::Schedule.prop_notification(user_id) if schedule_prop_feature_url?(url)
     # ファイル管理
     count = Doclibrary::Control.notification(user_id) if doclibrary_feature_url?(url)
 

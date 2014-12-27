@@ -461,7 +461,7 @@ class Gw::Admin::SchedulesController < Gw::Controller::Admin::Base
     else
       gname = ""
     end
-    @_props.push ["other", @_prop.id, "#{gname}#{@_prop.name}"]
+    @_props.push ["other", @_prop.id, "#{@_prop.name}"]
   end
 
   def show_one

@@ -17,8 +17,8 @@
 .iconCsv {
   background-image: url(/_common/images/icons/csv.png); 
 }
-.iconDoc, .iconDocx, .iconDocm, 
-.iconDotx, .iconDotm { 
+.iconDoc, .iconDocx, .iconDocm,
+.iconDotx, .iconDot, .iconDotm {
   background-image: url(/_common/images/icons/doc.png); 
 }
 .iconGif {
@@ -45,16 +45,17 @@
 .iconPng { 
   background-image: url(/_common/images/icons/png.png); 
 }
-.iconPpt, .iconPptx, .iconPptm, 
-.iconPotx, .iconPotm, .iconPpam, 
-.iconPpsx, .iconPpsm { 
+.iconPpt, .iconPptx, .iconPptm,
+.iconPot, .iconPotx, .iconPotm,
+.iconPpa, .iconPpam, .iconPps,
+.iconPpsx, .iconPpsm {
   background-image: url(/_common/images/icons/ppt.png); 
 }
 .iconTxt { 
   background-image: url(/_common/images/icons/txt.png); 
 }
-.iconXls, .iconXlsx, .iconXlsm,
-.iconXltx, .iconXltm, .iconXlam {
+.iconXlt, .iconXltx, .iconXltm,
+.iconXla, .iconXlam {
   background-image: url(/_common/images/icons/xls.png); 
 }
 .iconZip {

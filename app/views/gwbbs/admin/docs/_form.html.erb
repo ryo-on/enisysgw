@@ -13,7 +13,11 @@
 <%= raw(gw_js_include_full) %>
 
 <% unless @title.one_line_use == 0 %>
-<table class="bbsComment">
+<% if request.path_info.include?("gwbbs/docs/forward") || params[:request_path].present?  %>
+  <table class="bbsComment" style="width: 100%;">
+<% else %>
+  <table class="bbsComment">
+<% end %>
   <tr>
     <th>1行コメント</th>
     <td><%= f.select :one_line_note, @item.one_line_states , :class => 'select one_line_note'%></td>
@@ -27,7 +31,7 @@
     <td>
       <%
         case params[:action]
-        when 'new'
+        when 'new','forward'
           dd = Gw.date8_to_date(params[:s_date], :default=>'')
           now = Time.now
           hour = now.hour # 時間

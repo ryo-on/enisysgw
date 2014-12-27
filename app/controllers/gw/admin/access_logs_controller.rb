@@ -196,7 +196,7 @@ class Gw::Admin::AccessLogsController < Gw::Controller::Admin::Base
       @data << data
     end
 
-    @data_cnt = @logs.length
+    @data_cnt = @logs.count
 
     #機能別の最大値取得
     max = @data.compact.max || 0

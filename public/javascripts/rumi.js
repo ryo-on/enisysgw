@@ -90,6 +90,35 @@ rumi.attachment.prototype.bytesize = function(str) {
   return encode_str.length - (encode_str.split("%").length - 1) * 2;
 }
 
+// 通常のファイルアップロード
+rumi.attachment.prototype.file_upload = function(ffield, msg_selector) {
+  // FileAPI実装有無をチェック
+  if (window.File) {
+    var result = this.file_check(ffield.files);
+  } else {
+    // FileAPI未対応ブラウザの場合は、
+    // 正攻法でファイルサイズを取得する術がないため
+    // ファイル名の長さのみチェック
+    // (最終的にサーバ側でのファイルサイズチェックが行われる為、
+    //  実質的に問題なし)
+    if (this.bytesize(ffield.value.split("\\").pop()) > this.maxname) {
+      alert("ファイル名が長すぎるため保存できませんでした。");
+      var result = false;
+    } else {
+      var result = true;
+    }
+  }
+
+  if (result) {
+    jQuery(msg_selector).html("アップロード中です...");
+    jQuery(ffield).parents("form").submit();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
 //
 // rumi.dragdrop コンストラクタ
 //
@@ -721,4 +750,53 @@ rumi.folder_trees.changeToggle = function(ajax_url) {
     }).error(function(obj) {
       alert("フォルダーツリーの表示に失敗しました。");
     });
+};
+
+// rumi.unread namespace
+rumi.unread = {}
+
+// メールの未読件数を取得して表示する
+rumi.unread.mailCountRequest = function(url) {
+  if (url == '') {
+    // urlが指定されていない(=メールアドレスを持っていない)場合は 0 件とする。
+    this.showMailCount(0);
+  } else {
+    this.ajaxRequest(url,
+      function(data) {
+        this.showMailCount(JSON.parse(data).total_count);
+      }.bind(this),
+      function(e) {
+        // 未読件数が取得できなかった場合は 0 件とする。
+        this.showMailCount(0);
+      }.bind(this));
+  }
+};
+
+// 新着情報を取得して表示する
+rumi.unread.reminderRequest = function(url) {
+  this.ajaxRequest(url,
+    function(data) {
+      jQuery('#contentBody').html(data);
+    },
+    function(e) {
+      alert("新着情報が取得できませんでした。");
+    });
+};
+
+// メールの未読件数表示
+rumi.unread.showMailCount = function(count) {
+  if (count && Number(count) != 0) {
+    jQuery('#notificationMailCount').html(count);
+  } else {
+    jQuery('#notificationMailCount').html('');
+  }
+};
+
+// AJAXリクエスト共通処理
+rumi.unread.ajaxRequest = function(url, successFunction, failFunction) {
+  jQuery.ajax({
+    url: url,
+    type: "GET",
+    dataType: "html",
+  }).success(successFunction).error(failFunction);
 };

@@ -47,10 +47,13 @@ module  Rumi::Doclibrary::ZipFileUtils
       Zip::Archive.open(filename, Zip::CREATE) {|zf|
         zip_data.each {|entry_name, src|
           # フォルダ・ファイル名の長さチェック
-          if entry_name.bytesize >
-              Enisys.config.application['sys.max_file_name_length']
-            raise Errno::ENAMETOOLONG
-          end          
+          #e_name = entry_name.split("/")
+          #e_name.each do |e|
+          #  if e.bytesize >
+          #      Enisys.config.application['sys.max_file_name_length']
+          #    raise Errno::ENAMETOOLONG
+          #  end
+          #end
           
           if src.blank?
             # zipファイルへフォルダのみ作成

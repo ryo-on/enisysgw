@@ -131,13 +131,13 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
       #本文_回覧記事本文
       @gwcircular_text_body << @item.body
     else
-      @gwcircular_text_body = "-------- Original Message --------\n"
+      @gwcircular_text_body = "-------- Original Message --------\r\n"
       #本文_タイトル
-      @gwcircular_text_body << "タイトル： " + @item.title + "\n"
+      @gwcircular_text_body << "タイトル： " + @item.title + "\r\n"
       #本文_作成日時
-      @gwcircular_text_body << "作成日時： " + @item.created_at.strftime('%Y-%m-%d %H:%M') + "\n"
+      @gwcircular_text_body << "作成日時： " + @item.created_at.strftime('%Y-%m-%d %H:%M') + "\r\n"
       #本文_作成者
-      @gwcircular_text_body << "作成者： " + @item.createrdivision + " " + @item.creater + "\n"
+      @gwcircular_text_body << "作成者： " + @item.createrdivision + " " + @item.creater + "\r\n"
       #本文_回覧記事本文
       @gwcircular_text_body << @item.body
     end
@@ -725,7 +725,7 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
       elsif params[:category] == 'GROUP'
         item_order = "createrdivision_id ASC, expiry_date DESC, id DESC"
       else
-        item_order = "expiry_date DESC, id DESC"
+        item_order = "created_at DESC, id DESC"
       end
     when 'owner','admin'
       if params[:sort_key].present? && params[:category] == 'DATE'
@@ -741,7 +741,7 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
       elsif params[:category] == 'EXPIRY'
         item_order = "expiry_date DESC, id DESC"
       else
-        item_order = "id DESC"
+        item_order = "created_at DESC, id DESC"
       end
     else
       if params[:sort_key].present? && params[:category] == 'DATE'
@@ -755,7 +755,7 @@ class Gwcircular::Admin::MenusController < Gw::Controller::Admin::Base
       elsif params[:category] == 'GROUP'
         item_order = "createrdivision_id ASC, expiry_date DESC, id DESC"
       else
-        item_order = "expiry_date DESC, id DESC"
+        item_order = "created_at DESC, id DESC"
       end
     end
     return item_order

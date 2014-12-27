@@ -4,11 +4,25 @@
 <div id="footerHeader"></div>
 <div id="footerBody">
 <div class="copyright">
-  
+  <span class="server"><%= Enisys.server_name %></span>
   <!--<a class="siteinfo" target="_blank" href="/siteinfo/">接続情報</a>-->
 </div>
 </div>
 <div id="footerFooter"></div>
 </div>
 </div>
+
+<%
+if Site.user.email.present?
+  query = Rumi::AbstractApi.new.create_query(account:  Site.user.code,
+                                             password: Site.user.password)
+  uri = Enisys::Config.application["webmail.root_url"]
+  url = %Q{#{uri}/_api/gw/webmail/remind?#{query}}
+else
+  url = ''
+end
+%>
+<%= javascript_tag do %>
+  rumi.unread.mailCountRequest('<%= url %>');
+<% end %>
 <!--ここまでフッター-->

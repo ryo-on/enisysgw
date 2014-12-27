@@ -23,13 +23,13 @@ box_width = 'width:300px;'
     </td>
   </tr>
   <tr>
-    <th>予約可能期間<%= required %></th>
+    <th>連続予約可能期間<%= required %></th>
     <td>
       <%= f.text_field :span, :size => 30 %>日　無制限：<%= raw(f.check_box("span_limit", {:onClick => 'span_check(this)'}, "1", "0")) %>
     </td>
   </tr>
   <tr>
-    <th>予約可能時間<%= required %></th>
+    <th>連続予約可能時間<%= required %></th>
     <td>
       <%= f.text_field :span_hour, :size => 30 %>時間　無制限：<%= raw(f.check_box("time_limit", {:onClick => 'time_check(this)'}, "1", "0")) %>
     </td>

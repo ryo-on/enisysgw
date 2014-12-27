@@ -20,7 +20,14 @@ protected
   end
 
   def new_login(_account, _password)
-    return false unless user = System::User.authenticate(_account, _password)
+    unless user = System::User.authenticate(_account, _password)
+      flash.now[:notice] = "ユーザーID・パスワードを正しく入力してください"
+      return false
+    end
+    if user.enable_user_groups.length == 0
+      flash.now[:notice] = '所属設定が異常です。管理者に連絡してください。'
+      return false
+    end
     #session[ACCOUNT_KEY]  = user.account
     session[ACCOUNT_KEY]  = user.code
     session[PASSWD_KEY] = user.encrypt_password

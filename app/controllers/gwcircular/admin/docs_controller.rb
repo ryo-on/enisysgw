@@ -123,13 +123,13 @@ class Gwcircular::Admin::DocsController < Gw::Controller::Admin::Base
       #本文_回覧記事本文
       @gwcircular_text_body << @parent.body
     else
-      @gwcircular_text_body = "-------- Original Message --------\n"
+      @gwcircular_text_body = "-------- Original Message --------\r\n"
       #本文_タイトル
-      @gwcircular_text_body << "タイトル： " + @parent.title + "\n"
+      @gwcircular_text_body << "タイトル： " + @parent.title + "\r\n"
       #本文_作成日時
-      @gwcircular_text_body << "作成日時： " + @parent.created_at.strftime('%Y-%m-%d %H:%M') + "\n"
+      @gwcircular_text_body << "作成日時： " + @parent.created_at.strftime('%Y-%m-%d %H:%M') + "\r\n"
       #本文_作成者
-      @gwcircular_text_body << "作成者： " + @parent.createrdivision + " " + @parent.creater + "\n"
+      @gwcircular_text_body << "作成者： " + @parent.createrdivision + " " + @parent.creater + "\r\n"
       #本文_回覧記事本文
       @gwcircular_text_body << @parent.body
     end
