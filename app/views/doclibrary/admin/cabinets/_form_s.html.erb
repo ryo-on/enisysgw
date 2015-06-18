@@ -54,6 +54,22 @@
 
 <script>
 var my_submit = function() {
+  var admin_g = $('item_admingrps_json');
+  var admin = $('item_adms_json');
+  var reader_g = $('item_readers_json');
+  var reader = $('item_sureaders_json');
+
+  var admin_auth = JSON.parse(admin_g.value).length == 0 && JSON.parse(admin.value).length == 0
+  var reader_auth = JSON.parse(reader_g.value).length == 0 && JSON.parse(reader.value).length == 0
+
+  if (admin_auth) {
+    alert('管理部門、もしくは管理者を選択してください。');
+    return false;
+  }
+  if (reader_auth) {
+    alert('閲覧部門、もしくは閲覧者を選択してください。');
+    return false;
+  }
   $('itemForm').submit();
 };
 </script>

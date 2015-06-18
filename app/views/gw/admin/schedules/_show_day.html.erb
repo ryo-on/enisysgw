@@ -43,7 +43,7 @@ show_day_header = render(:partial => '/gw/admin/schedules/show_day_header')
                 <div class="username">
                   <span>
                     <%= link_to_show_profile(user.display_name_only, user.code) %>
-                    <% if @edit -%>
+		    <% if @edit && user.schedule_auth? -%>
                     <%= show_schedule_edit_icon(@calendar_first_day, :uid=>user.id) -%>
                     <% end -%>
                   </span>

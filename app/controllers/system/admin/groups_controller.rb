@@ -17,6 +17,7 @@ class System::Admin::GroupsController < Gw::Controller::Admin::Base
       parent_id = params[:parent]
     end
     @parent = System::Group.find_by_id(parent_id)
+    @parent_groups = System::Group.where(level_no: @parent.level_no, state: 'enabled')
     return http_error(404) if @parent.blank?
     Page.title = "ユーザー・グループ管理"
     @role_admin = System::User.is_admin?

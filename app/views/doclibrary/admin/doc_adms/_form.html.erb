@@ -5,6 +5,8 @@
   user_groups = Gwboard::Group.level
   groups = Gwboard::Group.level2_only
 %>
+<% no_limit_group_child_groups = build_select_parent_groups(
+     System::Group.child_groups_to_select_option(System::Group.no_limit_group_id)) %>
 
 <% parent_group_id = Core.user_group.parent_id %>
 <% group_child_groups = build_select_parent_groups(System::Group.child_groups_to_select_option(parent_group_id)) %>
@@ -47,9 +49,9 @@
   <tr>
     <td class="userChange">
       <%= render partial: "shared/select_group", locals: {
-        parent_group_selected: parent_group_id, child_groups: group_child_groups,
+        parent_group_selected: System::Group.no_limit_group_id, child_groups: no_limit_group_child_groups,
         hidden_item_name: "item[reader_groups_json]", values: @item.reader_groups_json,
-        ui_mode: ui_mode_groups_default
+        ui_mode: ui_mode_groups_include_no_limit
       } %>
     </td>
   </tr>

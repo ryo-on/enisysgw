@@ -250,7 +250,14 @@ class Gw::PropOther < Gw::Database
     end
 
     if params[:item][:d_load_st].present?
-      if params[:item][:d_load_st] =~ /\d{4}-\d{2}-\d{2}/
+      begin
+        d_load_st = Date.strptime(params[:item][:d_load_st], '%Y-%m-%d')
+                        .beginning_of_day
+      rescue
+        self.errors.add :d_load_st, "は正しい日付を入力してください。"
+      end
+=begin
+      if params[:item][:d_load_st] =~ /^\d{4}-\d{2}-\d{2}$/
         load_st = params[:item][:d_load_st].split("-")
         begin
           d_load_st = Time.new(load_st[0],load_st[1],load_st[2]).beginning_of_day.strftime("%Y-%m-%d %H:%M:%S")
@@ -260,9 +267,17 @@ class Gw::PropOther < Gw::Database
       else
         self.errors.add :d_load_st, "は日付を入力してください。"
       end
+=end
     end
 
     if params[:item][:d_load_ed].present?
+      begin
+        d_load_ed = Date.strptime(params[:item][:d_load_ed], '%Y-%m-%d')
+                        .end_of_day
+      rescue
+        self.errors.add :d_load_ed, "は正しい日付を入力してください。"
+      end
+=begin
       if params[:item][:d_load_ed] =~ /\d{4}-\d{2}-\d{2}/
         load_ed = params[:item][:d_load_ed].split("-")
         begin
@@ -273,6 +288,7 @@ class Gw::PropOther < Gw::Database
       else
         self.errors.add :d_load_ed, "は日付を入力してください。"
       end
+=end
     end
 
     if (limit_month = params[:item][:limit_month]).present?

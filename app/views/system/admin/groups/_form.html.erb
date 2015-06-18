@@ -53,7 +53,7 @@
   </tr>
   <tr>
     <th><%= System::Group.human_attribute_name(:parent_id) %></th>
-    <td><%= @item.parent.ou_name %></td>
+    <td><%= f.select :parent_id, @parent_groups.map{|x| [x.code.to_s + x.name.to_s, x.id]}, :selected => @parent.id %></td>
   </tr>
 </table>
 <%= raw(gw_js_include_full) %>

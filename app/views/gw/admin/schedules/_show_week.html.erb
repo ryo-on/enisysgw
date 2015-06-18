@@ -98,7 +98,7 @@ show_week_header = render(:partial => '/gw/admin/schedules/show_week_header')
             <% end %><%# Todo End %>
             <% end %><%# if @user.id == Site.user.id End %>
 
-            <% if @edit -%>
+            <% if @edit && user.schedule_auth? -%>
             <%= show_schedule_edit_icon(week_add_day, :uid=>user.id) -%>
             <% end -%>
             </td>

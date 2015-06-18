@@ -15,6 +15,22 @@
 <script type="text/javascript">
 //<![CDATA[
 var my_submit = function(state) {
+  var admin_g = $('item_admin_groups_json');
+  var admin = $('item_admins_json');
+  var reader_g = $('item_reader_groups_json');
+  var reader = $('item_readers_json');
+
+  var admin_auth = JSON.parse(admin_g.value).length == 0 && JSON.parse(admin.value).length == 0
+  var reader_auth = JSON.parse(reader_g.value).length == 0 && JSON.parse(reader.value).length == 0
+  if (admin_auth) {
+    alert('グループ管理権限、もしくは個人管理権限を設定してください。');
+    return false;
+  }
+  if (reader_auth) {
+    alert('グループ閲覧権限、もしくは個人閲覧権限を設定してください。');
+    return false;
+  }
+
   switch (state) {
   case "create":
     var res = confirm('<%= I18n.t('rumi.doclibrary.submit.f_create_confirm') %>');

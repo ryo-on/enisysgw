@@ -526,10 +526,11 @@ protected
     # グループ閲覧権限、個人閲覧権限の両方が設定されていない場合、閲覧権限あり
     return true if reader_groups.blank? && readers.blank?
 
-    # 指定ユーザーがグループ閲覧権限に含まれるか？
+    # 指定ユーザーがグループ閲覧権限に含まれるか、グループ閲覧権限に制限なしが設定されているか？
     target_user = System::User.find(target_user_id)
     user_group_ids = target_user.groups.map(&:id)
     reader_groups.each do |group|
+      return true if group[1].to_i == 0 || group[2] == "制限なし"
       return true if user_group_ids.include?(group[1].to_i)
     end
 

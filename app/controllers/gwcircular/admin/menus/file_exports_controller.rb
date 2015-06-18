@@ -52,8 +52,8 @@ class Gwcircular::Admin::Menus::FileExportsController < Gw::Controller::Admin::B
 
     doc = Gwcircular::Doc.new
     doc.and :title_id , @title.id
-    doc.and :doc_type , 1
-    doc.and :parent_id , @item.id
+    doc.and :doc_type , 0
+    doc.and :id , @item.id
     doc.and 'sql', "state != 'preparation'"
     docs = doc.find(:all)
     for doci in docs

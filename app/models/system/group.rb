@@ -26,7 +26,7 @@ class System::Group < ActiveRecord::Base
     :join_table => 'system_users_groups'
 
   validates_presence_of :state, :code, :name, :start_at, :category
-  validates_uniqueness_of :code, :scope => [:parent_id]
+  validates_uniqueness_of :code
 
   validates :state, inclusion: { in: Proc.new{ |record| System::UsersGroup.state_values } }
   validates :ldap, inclusion: { in: Proc.new{ |record| System::UsersGroup.ldap_values } }
@@ -371,7 +371,10 @@ class System::Group < ActiveRecord::Base
   #      e.g. without_disable: boolean, unshift_parent_group: boolean
   # ==== 戻り値
   #  Array.<group>
-  def self.child_groups_to_select_option(target_group_id, options = System::Group::TO_SELECT_OPTION_SETTINGS[:default])
+  def self.child_groups_to_select_option(target_group_id,
+              options = System::Group::TO_SELECT_OPTION_SETTINGS[:default])
+    return [] if target_group_id.blank?
+
     to_without_disable = options.key?(:without_disable) && options[:without_disable] == true
     to_unshift_parent_group = options.key?(:unshift_parent_group) && options[:unshift_parent_group] == true
 

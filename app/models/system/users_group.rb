@@ -164,7 +164,9 @@ class System::UsersGroup < ActiveRecord::Base
   # ==== 戻り値
   #  boolean
   def deletable?
-    return self.user.enable_user_groups.count >= 2
+    current_time = Time.now.strftime("%Y-%m-%d 23:59:59")
+    item_state = self.end_at.present? && (self.end_at != '0000-00-00 00:00:00' && self.end_at < current_time)
+    return self.user.enable_user_groups.count >= 2 || item_state
   end
 
   # === グループが任意の場合は本務・兼務をnilにする

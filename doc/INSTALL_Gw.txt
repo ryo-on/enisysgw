@@ -1,4 +1,4 @@
-## Enisys Gw 1.2.0 インストールマニュアル                   2014.12.15
+## Enisys Gw 1.3.0 インストールマニュアル                   2015.05.11
 
 **********************************************************************
  1 想定環境
@@ -257,6 +257,8 @@ SMTP接続情報
   さらに環境設定のために次のSQL文を実行してください。
   # /usr/bin/mysql -u root -p -e "UPDATE production_jgw_gw.gwbbs_controls SET dbname = 'production_jgw_bbs_000001' WHERE gwbbs_controls.id =1;"
 
+※初期データの管理者ユーザーは、enisysadmです。
+　パスワードはenisysadmです。
 
 ======================================================================
  7.3 memcached のインストール

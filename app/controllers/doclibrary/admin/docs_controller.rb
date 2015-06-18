@@ -606,6 +606,10 @@ class Doclibrary::Admin::DocsController < Gw::Controller::Admin::Base
           d2.and 'doclibrary_view_acl_docs.acl_section_code', user_groups_code unless user_groups_code.blank?
         }
         d.or {|d2|
+          d2.and 'doclibrary_view_acl_docs.acl_flag', 1
+          d2.and 'doclibrary_view_acl_docs.acl_section_code', 0
+        }
+        d.or {|d2|
           d2.and 'doclibrary_view_acl_docs.acl_flag', 2
           d2.and 'doclibrary_view_acl_docs.acl_user_code', Site.user.code
         }
@@ -702,6 +706,10 @@ class Doclibrary::Admin::DocsController < Gw::Controller::Admin::Base
         d.or {|d2|
           d2.and :acl_flag, 1
           d2.and :acl_section_id, Site.user.user_group_parent_ids
+        }
+        d.or {|d2|
+          d2.and :acl_flag, 1
+          d2.and :acl_section_id, 0
         }
         d.or {|d2|
           d2.and :acl_flag, 2

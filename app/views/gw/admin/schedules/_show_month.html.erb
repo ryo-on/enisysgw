@@ -100,7 +100,7 @@ end
 
             <%
             if @sp_mode == :schedule
-              if @edit
+              if @edit && @user.schedule_auth?
                 %>
               <%= show_schedule_edit_icon(week_add_day, :uid=>@uid) -%>
             <%

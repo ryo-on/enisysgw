@@ -101,7 +101,7 @@ class System::User < ActiveRecord::Base
     # 管理グループに設定された所属
     editable_group_ids = operation_user.editable_groups_in_system_users.map(&:id)
     # 管理グループに設定された所属に属するユーザーのみ抽出する
-    includes(:user_groups).where("system_users_groups.group_id in (?)", editable_group_ids)
+    includes(:user_groups).where("system_users_groups.group_id in (?) or system_users_groups.group_id is null", editable_group_ids)
   }
 
   # === 状態が有効の所属のみを返すメソッド
@@ -232,7 +232,7 @@ class System::User < ActiveRecord::Base
     editable_group_ids = editable_groups_in_system_users.map(&:id)
     uneditable_group_ids = editable_group_ids - target_user.user_groups.map(&:group_id)
     # ユーザーが属する所属の内1つでも管理グループに含まれていれば編集可能と判断する
-    return editable_group_ids != uneditable_group_ids
+    return editable_group_ids != uneditable_group_ids || target_user.user_groups.count == 0
   end
 
   # === 管理グループに設定された所属に含まれるグループか評価するメソッド
@@ -809,6 +809,23 @@ class System::User < ActiveRecord::Base
       group_ids += user_group.group.parent_tree.map(&:id)
     end
     return group_ids.uniq
+  end
+
+  # === スケジュール権限判定メソッド
+  # スケジュール権限がログインユーザにあるか判定するメソッド
+  def schedule_auth?
+    unless defined?(@schedule_auth)
+      if Core.user.id == self.id ||
+          (role = System::ScheduleRole.where(target_uid: self.id)).blank?
+        @schedule_auth = true
+      else
+          gids = Core.user.enable_user_groups.map(&:group_id)
+          q1 = role.where(user_id: Core.user.id).where_values.reduce(:and)
+          q2 = role.where(group_id: gids).where_values.reduce(:and)
+          @schedule_auth = role.where(q1.or(q2)).present?
+      end
+    end
+    @schedule_auth
   end
 
 protected
